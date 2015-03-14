@@ -21,6 +21,7 @@ Student::Student(int in_semester, int in_num_interesting_courses, vector<int> in
 	budget = in_budget;
 }
 
+//copy constructor
 Student::Student(Student const &other)
 {
 	semester = other.semester;
@@ -34,3 +35,4 @@ Student::~Student()
 {
 	//
 }
+
