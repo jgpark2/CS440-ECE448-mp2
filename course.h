@@ -19,6 +19,10 @@ class Course
 		//destructor
 		~Course();
 
+		int get_fall_price();
+		int get_spring_price();
+		int get_credit_hours();
+		
 	private:
 		int fall_price;
 		int spring_price;

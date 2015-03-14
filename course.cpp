@@ -32,3 +32,18 @@ Course::~Course()
 	//
 }
 
+//get fall price
+int Course::get_fall_price()
+{
+	return this->fall_price;
+}
+
+int Course::get_spring_price()
+{
+	return this->spring_price;
+}
+
+int Course::get_credit_hours()
+{
+	return this->credit_hours;
+}

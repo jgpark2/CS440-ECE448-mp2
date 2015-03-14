@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "course.h"
 
 using namespace std;
 
@@ -33,6 +34,11 @@ int main(int argc, char* argv[])
 		int num_courses;
 		int Cmin;
 		int Cmax;
+		vector<Course> courses;
+		int fall_price;
+		int spring_price;
+		int credit_hours;
+
 		if(getline(myfile, curr_line) == NULL)
 		{
 			cout << "Error: no lines to read" << endl;
@@ -54,6 +60,24 @@ int main(int argc, char* argv[])
 				cout << "Search flag mode: " << mode << endl;
 				break;
 		}
+
+		for(int i = 0; i < num_courses; i++)
+		{
+			getline(myfile, curr_line);
+			istringstream(curr_line) >> fall_price >> spring_price >> credit_hours;
+			Course curr_course(fall_price, spring_price, credit_hours);
+			courses.push_back(curr_course);
+		}
+
+		for(int i = 0; i < num_courses; i++)
+		{
+			cout << "Course " << i;
+			cout << " Fall price: " << courses.at(i).get_fall_price();
+			cout << " Spring price: " << courses.at(i).get_spring_price();
+			cout << " Credits: " << courses.at(i).get_credit_hours() << endl;
+		}
+
+		cout << "End of parse" << endl;
 
 		return 0;
 	}
