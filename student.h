@@ -3,9 +3,8 @@
 
 #include <vector>
 
-using namespace std;
 
-class student
+class Student
 {
 	public:
 
@@ -13,7 +12,7 @@ class student
 		Student();
 
 		//param consstructor
-		Student(int in_semester, int in_num_interesting_courses, vector in_interesting_courses, int in_budget);
+		Student(int in_semester, int in_num_interesting_courses, std::vector<int> in_interesting_courses, int in_budget);
 
 		//copy constructor
 		Student(Student const &other);
@@ -23,7 +22,8 @@ class student
 
 	private:
 		int semester;
-		vector<int> interesting_courses;
+		int num_interesting_courses;
+		std::vector<int> interesting_courses;
 		int budget;
 
 

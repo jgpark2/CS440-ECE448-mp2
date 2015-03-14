@@ -1,5 +1,7 @@
 #include "student.h"
 
+using namespace std;
+
 //default constructor
 Student::Student()
 {
@@ -11,7 +13,7 @@ Student::Student()
 }
 
 //param constructor
-Student::Student(int in_semester, int in_num_interesting_courses, vector in_interesting_courses, int in_budget)
+Student::Student(int in_semester, int in_num_interesting_courses, vector<int> in_interesting_courses, int in_budget)
 {
 	semester = in_semester;
 	num_interesting_courses = in_num_interesting_courses;
@@ -21,10 +23,10 @@ Student::Student(int in_semester, int in_num_interesting_courses, vector in_inte
 
 Student::Student(Student const &other)
 {
-	semester = other.in_semester;
-	num_interesting_courses = other.in_num_interesting_courses;
-	interesting_courses = other.in_interesting_courses;
-	budget = other.in_budget;
+	semester = other.semester;
+	num_interesting_courses = other.num_interesting_courses;
+	interesting_courses = other.interesting_courses;
+	budget = other.budget;
 }
 
 //destructor
