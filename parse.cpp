@@ -62,8 +62,10 @@ vector<Course*> parseCourses(string scenario)
 		{
 			getline(myfile, curr_line);
 			istringstream(curr_line) >> fall_price >> spring_price >> credit_hours;
-			Course curr_course(i, fall_price, spring_price, credit_hours);
-			courses.push_back(curr_course);
+			
+			//kept safe in memory VERY IMPORTANT TO HAVE "new"!
+			Course* curr_course = new Course (i, fall_price, spring_price, credit_hours);
+			courses.push_back(*curr_course);
 		}
 
 		for(unsigned int i = 0; i < num_courses; i++)
