@@ -21,12 +21,7 @@ int main(int argc, char* argv[])
 	char mode = argv[1][0];
 	string scenario = argv[2];
 	
-	vector<Course> courses = parseCourses(scenario);
-	/*actually, just parse it into a vector of pointers...
-	vector<Course*> courses_ptr;
-	for(vector<Course>::iterator it = courses.begin(); it!=courses.end(); ++it) {
-		courses_ptr.push_back(&it);
-	}*/
+	vector<Course*> courses = parseCourses(scenario);
 
 	switch(mode)
 	{
