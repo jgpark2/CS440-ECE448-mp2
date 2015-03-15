@@ -1,28 +1,29 @@
 #include "gameTree.h"
 
 using namespace std;
-using namespace GameTree;
 
 //default constructor
-GameTree() {
+GameTree::GameTree() {
 	//Empty Game Tree
 }
 
-GameTree(GameState* root) {
+GameTree::GameTree(GameState* root) {
 	this->root = root;
 }
 
-~GameTree() { }
+GameTree::~GameTree() { }
 
-bool isEmpty() {
-	(root==NULL)? return true:return false;
+bool GameTree::isEmpty() {
+	if (root==NULL)
+		return true;
+	return false;
 }
 
-void clearTree() {
-	//TODO: free mem?
+void GameTree::clearTree() {
+	//TODO: free mem -> loop through all nodes and its children and delete them
 	root = NULL;
 }
 
-void printTree() {
+void GameTree::printTree() {
 	//TODO: whee
 }

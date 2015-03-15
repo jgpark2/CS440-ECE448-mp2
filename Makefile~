@@ -1,6 +1,6 @@
 #
 EXE = mp2
-OBJS = student.o course.o gameState.o gameTree.o parse.o main.o
+OBJS = student.o course.o parse.o main.o
 
 COMPILER = g++
 COMPILER_OPTS = -c -g -O0 -Wall -Werror

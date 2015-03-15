@@ -10,11 +10,18 @@
 class GameState {
 	public:
 		GameState();
+		GameState(std::vector<Course*> courseList);
 		GameState(GameState const &gs);
 		~GameState();
-		void setCoursesFromVector(std::vector<Course*> courseList);
 		
+		void setCoursesFromVector(std::vector<Course*> courseList);
+		void addChildGameState(GameState* child);
+		bool isRoot();
+		
+		std::vector<GameState*> children;
 		std::vector<Course*> courseList;
+		GameState* parent;
+		
 		
 };
 
