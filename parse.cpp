@@ -3,7 +3,7 @@
 using namespace std;
 using namespace boost;
 
-vector<Course> parseCourses(string scenario)
+vector<Course*> parseCourses(string scenario)
 {
 		//for parsing the scenario in general
 		string curr_line;
@@ -13,6 +13,7 @@ vector<Course> parseCourses(string scenario)
 
 		//list of courses
 		vector<Course> courses;
+		vector<Course*> course_ptrs;
 
 		//for parsing each course
 		int fall_price;
@@ -31,14 +32,14 @@ vector<Course> parseCourses(string scenario)
 		{
 			cout << "Error opening file" <<endl;
 			//return 1;
-			return courses;
+			return course_ptrs;
 		}
 
 		if(getline(myfile, curr_line) == NULL)
 		{
 			cout << "Error: no lines to read" << endl;
 			//return 1;
-			return courses;
+			return course_ptrs;
 		}
 
 		//the first string is already stored in curr_line
@@ -83,18 +84,23 @@ vector<Course> parseCourses(string scenario)
 
 		for(unsigned int i = 0; i < num_courses; i++)
 		{
-			cout << "Course " << courses[i].courseID;
-			cout << " Fall price: " << courses[i].fallPrice;
-			cout << " Spring price: " << courses[i].springPrice;
-			cout << " Credits: " << courses[i].credit;
+			course_ptrs.push_back(&courses[i]);
+		}
+
+		for(unsigned int i = 0; i < num_courses; i++)
+		{
+			cout << "Course " << course_ptrs[i]->courseID;
+			cout << " Fall price: " << course_ptrs[i]->fallPrice;
+			cout << " Spring price: " << course_ptrs[i]->springPrice;
+			cout << " Credits: " << course_ptrs[i]->credit;
 			cout << " Prerequisites: ";
-			for(unsigned int j = 0; j < courses[i].prereqList.size(); j++)
+			for(unsigned int j = 0; j < course_ptrs[i]->prereqList.size(); j++)
 			{
-				cout << courses[i].prereqList[j]->courseID << ", ";
+				cout << course_ptrs[i]->prereqList[j]->courseID << ", ";
 			}
 			cout << endl;
 		}
 		cout << "End of parse" << endl;
 
-		return courses;
+		return course_ptrs;
 }

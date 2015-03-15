@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	char mode = argv[1][0];
 	string scenario = argv[2];
 	
-	vector<Course> courses = parseCourses(scenario);
+	vector<Course*> courses = parseCourses(scenario);
 
 	switch(mode)
 	{
