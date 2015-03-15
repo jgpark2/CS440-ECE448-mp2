@@ -25,7 +25,7 @@ class GameState {
 		std::vector<GameState*> children;
 		std::vector<Course*> courseList;
 		GameState* parent;
-		std::map<Course*, int> assignment;
+		std::map<int, std::vector<Course*> > assignment;
 		
 		int curSemester; //current semester is the last semester the gamestate handled
 		int totalCredit; //toal credit of current semester

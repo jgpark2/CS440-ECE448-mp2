@@ -26,6 +26,7 @@ class Course
 		int fallPrice;
 		int springPrice;
 		int credit;
+		int semesterID;
 		std::vector <Course*> prereqList;
 };
 
