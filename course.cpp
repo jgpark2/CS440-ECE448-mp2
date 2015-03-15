@@ -10,11 +10,11 @@ Course::Course() {
 }
 
 //param constructor
-Course::Course(int ifallPrice, int ispringPrice, int icreditHours)
+Course::Course(int fallPrice, int springPrice, int creditHours)
 {
-	fallPrice = ifallPrice;
-	springPrice = ispringPrice;
-	credit = icreditHours;
+	this->fallPrice = fallPrice;
+	this->springPrice = springPrice;
+	this->credit = creditHours;
 }
 
 //copy constructor
