@@ -40,3 +40,14 @@ void GameState::setCoursesFromVector(vector<Course*> courseList){
 		this->courseList.push_back(new Course( *(courseList[i]) ));
 	}
 }
+
+bool isSolution() {
+	//TODO: returns whether all required (+prereq) courses have semesters assigned to it
+	//check if its valid though
+	return true;
+}
+
+bool isValid() {
+	//actually checks the constraints
+	return true;
+}
