@@ -14,7 +14,7 @@ class Course
 		Course();
 
 		//param constructor
-		Course(int fallPrice, int springPrice, int credit);
+		Course(int courseID, int fallPrice, int springPrice, int credit);
 
 		//copy constructor
 		Course(Course const &other);
