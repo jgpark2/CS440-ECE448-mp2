@@ -3,37 +3,33 @@
 using namespace std;
 
 //default constructor
-Course::Course()
-{
+Course::Course() {
 	fallPrice = 0; //free
 	springPrice = 0; //
 	credit = 0; //no hours
-	prereqList = new vector<Course*>();
 }
 
 //param constructor
-Course::Course(int fallPrice, int springPrice, int creditHours)
+Course::Course(int ifallPrice, int ispringPrice, int icreditHours)
 {
-	this.fallPrice = fallPrice;
-	this.springPrice = springPrice;
-	this.credit = creditHours;
-	prereqList = new vector<Course*>();
+	fallPrice = ifallPrice;
+	springPrice = ispringPrice;
+	credit = icreditHours;
 }
 
 //copy constructor
 Course::Course(Course const &other)
 {
-	this.fallPrice = other.fallPrice;
-	this.springPrice = other.springPrice;
-	this.credit = other.creditHours;
+	fallPrice = other.fallPrice;
+	springPrice = other.springPrice;
+	credit = other.credit;
 	prereqList = other.prereqList;
 }
 
 //destructor
 Course::~Course()
 {
-	for(int i=0; i<prereqList.size(); ++i) {
+	/*for(int i=0; i<prereqList.size(); ++i) {
 		delete prereqList[i];
-	}
+	}*/
 }
-
