@@ -3,6 +3,7 @@
 
 #include "course.h"
 #include <vector>
+#include <cstddef>
 
 /*
  * gameState class that represents the Game State. These are nodes to the game tree.
