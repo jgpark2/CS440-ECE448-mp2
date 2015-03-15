@@ -5,30 +5,35 @@ using namespace std;
 //default constructor
 Course::Course()
 {
-	fall_price = 0; //free
-	spring_price = 0;
-	credit_hours = 0; //no hours
+	fallPrice = 0; //free
+	springPrice = 0; //
+	credit = 0; //no hours
+	prereqList = new vector<Course*>();
 }
 
 //param constructor
-Course::Course(int in_fall_price, int in_spring_price, int in_credit_hours)
+Course::Course(int fallPrice, int springPrice, int creditHours)
 {
-	fall_price = in_fall_price; //free
-	spring_price = in_spring_price;
-	credit_hours = in_credit_hours; //no hours
+	this.fallPrice = fallPrice;
+	this.springPrice = springPrice;
+	this.credit = creditHours;
+	prereqList = new vector<Course*>();
 }
 
 //copy constructor
 Course::Course(Course const &other)
 {
-	fall_price = other.fall_price; //free
-	spring_price = other.spring_price;
-	credit_hours = other.credit_hours; //no hours
+	this.fallPrice = other.fallPrice;
+	this.springPrice = other.springPrice;
+	this.credit = other.creditHours;
+	prereqList = other.prereqList;
 }
 
 //destructor
 Course::~Course()
 {
-	//
+	for(int i=0; i<prereqList.size(); ++i) {
+		delete prereqList[i];
+	}
 }
 
