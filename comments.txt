@@ -1,0 +1,55 @@
+backtracking algorithm
+/*
+
+// /http://www.cs.toronto.edu/~hojjat/384w09/Lectures/Lecture-04-Backtracking-Search.pdf
+Heuristic are used to determine which variable to assign next
+
+
+constraint propagation refers to technique of looking ahead
+in the search as yet unassigned variables
+
+forward checking - when a variable is instantiated, we check all
+constraints that have only one uninstantiated variable remaining. For that
+uninstantiated variable, we check all of its values, pruning those values that 
+violate the constraint
+/*
+/* this method just checks the constraint C */
+/*
+FCCheck(C,x)
+// C is a constraint with all its variables already
+// assigned, except for variable x.
+for d := each member of CurDom[x]
+if making x = d together with
+previous assignments to
+variables in scope C falsifies C
+then
+remove d from CurDom[x]
+if CurDom[x] = {} then return DWO (Domain Wipe Out)
+return ok
+
+Can also use arc consistancy
+
+http://ktiml.mff.cuni.cz/~bartak/constraints/backtrack.html
+
+
+http://www.cs.toronto.edu/~fbacchus/Papers/liu.pdf
+CSP is called an n-ary CSP where n is max number of distinct variables over which
+a constraint is specified. (ex. binary CSP has constraints involving only two variables)
+ note: any n-ary csp can be converted to binary csp
+
+ In BT variables are instantiated one by one When a variable is instantiated
+a value from its domain is picked and assigned to it Then constraint checks are
+performed to make sure that the new instantiation is compatible with all the in
+stantiations made so far If all the completed constraints are satised this variable
+has been instantiated successfully and we can move on to instantiate the next vari
+able If it violates certain constraints then an alternative value when available is
+picked If all the variables haveavalue noting that all the assignments are consis
+tent the problem is solved If at any stage no value can be assigned to a variable
+without violating a constraint backtracking occurs That means the most recent
+instantiated variable has its instantiation revised and a new value if available is
+assigned to it At this point we continue on to try instantiating the other variables
+or we backtrack farther This carries on until either a solution is found or all the
+combinations of instantiation have been tried and have failed which means that
+there is no solution
+
+*/
