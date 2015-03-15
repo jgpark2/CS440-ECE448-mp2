@@ -1,6 +1,6 @@
 #
 EXE = mp2
-OBJS = student.o course.o main.o
+OBJS = student.o course.o parse.o main.o
 
 COMPILER = g++
 COMPILER_OPTS = -c -g -O0 -Wall -Werror
@@ -17,6 +17,9 @@ student.o : student.h student.cpp
 
 course.o : course.h course.cpp
 	$(COMPILER) $(COMPILER_OPTS) course.cpp
+
+parse.o : parse.h parse.cpp
+	$(COMPILER) $(COMPILER_OPTS) parse.cpp
 
 main.o : main.cpp student.h
 	$(COMPILER) -c $(COMPILER_OPTS) main.cpp
