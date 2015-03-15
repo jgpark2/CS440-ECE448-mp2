@@ -2,9 +2,12 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <boost/algorithm/string.hpp>
+#include <stdlib.h>
 #include "course.h"
 
 using namespace std;
+using namespace boost;
 
 int main(int argc, char* argv[])
 {
@@ -30,14 +33,24 @@ int main(int argc, char* argv[])
 	//file is opened
 	else
 	{
+		//for parsing the scenario in general
 		string curr_line;
-		int num_courses;
+		unsigned int num_courses;
 		int Cmin;
 		int Cmax;
+
+		//list of courses
 		vector<Course> courses;
+
+		//for parsing each course
 		int fall_price;
 		int spring_price;
 		int credit_hours;
+
+		//for parsing prereqs
+		vector<int> curr_reqs;
+		vector<string> fields;
+		int curr_req;
 
 		if(getline(myfile, curr_line) == NULL)
 		{
@@ -61,21 +74,44 @@ int main(int argc, char* argv[])
 				break;
 		}
 
-		for(int i = 0; i < num_courses; i++)
+		for(unsigned int i = 0; i < num_courses; i++)
 		{
 			getline(myfile, curr_line);
 			istringstream(curr_line) >> fall_price >> spring_price >> credit_hours;
-			Course curr_course(fall_price, spring_price, credit_hours);
+			Course curr_course(i, fall_price, spring_price, credit_hours);
 			courses.push_back(curr_course);
 		}
 
-		for(int i = 0; i < num_courses; i++)
+		for(unsigned int i = 0; i < num_courses; i++)
+		{
+			getline(myfile, curr_line);
+			//referenced: http://www.cplusplus.com/faq/sequences/strings/split/
+			split( fields, curr_line, is_any_of(" "), token_compress_on);
+			for(unsigned int j = 1; j < fields.size(); j++)
+			{
+				string curr_string = fields[j];
+				//convert string to integer
+				//referenced: https://stackoverflow.com/questions/7663709/convert-string-to-int-c
+				curr_req = atoi(curr_string.c_str());
+				//push back pointer to prereqList
+				courses[i].prereqList.push_back(&courses[curr_req]);
+			}
+		}
+
+		for(unsigned int i = 0; i < num_courses; i++)
 		{
 			cout << "Course " << courses[i].courseID;
 			cout << " Fall price: " << courses[i].fallPrice;
 			cout << " Spring price: " << courses[i].springPrice;
-			cout << " Credits: " << courses[i].credit << endl;
+			cout << " Credits: " << courses[i].credit;
+			cout << " Prerequisites: ";
+			for(unsigned int j = 0; j < courses[i].prereqList.size(); j++)
+			{
+				cout << courses[i].prereqList[j]->courseID << ", ";
+			}
+			cout << endl;
 		}
+
 
 		cout << "End of parse" << endl;
 
