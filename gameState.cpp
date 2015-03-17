@@ -50,6 +50,20 @@ bool GameState::isSolution() {
 bool GameState::isValid() {
 	//checks the constraints: pre-reqs, cannot retake a course, budget, Cmin, and Cmax
 
+	//flag for each constraint
+	bool prereq_flag;
+	bool retake_flag;
+	bool budget_flag;
+	bool Cmin_flag;
+	bool Cmax_flag;
+
+	//giving the benefit of the doubt
+	prereq_flag = true;
+	retake_flag = true;
+	budget_flag = true;
+	Cmin_flag = true;
+	Cmax_flag = true;
+
 	//pre-reqs: check to see if the pre-req of a course is taken for every course
 	//TODO: consider only checking the latest assignment i.e. this->courseList[courseList.size()-1]
 	for(unsigned int i = 0; i < courseList.size(); i++)
@@ -69,24 +83,32 @@ bool GameState::isValid() {
 				//get the semesterID for each prereq
 				//check to see if it's assigned (not less than 0) and if its semester ID is less than curr_semester
 				int temp_semester = (*it)->semesterID; //note that it is a pointer to a Course pointer, have to dereference it and use '->'
-				if(temp_semester >= 0 && temp_semester < curr_semester)
+				if(temp_semester >= 0 && temp_semester < curr_semester) //if prereq is assigned and taken before the current semester
 				{
 					//condition met, prereq assigned and taken
-					continue;
+					continue;	//next iteration of for loop
 				}
 				else
 				{
 					//condition not met, prereq either not assigned or not taken prior to curr_semester
-					continue;
+					//continue;
+					prereq_flag = false;
+					return false;
+					break;
 				}
 				continue; 
 			}
 
 
 		}
-
-
 	}
 
-	return true;
+	//retake: check to see if any class is assigned more than once
+	for(unsigned int i = 0; i < courseList.size(); i++)
+	{
+		continue;
+	}
+
+
+	return (prereq_flag == true && retake_flag == true && budget_flag == true && Cmin_flag == true && Cmax_flag == true);
 }
