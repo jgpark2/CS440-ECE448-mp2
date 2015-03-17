@@ -8,6 +8,8 @@ Course::Course() {
 	fallPrice = 0; //free
 	springPrice = 0; //
 	credit = 0; //no hours
+
+//pre-rec list in parsing
 }
 
 //param constructor

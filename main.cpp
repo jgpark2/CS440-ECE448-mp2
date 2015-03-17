@@ -30,5 +30,42 @@ int main(int argc, char* argv[])
 			break;
 	}
 
+		GameTree tree = new GameTree(); //creates new tree for student
+		GameState currNode = tree.root; //define current Node to start at root
+		schedule = 
+
+		recursiveBack(currNode, tree);
+
+
 	return 0;
+}
+
+
+
+Gametree recursiveBack(GameState *cNode, GameTree *cTree)
+{
+	if (cNode.isSolution()) return cNode;
+	else
+	{
+		int numChild = 
+		for(int i = 0; i<)
+		Course tryCourse = cNode.children[i];
+		if(tryCourse.isValid())
+		{
+			recursiveBack(tryCourse, cTree)
+		}
+
+	if(tryCourse.isValid())
+		{
+			schedule.pushBack( new Course( *courses[i]))
+
+		}
+
+	}
+
+
+	
+
+
+	}
 }
