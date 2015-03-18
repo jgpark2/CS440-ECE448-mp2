@@ -62,14 +62,22 @@ vector<Course*> parseCourses(string scenario)
 		// 		break;
 		// }
 
+		//populates course array courses
 		for(unsigned int i = 0; i < num_courses; i++)
 		{
 			getline(myfile, curr_line);
 			istringstream(curr_line) >> fall_price >> spring_price >> credit_hours;
 			
 			//kept safe in memory VERY IMPORTANT TO HAVE "new"!
-			Course* curr_course = new Course (i, fall_price, spring_price, credit_hours);
+			//note that there is NO SUCH THING AS COURSE 0 (if there was, then course 9 would be a pre-req of itself in firstScenario.txt)
+			Course* curr_course = new Course (i+1, fall_price, spring_price, credit_hours);
 			courses.push_back(*curr_course);
+		}
+
+		//populates course pointers array course_ptrs
+		for(unsigned int i = 0; i < num_courses; i++)
+		{
+			course_ptrs.push_back(&courses[i]);
 		}
 
 		for(unsigned int i = 0; i < num_courses; i++)
@@ -79,18 +87,15 @@ vector<Course*> parseCourses(string scenario)
 			split( fields, curr_line, is_any_of(" "), token_compress_on);
 			for(unsigned int j = 1; j < fields.size(); j++)
 			{
+				//j is the course whose prereqs are listed in fields[1 through fields.size()-1]
 				string curr_string = fields[j];
 				//convert string to integer
 				//referenced: https://stackoverflow.com/questions/7663709/convert-string-to-int-c
 				curr_req = atoi(curr_string.c_str());
 				//push back pointer to prereqList
-				courses[i].prereqList.push_back(&courses[curr_req]);
+				courses[i].prereqList.push_back(&courses[curr_req-1]);
+				courses[curr_req-1].is_prereq_for.push_back(j+1);
 			}
-		}
-
-		for(unsigned int i = 0; i < num_courses; i++)
-		{
-			course_ptrs.push_back(&courses[i]);
 		}
 
 		//gets list of interesting courses
@@ -128,7 +133,7 @@ vector<Course*> parseCourses(string scenario)
 		//assign respective interesting flag in each course
 		for(unsigned int i = 1; i < interesting_courses.size(); i++)
 		{
-			courses[interesting_courses[i]].interesting = true;
+			courses[interesting_courses[i]-1].interesting = true;
 		}
 
 
@@ -142,6 +147,13 @@ vector<Course*> parseCourses(string scenario)
 			for(unsigned int j = 0; j < course_ptrs[i]->prereqList.size(); j++)
 			{
 				cout << course_ptrs[i]->prereqList[j]->courseID << ", ";
+			}
+			cout << " Is prereq for: ";
+			for(unsigned int j = 0; j < course_ptrs[i]->is_prereq_for.size(); j++)
+			{
+				int prereq_index = course_ptrs[i]->is_prereq_for[j];
+				Course* temp_ptr = course_ptrs[prereq_index];
+				cout << temp_ptr->courseID;
 			}
 			cout << "Interesting flag: ";
 			if(course_ptrs[i]->interesting==true)
