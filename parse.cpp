@@ -25,6 +25,10 @@ vector<Course*> parseCourses(string scenario)
 		vector<string> fields;
 		int curr_req;
 
+		//for parsing interesting courses
+		vector<int>interesting_courses;
+		string curr_interesting_course;
+
 		ifstream myfile (scenario.c_str());
 	
 		//failure to open file
@@ -89,6 +93,45 @@ vector<Course*> parseCourses(string scenario)
 			course_ptrs.push_back(&courses[i]);
 		}
 
+		//gets list of interesting courses
+		getline(myfile, curr_line);
+		for(string::iterator it=curr_line.begin(); it!=curr_line.end(); ++it)
+		{
+			//if we're still reading from a valid number, i.e. we do not reach a delimiter
+			if( *(it)!=' ')
+			{
+				//gets the current character and append it to curr_interesting_course
+				curr_interesting_course.push_back(*it); //push back the char digit
+
+				//for last char digit
+				string::iterator it_test = it;
+				it_test++;
+				if(it_test == curr_line.end())
+				{
+					//cout << "last char: " << *(it) << endl;
+					interesting_courses.push_back(atoi(curr_interesting_course.c_str()));
+					//clear the string for the next iteration
+					curr_interesting_course.clear();
+				}
+			}
+			//if we reach a delimiter (space in our case)
+			else
+			{
+				//convert curr_interesting course string into an integer and push it onto interesting_courses int vector
+				//cout << "Adding interesting course: " << curr_interesting_course.c_str() << endl;
+				interesting_courses.push_back(atoi(curr_interesting_course.c_str()));
+				//clear the string for the next iteration
+				curr_interesting_course.clear();
+			}
+		}
+
+		//assign respective interesting flag in each course
+		for(unsigned int i = 1; i < interesting_courses.size(); i++)
+		{
+			courses[interesting_courses[i]].interesting = true;
+		}
+
+
 		for(unsigned int i = 0; i < num_courses; i++)
 		{
 			cout << "Course " << course_ptrs[i]->courseID;
@@ -100,9 +143,95 @@ vector<Course*> parseCourses(string scenario)
 			{
 				cout << course_ptrs[i]->prereqList[j]->courseID << ", ";
 			}
+			cout << "Interesting flag: ";
+			if(course_ptrs[i]->interesting==true)
+			{
+				cout << "true";
+			}
+			else
+			{
+				cout << "false";
+			}
 			cout << endl;
 		}
+		cout << "There are " << interesting_courses[0] << " interesting courses: ";
+		for(unsigned int j = 1; j < interesting_courses.size(); j++)
+		{
+			cout << interesting_courses[j] << ", ";
+		}
+		cout << endl;
+
 		cout << "End of parse" << endl;
 
+		myfile.close();
 		return course_ptrs;
 }
+
+// vector<Course*> parseInterestingCourses(string scenario)
+// {
+// 	string curr_line;
+// 	unsigned int num_courses;
+// 	vector<Course*> course_ptrs;
+
+// 	ifstream myfile (scenario.c_str());
+
+// 	//failure to open file
+// 	if(!myfile.is_open()) 
+// 	{
+// 		cout << "Error opening file" <<endl;
+// 		//return 1;
+// 		return course_ptrs;
+// 	}
+
+// 	if(getline(myfile, curr_line) == NULL)
+// 	{
+// 		cout << "Error: no lines to read" << endl;
+// 		//return 1;
+// 		return course_ptrs;
+// 	}
+
+// 	istringstream(curr_line) >> num_courses;
+// 	cout << "Number of courses: " << num_courses << endl;
+	
+// 	//skip to line with interesting courses
+// 	for(unsigned int i = 0; i < num_courses*2; i++)
+// 	{
+// 		getline(myfile, curr_line);
+// 	}
+
+// 	//gets list of interesting courses
+// 	getline(myfile, curr_line);
+// 	for(string::iterator it=curr_line.begin(); it!=curr_line.end(); ++it)
+// 	{
+// 		//if we're still reading from a valid number, i.e. we do not reach a delimiter
+// 		if( *(it)!=' ')
+// 		{
+// 			//gets the current character and append it to curr_interesting_course
+// 			curr_interesting_course.push_back(*it); //push back the char digit
+
+// 			//for last char digit
+// 			string::iterator it_test = it;
+// 			it_test++;
+// 			if(it_test == curr_line.end())
+// 			{
+// 				//cout << "last char: " << *(it) << endl;
+// 				interesting_courses.push_back(atoi(curr_interesting_course.c_str()));
+// 				//clear the string for the next iteration
+// 				curr_interesting_course.clear();
+// 			}
+// 		}
+// 		//if we reach a delimiter (space in our case)
+// 		else
+// 		{
+// 			//convert curr_interesting course string into an integer and push it onto interesting_courses int vector
+// 			//cout << "Adding interesting course: " << curr_interesting_course.c_str() << endl;
+// 			interesting_courses.push_back(atoi(curr_interesting_course.c_str()));
+// 			//clear the string for the next iteration
+// 			curr_interesting_course.clear();
+// 		}
+// 	}
+
+// 	myfile.close();
+	
+// 	return course_ptrs;
+// }
