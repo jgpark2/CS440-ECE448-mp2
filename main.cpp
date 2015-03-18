@@ -32,9 +32,10 @@ int main(int argc, char* argv[])
 
 		GameTree tree = new GameTree(); //creates new tree for student
 		GameState currNode = tree.root; //define current Node to start at root
-		schedule = 
+		currNode.courseList = courses;
 
-		recursiveBack(currNode, tree);
+
+		recursiveBack(currNode);
 
 
 	return 0;
@@ -44,24 +45,53 @@ int main(int argc, char* argv[])
 
 Gametree recursiveBack(GameState *cNode, GameTree *cTree)
 {
-	if (cNode.isSolution()) return cNode;
-	else
-	{
-		int numChild = 
-		for(int i = 0; i<)
-		Course tryCourse = cNode.children[i];
-		if(tryCourse.isValid())
+	if (cNode.isValid())
 		{
-			recursiveBack(tryCourse, cTree)
+			if(cNode.isSolution()) return cNode; //if we have found the solution, return the gamestate
 		}
 
-	if(tryCourse.isValid())
+
+	tempGameState = GameState(cNode);
+	vector<Course*> tempCourses = cNode.courseList;
+	bool valid = True;
+	//select next variable (class)
+	Course tryCourse;
+	Course tryCourse = cNode.getMostConstrained(); //select most constrained variable, popped off of priority queue.
+
+	int numValues = size(tryCourse.possibleSemeters) //find out how many semesters are possible = total number of classes
+	for(int i =0; i<num_possible_semester; i++)
+	{
+		tempGameState.courseList[tryCourse].semesterID = i;
+		if(tempGameState.isValid())
 		{
-			schedule.pushBack( new Course( *courses[i]))
+			cNode.children.pushBack(tempGameState);
+			tempGameState.parent = cNode;
+			//TODO assign classes to semester in assignment map
+			solution = recursiveBack(tempGameState);
+			if(solution != false)
+				return solution;
+			else
+			{
+				delete tempGameState;
+				cNode.children.pop_back();
+			}
 
 		}
 
 	}
+
+
+
+	return false; //all options failed
+
+
+
+
+
+
+
+
+
 
 
 	

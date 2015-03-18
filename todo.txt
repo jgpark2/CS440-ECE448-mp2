@@ -1,0 +1,24 @@
+Forward Check
+-still need to implement this
+
+Courses
+-add vector of integers that gives possible semesters that can be assigned to that course
+
+Backtracking
+- every time we assign a course, in gameState.c we need a method that goes through the vector of possible semesters that can be assigned, and eliminate ones that no longer fit the constraints
+	note: if class has 2 prerecs, we can eliminate one semester
+	
+
+
+-priority queue for gameState of course pointers to rank the courses based on constraints
+	-each course will have integer called "constrain rank"
+	-rank will have a value that determines how constrained it is
+	-in backtracking there will be a local priority queue which the comaprison operator with our own custom function that determines constraint
+	-create a struct in course, we can overload the comparison operator
+	-will return true or false for most and least constrained
+	-if something is not valid, we pop off the next value of the queue
+	-if it is solution, then its a possible solution and we continue with the recursive function
+	
+
+
+
