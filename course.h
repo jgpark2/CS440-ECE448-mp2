@@ -29,6 +29,9 @@ class Course
 		int credit;
 		int semesterID;
 		std::vector <Course*> prereqList;
+		std::vector <int> is_prereq_for;
+		bool interesting;
+		int constrained_rank;
 		
 		//map of semesterID's (value domain) to bool (assignable or no longer possible)
 		std::map <int, bool> reaminingValues;
