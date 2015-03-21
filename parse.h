@@ -14,6 +14,6 @@ using namespace std;
 using namespace boost;
 
 vector<Course*> parseCourses(string scenario);
-
+void getParams(string scenario, int (&array)[3] );
 
 #endif

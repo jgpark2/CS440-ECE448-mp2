@@ -3,6 +3,47 @@
 using namespace std;
 using namespace boost;
 
+void getParams(string scenario, int (&array)[3] )
+{
+	string curr_line;
+	int Cmin;
+	int Cmax;
+	int num_courses;
+	int budget;
+
+	ifstream myfile (scenario.c_str());
+
+	if(!myfile.is_open())
+	{
+		cout << "Error opening file" << endl;
+		return;
+	}
+	if(getline(myfile, curr_line) == NULL)
+	{
+		cout << "Error: no lines to read" << endl;
+		//return 1;
+		return;
+	}
+
+	istringstream(curr_line) >> num_courses >> Cmin >> Cmax;
+	array[0] = Cmin;
+	array[1] = Cmax;
+	// cout << "Number of courses: " << num_courses << endl;
+	// cout << "Cmin: " << Cmin << endl;
+	// cout << "Cmax: " << Cmax << endl;
+	for(int i = 0; i < num_courses*2; i++)
+	{
+		getline(myfile, curr_line);
+	}
+	
+	//get budget
+	getline(myfile, curr_line);
+	budget = atoi(curr_line.c_str());
+	array[2] = budget;
+
+	return;
+}
+
 vector<Course*> parseCourses(string scenario)
 {
 		//for parsing the scenario in general

@@ -187,6 +187,7 @@ void GameState::printState()
 		for(map<int, vector<Course*> >::const_iterator it = this->assignment.begin(); it!=this->assignment.end(); ++it)
 		{
 			cout << "Semester: " << it->first << endl;
+			//for each course
 			for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner!=it->second.end(); ++it_inner)
 			{
 				cout << "CourseID: " << (*it_inner)->courseID;

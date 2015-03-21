@@ -5,6 +5,8 @@
 #include <vector>
 #include "course.h"
 #include "parse.h"
+#include "gameTree.h"
+#include "gameState.h"
 
 using namespace std;
 using namespace boost;
@@ -21,14 +23,22 @@ int main(int argc, char* argv[])
 	char mode = argv[1][0];
 	string scenario = argv[2];
 	
-	vector<Course*> courses = parseCourses(scenario);
-
 	switch(mode)
 	{
 		default:
 			cout << "Search flag mode: " << mode << endl;
 			break;
 	}
+
+	vector<Course*> courses = parseCourses(scenario);
+	int params_array[3];
+	getParams(scenario, params_array);
+	int Cmin = params_array[0];
+	int Cmax = params_array[1];
+	int budget = params_array[2];
+
+	GameTree tree;
+	GameState currNode(courses, Cmin, Cmax, budget);
 
 	return 0;
 }
