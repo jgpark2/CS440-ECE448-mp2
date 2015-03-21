@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
 
 	GameTree tree;
 	GameState currNode(courses, Cmin, Cmax, budget);
+	currNode.printState();
 
 	return 0;
 }
