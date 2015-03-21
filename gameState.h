@@ -26,6 +26,7 @@ class GameState {
 		bool prereqSatisfied(Course* course);
 		int semesterCredit(int semesterID);
 		void updateAssignment();
+		void printState();
 		
 		std::vector<GameState*> children;
 		std::vector<Course*> courseList;

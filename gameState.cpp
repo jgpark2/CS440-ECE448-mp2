@@ -174,3 +174,27 @@ int GameState::semesterCredit(int semesterID) {
 	return credit;
 }
 
+void GameState::printState()
+{
+	//print the map
+	if(this->assignment.empty())
+	{
+		cout << "There are no assignments" << endl;
+	}
+	else
+	{
+		//for each semester in the map
+		for(map<int, vector<Course*> >::const_iterator it = this->assignment.begin(); it!=this->assignment.end(); ++it)
+		{
+			cout << "Semester: " << it->first << endl;
+			for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner!=it->second.end(); ++it_inner)
+			{
+				cout << "CourseID: " << (*it_inner)->courseID;
+				cout << " price: " << ( ((*it_inner)->semesterID)%2 )?((*it_inner)->fallPrice):((*it_inner)->springPrice);
+				cout << " hours: " << (*it_inner)->credit;
+				cout << endl;
+			}
+			cout << endl;
+		}
+	}
+}
