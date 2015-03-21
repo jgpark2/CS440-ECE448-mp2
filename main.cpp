@@ -37,9 +37,14 @@ int main(int argc, char* argv[])
 	int Cmax = params_array[1];
 	int budget = params_array[2];
 
+	cout << "Cmin: " << Cmin;
+	cout << " Cmax: " << Cmax;
+	cout << " Budget: " << budget;
+	cout << endl;
+
 	GameTree tree;
-	GameState currNode(courses, Cmin, Cmax, budget);
-	currNode.printState();
+	//GameState currNode(courses, Cmin, Cmax, budget);
+	//currNode.printState();
 
 	return 0;
 }

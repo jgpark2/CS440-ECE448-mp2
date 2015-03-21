@@ -31,7 +31,7 @@ void getParams(string scenario, int (&array)[3] )
 	// cout << "Number of courses: " << num_courses << endl;
 	// cout << "Cmin: " << Cmin << endl;
 	// cout << "Cmax: " << Cmax << endl;
-	for(int i = 0; i < num_courses*2; i++)
+	for(int i = 0; i < (num_courses*2)+1; i++)
 	{
 		getline(myfile, curr_line);
 	}
