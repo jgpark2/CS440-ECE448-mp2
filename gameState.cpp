@@ -8,40 +8,31 @@ using namespace std;
 
 /*
  * Main constructor. Due to GameState copy constructor, this should ideally only be called once
- * for the root (empty gamestate), and have all other ndoes build off of this
+ * for the root (empty gamestate), and have all other nodes build off of this via assign(...)
  */
 GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget) {
-	curSemester = 0;
-	totalCredit = 0;
 	this->cmin = cmin;
 	this->cmax = cmax;
-	curBudget = budget; //remaining budget after assigning current semester classes
+	totalBudget = budget; //remaining budget after assigning current semester classes
+	
 	parent = NULL;
 	
 	setCoursesFromVector(courses);
 		
-	updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate, but just in case...
+	//updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate
 }
 
 /*
- * Copy constructor that actually automatically is set to the child of the copy-ee....to entice iterative gametree bulding.
- * If this is an issue, please rewrite this function and other functions in gameState.cpp
- * only deep copies courselist. It does not inherit children. Assignment list is simply recalculated.
- * !!!!!!Parent is set default to what this is being copied from. SemesterID is incremented.
- * credit,cmin,cmax,and budget is simply copied
+ * Copy constructor.
+ * deep copies courselist.cmin,cmax,and budget is simply copied.
+ * ASSIGNMENT MAP NOT UPDATED (so it's empty)
+ * DO NOT CALL THIS. Call assign instead.
  */
 GameState::GameState(GameState const &gs){
 	setCoursesFromVector(gs.courseList);
-	parent = &gs;
-
-	curSemester = gs.curSemester + 1;
-	totalCredit = gs.totalCredit;
 	cmin = gs.cmin;
 	cmax = gs.cmax;
-	curBudget = gs.curBudget;
-
-	//Recalculate assignment list (cannot assign parent's list to mine because then my pointers point to parents' courses)
-	updateAssignment();
+	totalBudget = gs.totalBudget;
 }
 
 void GameState::updateAssignment() {
@@ -64,21 +55,44 @@ GameState::~GameState() {
 	//TODO:Do we have to delete assignment vectors itself at each semesterID index?
 }
 
+/*
+ * Creates a new child node (via copy constructor) with new assignments made to it. Returns the new GameState*.
+ */
+GameState* GameState::assign(int assignCourseID, int assignSemester) {
+	
+	if(assignCourseID<1 || assignSemester<0) {
+		cout << "Invalid assignments"<< endl;
+		return NULL;
+	}
+	
+	//Should call copy constructor...
+	GameState gs = *this;
+	GameState* child = &gs;
+	
+	children.push_back(child);
+	child->parent = this;
+	
+	//Make assignment
+	if (child->courseList[assignCourseID]->semesterID==-1)
+		child->courseList[assignCourseID]->semesterID = assignSemester;
+	else {
+		cout << "Reassignment is illegal. Why are you doing this?" << endl;
+		return NULL;
+	}
+		
+	//TODO: assign cred/ decr budget
+	
+	//Recalculate assignment list (cannot assign parent's list to mine because then my pointers point to parents' courses)
+	updateAssignment();
+	
+	return child;
+}
+
+
 bool GameState::isRoot(){
 	if (parent==NULL)
 		return true;
 	return false;
-}
-
-void GameState::addChildGameState(GameState* child) {
-	if(std::find(children.begin(), children.end(), child) != children.end()) {
-		/* Children contains child */
-		cout<<"Adding duplicate children. Ignored"<<endl;
-		return;
-	}
-	
-	children.push_back(child);
-	child->parent = this;
 }
 
 void GameState::setCoursesFromVector(vector<Course*> courses){
@@ -93,6 +107,9 @@ void GameState::setCoursesFromVector(vector<Course*> courses){
 bool GameState::isSolution() {
 	//returns whether all required (+prereq) courses have semesters assigned to it
 	if(isValid()) {
+		if (!checkCmin())
+			return false;
+	
 		for(unsigned int i=0; i<courseList.size(); ++i) {
 			if((courseList[i]->interesting) && (courseList[i]->semesterID)==-1)
 				return false;
@@ -103,49 +120,46 @@ bool GameState::isSolution() {
 	return false;
 }
 
+bool GameState::checkCmin() {
+	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
+		int credits = 0;
+		for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner != it->second.end(); ++it_inner) 
+			credits+=(*it_inner)->credit;
+		
+		if(credits<cmin)
+			return false;
+	}
+	return true;
+}
+
 bool GameState::isValid() {
-	//checks the constraints: pre-reqs, cannot retake a course, budget, Cmin, and Cmax
-
-	/* TODO: This is the implementation for non-iterative GameState building.
-	This would be when:
-	0th GameState starts completely empty
-	root GameState of the tree is valid
-	all subsequent GameState nodes must be built from its parent, and only if the parent is valid
-	//Pre-Req's - check if all prereqs have been met BEFOREHAND
-	for(unsigned int i = 0; i < courseList.size(); i++) {
-		//Loop through all assigned courses (including this state's semester) and check if all prereqs are met
-		if (!prereqSatisfied(courseList[i])) {
-			return false;
-		}
-	}*/
-
-	vector<Course*> semesterCourseList;
-	try {
-		semesterCourseList = assignment.at(curSemester);
-	} catch (const out_of_range& oor) {
-		//No courses has been assigned a semesterID in this gamestate!?
-		//Technically the cmin constraint would pick this up and return fail but...
-		std::cerr << "Out of Range error: " << oor.what() << '\n';
-		cout << "You are checking isValid for a gamestate with no semester assignments yet" <<endl;
-		return false;
-	}
+	//Checks the entire gamestate (all courses) for the constraints:
+	//pre-reqs integrity, budget, Cmin, and Cmax
 	
-	for(vector<Course*>::iterator it = semesterCourseList.begin(); it!=semesterCourseList.end(); ++it) {
-		if (!prereqSatisfied(*it))
-			return false;
+	int budget = 0;
+	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
+		int credits = 0;
+		for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner != it->second.end(); ++it_inner) {
+			//PREREQ
+			if (!prereqSatisfied(*it_inner))
+				return false;
+			
+			//CREDIT
+			//Make sure current budget doesn't exceed max and credit hours are in range
+			credits+=(*it_inner)->credit;
+			if(credits>cmax)
+				return false;
+			
+			//BUDGET
+			//Find price for given semester type
+			if ((*it_inner)->semesterID % 2 ==0) //If FALL
+				budget+=(*it_inner)->fallPrice;
+			else
+				budget+=(*it_inner)->springPrice;
+			if (totalBudget-budget<0)
+				return false;
+		}
 	}
-
-	//retake: never assign 2 values to a variable. This must be checked on the assignment step, so the condition is implicitly satisfied
-
-	//budget
-	if(curBudget<0)
-		return false;
-
-	//Make sure this semester's credit hours are in range
-	//TODO: If GameStates are built non-iteratively, you need to instead loop through all semesterID's thus far rather than just checking curSemester
-	int curSemesterCredit = semesterCredit(curSemester);
-	if(curSemesterCredit<cmin || curSemesterCredit>cmax)
-		return false;
 
 	return true;
 }
@@ -203,3 +217,4 @@ void GameState::printState()
 		cout << endl;
 	}
 }
+

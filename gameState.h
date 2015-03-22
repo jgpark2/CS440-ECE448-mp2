@@ -19,9 +19,10 @@ class GameState {
 		~GameState();
 		
 		void setCoursesFromVector(std::vector<Course*> courseList);
-		void addChildGameState(GameState* child);
+		GameState* assign(int assignCourseID, int assignSemester);
 		bool isRoot();
 		bool isValid();
+		bool checkCmin();
 		bool isSolution();
 		bool prereqSatisfied(Course* course);
 		int semesterCredit(int semesterID);
@@ -33,11 +34,11 @@ class GameState {
 		GameState const * parent; //pointer to const GS. You can't modify a parent from a child...
 		std::map<int, std::vector<Course*> > assignment;
 		
-		int curSemester; //current semester is the last semester the gamestate handled
-		int totalCredit; //TODO: DECIDE: toal credit of current semester? or all classes thus far???
 		int cmin;
 		int cmax;
-		int curBudget; //remaining budget after assigning current semester classes
+		int totalBudget;
+		//int totalCredit; //total credit of all classes thus far
+		
 };
 
 #endif
