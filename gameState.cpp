@@ -151,10 +151,20 @@ bool GameState::isValid() {
 }
 
 bool GameState::prereqSatisfied(Course* course) {
-	for(vector<Course*>::iterator it = (course->prereqList).begin(); it!=(course->prereqList).end(); ++it) {
-		if ((*it)->semesterID==-1 || (*it)->semesterID >= course->semesterID)
+	// for(vector<Course*>::iterator it = (course->prereqList).begin(); it!=(course->prereqList).end(); ++it) {
+	// 	if ((*it)->semesterID==-1 || (*it) >= course->semesterID)
+	// 		return false;
+	// }
+
+	//for(vector<int>::iterator it = course->prereqList.begin(); it!=course->prereqList.end(); ++it)
+	for(unsigned int i = 0; i < course->prereqList.size(); ++i)
+	{
+		//courseList is organized by our design
+		if(courseList[course->prereqList[i]]->semesterID == -1 || courseList[course->prereqList[i]]->semesterID >= course->semesterID)
 			return false;
 	}
+
+
 	return true;
 }
 

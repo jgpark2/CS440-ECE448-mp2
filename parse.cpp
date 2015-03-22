@@ -135,7 +135,8 @@ void Parse::parseCourses(string scenario)
 				//referenced: https://stackoverflow.com/questions/7663709/convert-string-to-int-c
 				curr_req = atoi(curr_string.c_str());
 				//push back pointer to prereqList
-				courses[i]->prereqList.push_back(courses[curr_req-1]);
+				//courses[i]->prereqList.push_back(courses[curr_req-1]);
+				courses[i]->prereqList.push_back(curr_req);
 				courses[curr_req-1]->is_prereq_for.push_back(i);
 			}
 		}
@@ -188,7 +189,7 @@ void Parse::parseCourses(string scenario)
 			cout << " Prerequisites: ";
 			for(unsigned int j = 0; j < courses[i]->prereqList.size(); j++)
 			{
-				cout << courses[i]->prereqList[j]->courseID << ", ";
+				cout << courses[i]->prereqList[j] << ", ";
 			}
 			cout << " Is prereq for: ";
 			for(unsigned int j = 0; j < courses[i]->is_prereq_for.size(); j++)

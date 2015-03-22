@@ -28,7 +28,7 @@ class Course
 		int springPrice;
 		int credit;
 		int semesterID;
-		std::vector <Course*> prereqList;
+		std::vector <int> prereqList;
 		std::vector <int> is_prereq_for;
 		bool interesting;
 		int constrained_rank;
