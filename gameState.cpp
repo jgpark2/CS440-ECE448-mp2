@@ -10,14 +10,15 @@ using namespace std;
  * Main constructor. Due to GameState copy constructor, this should ideally only be called once
  * for the root (empty gamestate), and have all other ndoes build off of this
  */
-GameState::GameState(vector<Course*> courseList, int cmin, int cmax, int budget) {
-	setCoursesFromVector(courseList);
-	
+GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget) {
 	curSemester = 0;
 	totalCredit = 0;
 	this->cmin = cmin;
 	this->cmax = cmax;
 	curBudget = budget; //remaining budget after assigning current semester classes
+	parent = NULL;
+	
+	setCoursesFromVector(courses);
 		
 	updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate, but just in case...
 }
@@ -80,10 +81,12 @@ void GameState::addChildGameState(GameState* child) {
 	child->parent = this;
 }
 
-void GameState::setCoursesFromVector(vector<Course*> courseList){
+void GameState::setCoursesFromVector(vector<Course*> courses){
+	courseList.clear();
+	
 	//DEEP copy all Course objects into my own list
-	for(unsigned int i=0; i<courseList.size(); ++i) {
-		this->courseList.push_back(new Course( *(courseList[i]) ));
+	for(unsigned int i=0; i<courses.size(); ++i) {
+		courseList.push_back(new Course( *(courses[i]) ));
 	}
 }
 
@@ -177,25 +180,22 @@ int GameState::semesterCredit(int semesterID) {
 void GameState::printState()
 {
 	//print the map
-	if(this->assignment.empty())
-	{
+	if(assignment.empty()) {
 		cout << "There are no assignments" << endl;
+		return;
 	}
-	else
-	{
-		//for each semester in the map
-		for(map<int, vector<Course*> >::const_iterator it = this->assignment.begin(); it!=this->assignment.end(); ++it)
-		{
-			cout << "Semester: " << it->first << endl;
-			//for each course
-			for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner!=it->second.end(); ++it_inner)
-			{
-				cout << "CourseID: " << (*it_inner)->courseID;
-				cout << " price: " << ( ((*it_inner)->semesterID)%2 )?((*it_inner)->fallPrice):((*it_inner)->springPrice);
-				cout << " hours: " << (*it_inner)->credit;
-				cout << endl;
-			}
+	
+	//for each semester in the map
+	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
+		cout << "Semester: " << it->first << endl;
+		
+		//for each course
+		for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner != it->second.end(); ++it_inner) {
+			cout << "\tCourseID: " << (*it_inner)->courseID;
+			cout << "\tprice: " << ( ((*it_inner)->semesterID)%2==0 )?((*it_inner)->fallPrice):((*it_inner)->springPrice);
+			cout << "\thours: " << (*it_inner)->credit;
 			cout << endl;
 		}
+		cout << endl;
 	}
 }

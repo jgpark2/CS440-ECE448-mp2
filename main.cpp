@@ -30,9 +30,12 @@ int main(int argc, char* argv[])
 			break;
 	}
 
-	vector<Course*> courses = parseCourses(scenario);
+	Parse* p = new Parse();
+	p->parseCourses(scenario);
+	vector<Course*> courses = p->courses;
+	
 	int params_array[3];
-	getParams(scenario, params_array);
+	p->getParams(scenario, params_array);
 	int Cmin = params_array[0];
 	int Cmax = params_array[1];
 	int budget = params_array[2];
@@ -42,9 +45,8 @@ int main(int argc, char* argv[])
 	cout << " Budget: " << budget;
 	cout << endl;
 
-	GameTree tree;
-	//GameState currNode(courses, Cmin, Cmax, budget);
-	//currNode.printState();
+	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
+	tree->root->printState();
 
 	return 0;
 }
