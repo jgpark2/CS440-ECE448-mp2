@@ -41,8 +41,10 @@ void GameState::updateAssignment() {
 
 	//Loop through courselist and re-populate
 	for(unsigned int i=0; i<courseList.size(); ++i) {
-		if (courseList[i]->semesterID!=-1)
-			assignment.at(courseList[i]->semesterID).push_back(courseList[i]);
+		if (courseList[i]->semesterID!=-1) {
+			//map.operator[] declares value automatically on nonexistent keys
+			(assignment[courseList[i]->semesterID]).push_back(courseList[i]);
+		}
 	}
 }
 
@@ -73,17 +75,15 @@ GameState* GameState::assign(int assignCourseID, int assignSemester) {
 	child->parent = this;
 	
 	//Make assignment
-	if (child->courseList[assignCourseID]->semesterID==-1)
-		child->courseList[assignCourseID]->semesterID = assignSemester;
+	if (child->courseList[assignCourseID-1]->semesterID==-1) {
+		child->courseList[assignCourseID-1]->semesterID = assignSemester;
+	}
 	else {
 		cout << "Reassignment is illegal. Why are you doing this?" << endl;
 		return NULL;
 	}
-		
-	//TODO: assign cred/ decr budget
-	
 	//Recalculate assignment list (cannot assign parent's list to mine because then my pointers point to parents' courses)
-	updateAssignment();
+	child->updateAssignment();
 	
 	return child;
 }
@@ -168,7 +168,7 @@ bool GameState::prereqSatisfied(Course* course) {
 	//for(vector<int>::iterator it = course->prereqList.begin(); it!=course->prereqList.end(); ++it)
 	for(unsigned int i = 0; i < course->prereqList.size(); ++i)
 	{
-		if(courseList[course->prereqList[i]]->semesterID == -1 || courseList[course->prereqList[i]]->semesterID >= course->semesterID)
+		if(courseList[course->prereqList[i]-1]->semesterID == -1 || courseList[course->prereqList[i]-1]->semesterID >= course->semesterID)
 			return false;
 	}
 
@@ -207,14 +207,32 @@ void GameState::printState()
 	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
 		cout << "Semester: " << it->first << endl;
 		
+		vector<Course*> assignedList = it->second;
+		//for each course
+		for(unsigned int i=0; i<assignedList.size(); ++i) {
+			cout << "\tCourseID: " << assignedList[i]->courseID <<endl;
+			cout << "\tFprice: " << assignedList[i]->fallPrice << endl;
+			cout << "\tSprice: " << assignedList[i]->springPrice << endl;
+			cout << "\ttaken price: " << ( (assignedList[i]->semesterID)%2==0 )?(assignedList[i]->fallPrice):(assignedList[i]->springPrice);
+			cout << endl;
+			cout << "\tsemesterID: " << assignedList[i]->semesterID << endl;
+			cout << "\thours: " << assignedList[i]->credit << endl;
+			cout << endl;
+		}
+		/*
 		//for each course
 		for(vector<Course*>::const_iterator it_inner = it->second.begin(); it_inner != it->second.end(); ++it_inner) {
-			cout << "\tCourseID: " << (*it_inner)->courseID;
-			cout << "\tprice: " << ( ((*it_inner)->semesterID)%2==0 )?((*it_inner)->fallPrice):((*it_inner)->springPrice);
-			cout << "\thours: " << (*it_inner)->credit;
+			cout << "\tCourseID: " << (*it_inner)->courseID <<endl;
+			cout << "\tFprice: " << (*it_inner)->fallPrice << endl;
+			cout << "\tSprice: " << (*it_inner)->springPrice << endl;
+			cout << "\ttaken price: " << ( ((*it_inner)->semesterID)%2==0 )?((*it_inner)->fallPrice):((*it_inner)->springPrice);
+			cout << endl;
+			cout << "\tsemesterID: " << (*it_inner)->semesterID << endl;
+			cout << "\thours: " << (*it_inner)->credit << endl;
 			cout << endl;
 		}
 		cout << endl;
+		*/
 	}
 }
 

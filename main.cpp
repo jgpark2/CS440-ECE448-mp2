@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	cout << endl;
 
 	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
-	tree->root->printState();
+	(tree->root->assign(1,1))->printState();
 
 	return 0;
 }
