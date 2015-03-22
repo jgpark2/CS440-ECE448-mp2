@@ -47,7 +47,4 @@ Course::Course(Course const &other)
 //destructor
 Course::~Course()
 {
-	/*for(int i=0; i<prereqList.size(); ++i) {
-		delete prereqList[i];
-	}*/
 }
