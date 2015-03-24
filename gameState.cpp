@@ -68,8 +68,8 @@ GameState* GameState::assign(int assignCourseID, int assignSemester) {
 	}
 	
 	//Should call copy constructor...
-	GameState gs = *this;
-	GameState* child = &gs;
+	GameState* child = new GameState(*this);
+	//GameState* child = &gs;
 	
 	children.push_back(child);
 	child->parent = this;
