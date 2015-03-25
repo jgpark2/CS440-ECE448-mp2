@@ -32,9 +32,17 @@ int main(int argc, char* argv[])
 	b->addPlayer("Blue");
 	b->addPlayer("Green");
 
-	b->paraDrop('A', 1, "Blue");
-	b->paraDrop('A', 2, "Green");
-	b->paraDrop('A', 1, "Green");
+	b->paraDrop('D', 1, "Blue");
+	b->paraDrop('C', 2, "Blue");
+	b->paraDrop('D', 2, "Blue");
+	b->paraDrop('E', 2, "Blue");
+	b->paraDrop('C', 4, "Green");
+	b->paraDrop('D', 4, "Green");
+	b->printBoard();
+	b->printScores();
+
+	b->deathBlitz('D', 3, "Green");
+	b->printBoard();
 	b->printScores();
 
 	return 0;
