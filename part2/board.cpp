@@ -77,6 +77,43 @@ void Board::addPlayer(string playerName)
 	player_map.insert(pair<int, pair<int, string> >(counter, my_pair));
 }
 
+bool Board::checkNeighbors(int column, int row, int playerID)
+{
+	//check up
+	int up_row = row-1;
+	if(!up_row<0)
+	{
+		if(board[up_row*6+column].second==playerID)
+			return true;
+	}
+
+	//check right
+	int right_col = column+1;
+	if(!right_col>=6)
+	{
+		if(board[row*6+right_col].second==playerID)
+			return true;
+	}
+
+	//check down
+	int down_row = row+1;
+	if(!down_row>=6)
+	{
+		if(board[down_row*6+column].second==playerID)
+			return true;
+	}
+
+	//check left
+	int left_col = column-1;
+	if(!left_col<0)
+	{
+		if(board[row*6+left_col].second==playerID)
+			return true;
+	}
+
+	return false;
+}
+
 void Board::paraDrop(char i_column, int row, string playerName)
 {
 	row--;
@@ -136,14 +173,14 @@ void Board::paraDrop(char i_column, int row, string playerName)
 	}
 	if(playerID==-1)
 	{
-		cerr << "Error: Invalid playerName for paraDrop" << endl;
+		cerr << "Error: Invalid playerName for paraDrop. Please call addPlayer(" << playerName << ")" << endl;
 		return;
 	}
 
 	int orig_playerID = board[row*6+column].second;
-	if(playerID == orig_playerID)
+	if(orig_playerID!=-1)
 	{
-		cout << playerName << "already occupies [" << i_column << "," << row << endl;
+		cerr << "Error: Invalid paradrop - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row << "]" << endl;
 		return;
 	}
 	else
@@ -159,6 +196,99 @@ void Board::paraDrop(char i_column, int row, string playerName)
 		printBoard();
 	}
 
+}
+
+void Board::deathBlitz(char i_column, int row, string playerName)
+{
+	row--;
+	if(row<0 || row>=6)
+	{
+		cerr << "Error: Invalid i_column for deathBlitz" << endl;
+	}
+
+	int column = -1;
+
+	switch(i_column)
+	{
+		case 'A':
+		case 'a':
+			column = 0;
+			break;
+		case 'B':
+		case 'b':
+			column = 1;
+			break;
+		case 'C':
+		case 'c':
+			column = 2;
+			break;
+		case 'D':
+		case 'd':
+			column = 3;
+			break;
+		case 'E':
+		case 'e':
+			column = 4;
+			break;
+		case 'F':
+		case 'f':
+			column = 5;
+			break;
+		default:
+			cerr << "Error: Invalid column for deathBlitz" << endl;
+			break;
+	}
+
+	//this should never happen
+	if(column<0 || column>=6)
+	{
+		cerr << "Error: Invalid column for deathBlitz" << endl;
+		return;
+	}
+
+	int playerID = -1;
+	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	{
+		if( (((it)->second).second).compare(playerName) == 0)
+		{
+			playerID = (it)->first;
+			break;
+		}
+	}
+	if(playerID==-1)
+	{
+		cerr << "Error: Invalid playerName for deathBlitz. Please call addPlayer(" << playerName << ")" << endl;
+		return;
+	}
+
+	int orig_playerID = board[row*6+column].second;
+	if(orig_playerID!=-1)
+	{
+		cerr << "Error: Invalid deathBlitz - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row << "]" << endl;
+		return;
+	}
+	else if(!checkNeighbors(column, row, playerID))
+	{
+		cout << "Error: invalid deathBlitz - " << playerName << " does not control a neighboring square" << endl;
+		return;
+	}
+	else
+	{
+		//todo: implementation
+		cout << "Moving " << playerName << " (" << playerID << ") to " << i_column << "," << row << endl;
+		
+		//todo: conquer every enemy controlled square adjacent to the square to be taken
+
+		//update score
+		int square_score = board[row*6+column].first;
+		player_map[orig_playerID].first -= square_score;
+		player_map[playerID].first += square_score;
+
+		//update player's claim to square
+		board[row*6+column].second = playerID;
+
+		printBoard();
+	}
 }
 
 void Board::parseBoard(string scenario)

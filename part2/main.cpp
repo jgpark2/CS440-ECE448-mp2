@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 
 	b->paraDrop('A', 1, "Blue");
 	b->paraDrop('A', 2, "Green");
+	b->paraDrop('A', 1, "Green");
 	b->printScores();
 
 	return 0;

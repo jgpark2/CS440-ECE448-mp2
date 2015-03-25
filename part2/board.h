@@ -20,6 +20,7 @@ class Board {
 		void printScores();
 		void addPlayer(std::string player_name);
 		void paraDrop(char i_column, int row, std::string playerName);
+		void deathBlitz(char i_column, int row, std::string playerName);
 
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		
@@ -28,6 +29,10 @@ class Board {
 		std::map< int, std::pair <int, std::string> > player_map;
 
 		void parseBoard(std::string scenario);
+
+	private:
+		//helper methods
+		bool checkNeighbors(int column, int row, int playerID); //could be private
 };
 
 
