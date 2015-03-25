@@ -5,9 +5,12 @@
 #include <vector>
 #include "course.h"
 #include "parse.h"
+#include "gameTree.h"
+#include "gameState.h"
 
 using namespace std;
 using namespace boost;
+
 
 int main(int argc, char* argv[])
 {
@@ -21,8 +24,6 @@ int main(int argc, char* argv[])
 	char mode = argv[1][0];
 	string scenario = argv[2];
 	
-	vector<Course*> courses = parseCourses(scenario);
-
 	switch(mode)
 	{
 		default:
@@ -30,72 +31,25 @@ int main(int argc, char* argv[])
 			break;
 	}
 
-		GameTree tree = new GameTree(); //creates new tree for student
-		GameState currNode = tree.root; //define current Node to start at root
-		currNode.courseList = courses;
+	Parse* p = new Parse();
+	p->parseCourses(scenario);
+	vector<Course*> courses = p->courses;
+	
+	int params_array[3];
+	p->getParams(scenario, params_array);
+	int Cmin = params_array[0];
+	int Cmax = params_array[1];
+	int budget = params_array[2];
 
+	cout << "Cmin: " << Cmin;
+	cout << " Cmax: " << Cmax;
+	cout << " Budget: " << budget;
+	cout << endl;
 
-		recursiveBack(currNode);
-
+	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
+	(tree->root->assign(1,1))->printState();
 
 	return 0;
 }
 
 
-
-Gametree recursiveBack(GameState *cNode, GameTree *cTree)
-{
-	if (cNode.isValid())
-		{
-			if(cNode.isSolution()) return cNode; //if we have found the solution, return the gamestate
-		}
-
-
-	tempGameState = GameState(cNode);
-	vector<Course*> tempCourses = cNode.courseList;
-	bool valid = True;
-	//select next variable (class)
-	Course tryCourse;
-	Course tryCourse = cNode.getMostConstrained(); //select most constrained variable, popped off of priority queue.
-
-	int numValues = size(tryCourse.possibleSemeters) //find out how many semesters are possible = total number of classes
-	for(int i =0; i<num_possible_semester; i++)
-	{
-		tempGameState.courseList[tryCourse].semesterID = i;
-		if(tempGameState.isValid())
-		{
-			cNode.children.pushBack(tempGameState);
-			tempGameState.parent = cNode;
-			//TODO assign classes to semester in assignment map
-			solution = recursiveBack(tempGameState);
-			if(solution != false)
-				return solution;
-			else
-			{
-				delete tempGameState;
-				cNode.children.pop_back();
-			}
-
-		}
-
-	}
-
-
-
-	return false; //all options failed
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-	}
-}

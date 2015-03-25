@@ -13,7 +13,13 @@
 using namespace std;
 using namespace boost;
 
-vector<Course*> parseCourses(string scenario);
+class Parse{
+	public:
+	vector<Course*> courses;
 
+	void parseCourses(string scenario);
+	void getParams(string scenario, int (&array)[3] );
+
+};
 
 #endif
