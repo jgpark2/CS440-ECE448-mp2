@@ -45,5 +45,10 @@ int main(int argc, char* argv[])
 	b->printBoard();
 	b->printScores();
 
+	b->deathBlitz('C', 3, "Blue");
+	b->printBoard();
+	b->printScores();
+
+
 	return 0;
 }

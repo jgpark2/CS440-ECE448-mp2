@@ -33,11 +33,16 @@ Board::~Board()
 void Board::printBoard()
 {
 	cout << "printing board..." << endl;
+	cout << "\tA\tB\tC\tD\tE\tF" << endl;
 	int counter = 0;
+	int row_counter = 0;
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
 	{
-		if(counter%6==0 && counter!=0)
-			cout << endl;
+		if(counter%6==0)
+		{
+			row_counter++;
+			cout << endl << (row_counter) << "\t";
+		}
 		cout << (it)->first << "-";
 		string playerName = (player_map[(it)->second]).second;
 		cout << playerName.at(0) << "\t";
@@ -291,7 +296,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 	else
 	{
 		//todo: implementation
-		cout << "deathBlitz by " << playerName << " (" << playerID << ") on " << i_column << "," << row << endl;
+		cout << "deathBlitz by " << playerName << " (" << playerID << ") on [" << i_column << "," << row << "]" << endl;
 		
 		//update score
 		int square_score = board[row*6+column].first;
@@ -320,7 +325,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 		int right_square_location = (row)*6+(column+1);
 		if(board[right_square_location].second!=-1 && board[right_square_location].second!=playerID)
 		{
-			cout << "Conquering right neighbot [" << i_column+1 << "," << (row)+1 << "]" << endl;
+			cout << "Conquering right neighbot [" << (char)(i_column+1) << "," << (row)+1 << "]" << endl;
 			//conquer the square, update the score, etc.
 			int enemy_playerID = board[right_square_location].second;
 			int neighbor_square_score = board[right_square_location].first;
@@ -346,7 +351,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 		int left_square_location = (row)*6+(column-1);
 		if(board[left_square_location].second!=-1 && board[left_square_location].second!=playerID)
 		{
-			cout << "Conquering left neighbor [" << i_column-1 << "," << (row)+1 << "]" << endl;
+			cout << "Conquering left neighbor [" << (char)(i_column-1) << "," << (row)+1 << "]" << endl;
 			//conquer the square, update the score, etc.
 			int enemy_playerID = board[left_square_location].second;
 			int neighbor_square_score = board[left_square_location].first;
