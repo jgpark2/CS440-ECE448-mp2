@@ -19,15 +19,22 @@ class GameState {
 		~GameState();
 		
 		void setCoursesFromVector(std::vector<Course*> courseList);
+		void updateAssignment();
+		
 		GameState* assign(int assignCourseID, int assignSemester);
+		
 		bool isRoot();
+		
 		bool isValid();
 		bool checkCmin();
 		bool isSolution();
-		bool prereqSatisfied(Course* course);
+		
+		bool prereqSatisfied();
+		bool validPrereqs(Course* course);
+		
 		int semesterCredit(int semesterID);
-		void updateAssignment();
 		void printState();
+		int mostConstrainedCourse();
 		
 		std::vector<GameState*> children;
 		std::vector<Course*> courseList;
@@ -37,6 +44,7 @@ class GameState {
 		int cmin;
 		int cmax;
 		int totalBudget;
+		int maxSemester; //Domain of values
 		//int totalCredit; //total credit of all classes thus far
 		
 };

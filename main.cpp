@@ -11,6 +11,43 @@
 using namespace std;
 using namespace boost;
 
+/*
+ * Recursive Backtracking algorithm.
+ * Returns NULL if no solution node is found for the CSP.
+ */
+GameState* recursiveBack(GameState* node)
+{
+	if(node->isSolution()) {
+		return node;
+	}
+	
+	//Select a variable to assign
+	int courseID = node->mostConstrainedCourse();
+	
+	if(courseID==-1) //Although assign() catches it anyways...
+		return NULL;
+
+	//Try different values to assign to variable (semesterID starts at 0)
+	for(int semesterID = 0; semesterID <= node->maxSemester; ++semesterID ) {
+		GameState* assignment = node->assign(courseID, semesterID);
+		//cout<<"assigning "<<courseID<<":"<<semesterID<<"...";//////////////////////////////////
+		
+		if (assignment==NULL) //Probably exhausted all variables
+			return NULL;
+			
+		GameState* result = NULL;
+		if (assignment->isValid()) {
+			//cout<<" ...was valid";//////////////////////////////////
+			result = recursiveBack(assignment);
+		}
+		
+		if (result != NULL)
+			return result;
+	}
+
+	return NULL;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -47,7 +84,15 @@ int main(int argc, char* argv[])
 	cout << endl;
 
 	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
-	(tree->root->assign(1,1))->printState();
+	
+	GameState* solution = recursiveBack(tree->root);
+	if (solution == NULL) {
+		cout << "No solution found!!" << endl;
+		return 0;
+	}
+	
+	cout << "Solution found: " << endl;
+	solution->printState();
 
 	return 0;
 }
