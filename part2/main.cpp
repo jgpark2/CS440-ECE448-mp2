@@ -49,6 +49,6 @@ int main(int argc, char* argv[])
 	b->printBoard();
 	b->printScores();
 
-
+	delete b;
 	return 0;
 }
