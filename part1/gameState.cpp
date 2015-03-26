@@ -3,6 +3,7 @@
 #include <stdexcept>      // std::out_of_range
 #include <vector>         // std::vector
 #include <algorithm>    // std::find
+#include <limits>
 
 using namespace std;
 
@@ -23,6 +24,14 @@ GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, ch
 	setCoursesFromVector(courses);
 	
 	//updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate
+	
+	semesterHead = new Semester(0,NULL,NULL);
+	Semester* temp = semesterHead;
+	for(int i=1; i<maxSemester+1; ++i) {
+		temp->next = new Semester(i,NULL,NULL);
+		temp->next->prev = temp;
+		temp = temp->next;
+	}
 }
 
 /*
@@ -38,6 +47,14 @@ GameState::GameState(GameState const &gs){
 	maxSemester = gs.maxSemester;
 	totalBudget = gs.totalBudget;
 	mode = gs.mode;
+	
+	semesterHead = new Semester(0,NULL,NULL);
+	Semester* temp = semesterHead;
+	for(int i=1; i<maxSemester+1; ++i) {
+		temp->next = new Semester(i,NULL,NULL);
+		temp->next->prev = temp;
+		temp = temp->next;
+	}
 }
 
 void GameState::updateAssignment() {
@@ -49,6 +66,12 @@ void GameState::updateAssignment() {
 		if (courseList[i]->semesterID!=-1) {
 			//map.operator[] declares value automatically on nonexistent keys
 			(assignment[courseList[i]->semesterID]).push_back(courseList[i]);
+			
+			//Semester crp
+			Semester* temp = semesterHead;
+			for(int j=0; j<courseList[i]->semesterID; ++j)
+				temp = temp->next;
+			temp->addCourse(courseList[i]);
 		}
 	}
 }
@@ -59,7 +82,17 @@ GameState::~GameState() {
 		delete courseList[i];
 	}
 
-	//TODO:Do we have to delete assignment vectors itself at each semesterID index?
+
+	//Delete all chain of pointers to semester...
+	Semester* temp_old = semesterHead;
+	Semester* temp;
+	while (temp!=NULL) {
+		temp=temp_old->next;
+		delete temp_old;
+		temp_old = temp;
+	}
+	
+	//Do we have to delete assignment vectors itself at each semesterID index?
 }
 
 /*
@@ -318,7 +351,8 @@ int GameState::mostConstrainedCourse() {
 			courseID = i+1; //COURSEID STARTS AT 1
 			maxReqRank = courseList[i]->constrained_rank;
 		}
-		/*TODO:else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
+		//TODO:this might be needed unless LEASTCONSTVAL fixes it
+		/*else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
 			//Tie breakers must be done via who "fits" in the cmin~cmax window most
 			
 		}*/
@@ -343,4 +377,34 @@ void GameState::amplifyRank(vector<int> prereq, int depth) {
 	}
 	
 	return;
+}
+
+vector<int> GameState::leastConstrainingValues(int courseID) {
+	//Return list of semesterIDs, sorted from least constraining to most constraining
+	vector<int> semesterIDs;
+	
+	Semester* temp = semesterHead;
+	for(int j=0; j<maxSemester+1; ++j) {
+		temp->visited_flag = false;
+		temp = temp->next;
+	}
+		
+	while (semesterIDs.size() <= (unsigned int) maxSemester) {
+		int leastConstraint = std::numeric_limits<int>::max();
+		Semester* leastSemester = NULL;
+		
+		Semester* temp = semesterHead;
+		for(int j=0; j<maxSemester+1; ++j) {
+			if ( 00 < leastConstraint) {//TODO: temp->credit + courseList[courseID-1]->credit//SOME LOGIC
+				leastConstraint = 00;
+				leastSemester = temp;
+			}
+			temp = temp->next;
+		}
+		
+		leastSemester->visited_flag = true;
+		semesterIDs.push_back(leastSemester->semesterID);
+	}
+	
+	return semesterIDs;
 }

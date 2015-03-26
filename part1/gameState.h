@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 
 #include "course.h"
+#include "semester.h"
 #include <vector>
 #include <cstddef>
 #include <map>
@@ -34,6 +35,7 @@ class GameState {
 		
 		int semesterCredit(int semesterID);
 		void printState();
+		std::vector<int> leastConstrainingValues(int courseID);
 		int mostConstrainedCourse();
 		void amplifyRank(std::vector<int> prereq, int depth);
 		
@@ -41,6 +43,8 @@ class GameState {
 		std::vector<Course*> courseList;
 		GameState const * parent; //pointer to const GS. You can't modify a parent from a child...
 		std::map<int, std::vector<Course*> > assignment;
+		
+		Semester* semesterHead;
 		
 		int cmin;
 		int cmax;
