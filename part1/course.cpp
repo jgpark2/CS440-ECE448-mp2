@@ -11,7 +11,7 @@ Course::Course() {
 	semesterID = -1;
 	//is_prereq_for = vector<int>();
 	interesting = false;
-	constrained_rank = -1;
+	constrained_rank = 0;
 }
 
 //param constructor
@@ -27,7 +27,8 @@ Course::Course(int courseID, int fallPrice, int springPrice, int creditHours)
 	this->is_prereq_for = vector<int>();
 	this->prereqList = vector<int>();
 	this->interesting = false;
-	this->constrained_rank = -1;
+	this->constrained_rank = 0;
+	evaluateConstrainedRank();
 }
 
 //copy constructor
@@ -47,4 +48,13 @@ Course::Course(Course const &other)
 //destructor
 Course::~Course()
 {
+}
+
+void Course::evaluateConstrainedRank()
+{
+	/*if(interesting == true) {
+		constrained_rank += INTERESTING_WEIGHT;
+	}
+	constrained_rank += IS_PREREQ_FOR_WEIGHT * is_prereq_for.size();*/
+	return;
 }

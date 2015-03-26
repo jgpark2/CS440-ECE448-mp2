@@ -14,7 +14,7 @@ class GameState {
 		//default constructor
 		//A new blank GameState must be defined with a list of Courses. Or it can be copied from an existing GameState.
 		//Thus, there cannot be a default constructor
-		GameState(std::vector<Course*> courseList, int cmin, int cmax, int budget);
+		GameState(std::vector<Course*> courseList, int cmin, int cmax, int budget, char mode);
 		GameState(GameState const &gs);
 		~GameState();
 		
@@ -35,6 +35,7 @@ class GameState {
 		int semesterCredit(int semesterID);
 		void printState();
 		int mostConstrainedCourse();
+		void amplifyRank(std::vector<int> prereq, int depth);
 		
 		std::vector<GameState*> children;
 		std::vector<Course*> courseList;
@@ -45,6 +46,7 @@ class GameState {
 		int cmax;
 		int totalBudget;
 		int maxSemester; //Domain of values
+		char mode;
 		//int totalCredit; //total credit of all classes thus far
 		
 };

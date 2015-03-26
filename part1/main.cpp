@@ -28,6 +28,7 @@ GameState* recursiveBack(GameState* node)
 		return NULL;
 
 	//Try different values to assign to variable (semesterID starts at 0)
+	//TODO: fuck, shud've just created semester obj for least constraining value (to minimize assignments) and final printing (budget keep track)
 	for(int semesterID = 0; semesterID <= node->maxSemester; ++semesterID ) {
 		GameState* assignment = node->assign(courseID, semesterID);
 		//cout<<"assigning "<<courseID<<":"<<semesterID<<"...";//////////////////////////////////
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
 
 	if (argc!=3) 
 	{
-		cout << "Error, usage: ./mp2 [search flag] [scenario file name]" << endl;
+		cout << "Error, usage: ./mp2 <task A,B,C> <scenario file>" << endl;
 		return 1;
 	}
 	
@@ -63,10 +64,27 @@ int main(int argc, char* argv[])
 	
 	switch(mode)
 	{
-		default:
-			cout << "Search flag mode: " << mode << endl;
+		case 'a':
+		case 'A':
+			mode = 'A';
 			break;
+			
+		case 'b':
+		case 'B':
+			mode = 'B';
+			break;
+			
+		case 'c':
+		case 'C':
+			mode = 'C';
+			break;
+			
+		default:
+			mode = 'A';
+			cout << "Invalid task mode. Defaulting to A" << endl;
 	}
+	
+	cout << "Task mode: " << mode << endl;
 
 	Parse* p = new Parse();
 	p->parseCourses(scenario);
@@ -83,7 +101,7 @@ int main(int argc, char* argv[])
 	cout << " Budget: " << budget;
 	cout << endl;
 
-	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
+	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget, mode));
 	
 	GameState* solution = recursiveBack(tree->root);
 	if (solution == NULL) {

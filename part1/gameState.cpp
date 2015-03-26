@@ -10,16 +10,18 @@ using namespace std;
  * Main constructor. Due to GameState copy constructor, this should ideally only be called once
  * for the root (empty gamestate), and have all other nodes build off of this via assign(...)
  */
-GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget) {
+GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, char mode) {
 	this->cmin = cmin;
 	this->cmax = cmax;
 	maxSemester = courses.size()-1; //SemesterID starts at 0 (hence, -1)
 	totalBudget = budget; //remaining budget after assigning current semester classes
-	
+
+	this->mode = mode;
+		
 	parent = NULL;
 	
 	setCoursesFromVector(courses);
-		
+	
 	//updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate
 }
 
@@ -35,6 +37,7 @@ GameState::GameState(GameState const &gs){
 	cmax = gs.cmax;
 	maxSemester = gs.maxSemester;
 	totalBudget = gs.totalBudget;
+	mode = gs.mode;
 }
 
 void GameState::updateAssignment() {
@@ -117,7 +120,7 @@ bool GameState::isSolution() {
 	
 	if(!isValid()) //Must be checked first
 		return false;
-	
+		
 	if (!checkCmin())
 		return false;
 	
@@ -174,6 +177,9 @@ bool GameState::isValid() {
 				return false;
 			}
 			
+			if (mode=='A')
+				continue; //Mode A ignores budget and price
+				
 			//BUDGET
 			//Find price for given semester type
 			if ((*it_inner)->semesterID % 2 ==0) //If FALL
@@ -192,11 +198,17 @@ bool GameState::isValid() {
 }
 
 bool GameState::prereqSatisfied() {
+	// Amongst actual function that this is intended for, below also includes a strong prereq *valid* check. This should ideally be in isValid to minimize node expansions, but we couldn't fit it there...
 	for(unsigned int c = 0; c < courseList.size(); ++c) {
+		if (!(courseList[c]->interesting) && (courseList[c]->semesterID<0)) {
+			//Non-needed courses' prereqs need not be checked, unless we actually used this as a filler...
+			continue;
+		}
+			
 		for(unsigned int i = 0; i < courseList[c]->prereqList.size(); ++i)
 		{
 			int prereqID = courseList[c]->prereqList[i];
-			if(courseList[prereqID]->semesterID == -1) { //Doesn't neccessarily have eto check for integrity since validPrereqs already checks it
+			if(courseList[prereqID-1]->semesterID == -1) { //Doesn't neccessarily have to check for integrity since validPrereqs already checks it
 				return false;
 			}
 		}
@@ -205,11 +217,16 @@ bool GameState::prereqSatisfied() {
 	return true;
 }
 
-//Only checks if assigned prereqs so far are valid to begin with
+//Only checks if an assigned course & its *assigned* prereqs are valid
 bool GameState::validPrereqs(Course* course) {
-	
+	if(course->semesterID==0 && course->prereqList.size()>0)
+		return false; //shortcircuit: you cant have this on first semester if there's prereqs
+		
 	for(unsigned int i = 0; i < course->prereqList.size(); ++i)
 	{
+		if(courseList[course->prereqList[i]-1]->semesterID==-1) //Need to skip yet-to-be-assigned...
+			continue;
+		
 		if(courseList[course->prereqList[i]-1]->semesterID >= course->semesterID) {
 			//cout << course->courseID << " taken before " << courseList[course->prereqList[i]-1]->courseID << "!?" << endl;//////////////////////////////////
 			return false;
@@ -279,9 +296,51 @@ void GameState::printState()
 }
 
 int GameState::mostConstrainedCourse() {
+	//Reset RANK...
 	for(unsigned int i=0; i<courseList.size(); ++i) {
-		if((courseList[i]->semesterID)==-1)
-			return courseList[i]->courseID;
+		courseList[i]->constrained_rank = 0;
 	}
-	return -1;
+	
+	//Calculate RANK
+	for(unsigned int i=0; i<courseList.size(); ++i) {
+		if(courseList[i]->interesting) {
+			courseList[i]->constrained_rank += 10;
+			amplifyRank(courseList[i]->prereqList, 1);
+		}
+	}
+	
+	//Find max rank...
+	int courseID = -1;
+	int maxReqRank = -1;
+	
+	for(unsigned int i=0; i<courseList.size(); ++i) {
+		if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank > maxReqRank) {
+			courseID = i+1; //COURSEID STARTS AT 1
+			maxReqRank = courseList[i]->constrained_rank;
+		}
+		/*TODO:else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
+			//Tie breakers must be done via who "fits" in the cmin~cmax window most
+			
+		}*/
+	}
+	
+	
+	if (courseID!=-1)////////////////////
+		cout<<"MOST CONST: " << courseID << "   ";	////////////////
+	
+	return courseID;
+}
+
+void GameState::amplifyRank(vector<int> prereq, int depth) {
+	if(prereq.size()==0)
+		return;
+		
+	depth++;
+	
+	for(unsigned int i=0; i<prereq.size(); ++i) {
+		courseList[prereq[i]-1]->constrained_rank += depth*10;
+		amplifyRank(courseList[prereq[i]-1]->prereqList, depth);
+	}
+	
+	return;
 }
