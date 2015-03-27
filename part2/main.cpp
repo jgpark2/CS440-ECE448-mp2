@@ -111,6 +111,8 @@ vector<int> minimax(Board board, int depth, bool maximizingPlayer, double gamma,
 	return retval;
 }
 
+
+//see description for minimax
 vector<int> alphabeta(Board board, int depth, int alpha, int beta, bool maximizingPlayer, double gamma, int nodes_expanded)
 {
 	if(depth==0 || board.isBoardFull())
