@@ -97,8 +97,6 @@ void Board::addPlayer(string playerName)
 
 bool Board::checkFriendlyNeighbors(int column, int row, int playerID)
 {
-	cout << "Checking neighbors with column=" << column << ", row=" << row << ", playerID=" << playerID << endl;
-
 	//check up
 	int up_row = row-1;
 	if(!(up_row<0))
@@ -152,8 +150,6 @@ bool Board::checkFriendlyNeighbors(int column, int row, int playerID)
 
 bool Board::checkEnemyNeighbors(int column, int row, int playerID)
 {
-	cout << "Checking neighbors with column=" << column << ", row=" << row << ", playerID=" << playerID << endl;
-
 	//check up
 	int up_row = row-1;
 	if(!(up_row<0))
@@ -207,8 +203,6 @@ bool Board::checkEnemyNeighbors(int column, int row, int playerID)
 
 int Board::getEnemyNeighborID(int column, int row, int playerID)
 {
-	cout << "Checking neighbors with column=" << column << ", row=" << row << ", playerID=" << playerID << endl;
-
 	//check up
 	int up_row = row-1;
 	if(!(up_row<0))
@@ -326,12 +320,12 @@ void Board::paraDrop(char i_column, int row, string playerName)
 	int orig_playerID = board[row*6+column].second;
 	if(orig_playerID!=-1)
 	{
-		cerr << "Error: Invalid paradrop - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row << "]" << endl;
+		cerr << "Error: Invalid paradrop - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
 		return;
 	}
 	else
 	{
-		cout << "paraDrop by " << playerName << " (" << playerID << ") on [" << i_column << "," << row << "]" << endl;
+		cout << "paraDrop by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 		//update score
 		int square_score = board[row*6+column].first;
 		player_map[orig_playerID].first -= square_score;
@@ -467,7 +461,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 	int orig_playerID = board[row*6+column].second;
 	if(orig_playerID!=-1)
 	{
-		cerr << "Error: Invalid deathBlitz - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row << "]" << endl;
+		cerr << "Error: Invalid deathBlitz - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1<< "]" << endl;
 		return;
 	}
 	if(!checkFriendlyNeighbors(column, row, playerID))
@@ -478,7 +472,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 	else
 	{
 		//todo: implementation
-		cout << "deathBlitz by " << playerName << " (" << playerID << ") on [" << i_column << "," << row << "]" << endl;
+		cout << "deathBlitz by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 		
 		//update score
 		int square_score = board[row*6+column].first;
@@ -560,7 +554,7 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 	int orig_playerID = board[row*6+column].second;
 	if(orig_playerID!=-1)
 	{
-		cerr << "Error: Invalid sabotage - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row << "]" << endl;
+		cerr << "Error: Invalid sabotage - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
 		return;
 	}
 	if(!checkEnemyNeighbors(column, row, playerID))
@@ -585,7 +579,7 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 
 	if(!success)
 	{
-		cout << "unsuccessful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row << "]" << endl;
+		cout << "unsuccessful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 		
 		int enemy_playerID = getEnemyNeighborID(column, row, playerID);
 		
@@ -597,14 +591,14 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 
 		int square_score = board[row*6+column].first;
 		player_map[enemy_playerID].first += square_score;
-		player_map[playerID].first -= square_score;
+		//player_map[playerID].first -= square_score; //don't do this, only the enemy's score is affected
 
 		//update player's claim to square
 		board[row*6+column].second = enemy_playerID;
 	}
 	else
 	{
-		cout << "successful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row << "]" << endl;
+		cout << "successful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 		//update score
 		int square_score = board[row*6+column].first;
 		player_map[orig_playerID].first -= square_score;
