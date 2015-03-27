@@ -14,17 +14,25 @@ using namespace boost;
 //returns index of board for next move i.e. board[index] s.t. index/6 = row-1 and index%6=column
 //ONLY WORKS FOR 2 PLAYERS - assuming maximizingPlayer is playerID 0 and minimizingPlayer is playerID 1
 //move: 0 = paraDrop, 1 = deathBlitz, 2 = sabotage
-int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
+//nodes_expanded: put in 0 for initial call
+//returns a vector that contains heuristic at 0, number of nodes expanded at 1
+vector<int> minimax(Board board, int depth, bool maximizingPlayer, double gamma, int nodes_expanded)
 {
 	if(depth==0 || board.isBoardFull())
 	{
 		if(maximizingPlayer)
 		{
-			return board.getPlayerScore(0);
+			vector <int> retval;
+			retval.push_back(board.getPlayerScore(0));
+			retval.push_back(nodes_expanded);
+			return retval;
 		}
 		else
 		{
-			return board.getPlayerScore(1);
+			vector <int> retval;
+			retval.push_back(board.getPlayerScore(1));
+			retval.push_back(nodes_expanded);
+			return retval;		
 		}
 	}
 
@@ -44,25 +52,28 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 
 			Board* paraDrop_board = new Board(board);
 			paraDrop_board->makeMove(*it, 0, 0, gamma);//fourth param is gamma, any double will work
-			test_val = minimax(*paraDrop_board, depth-1, false, gamma);
+			test_val = (minimax(*paraDrop_board, depth-1, false, gamma, nodes_expanded+1))[0];
 			test_val = max(bestValue, test_val);
 
 			Board* deathBlitz_board = new Board(board);
 			deathBlitz_board->makeMove(*it, 0, 1, gamma);//fourth param is gamma, any double will work
-			test_val = minimax(*deathBlitz_board, depth-1, false, gamma);
+			test_val = (minimax(*deathBlitz_board, depth-1, false, gamma, nodes_expanded+1))[0];
 			test_val = max(bestValue, test_val);
 
 			Board* sabotage_board = new Board(board);
 			sabotage_board->makeMove(*it, 0, 2, gamma);
-			test_val = minimax(*sabotage_board, depth-1, false, gamma);
+			test_val = (minimax(*sabotage_board, depth-1, false, gamma, nodes_expanded+1))[0];
 			test_val = max(bestValue, test_val);
 		}
-		return bestValue;
+		vector<int> retval;
+		retval.push_back(bestValue);
+		retval.push_back(nodes_expanded);
+		return retval;
 	}
 	else
 	{
 		int bestValue = INT_MAX;
-		//todo:
+		//DOUBLE CHECK THIS:
 		//for each child in vector of children from getChildrenIndices
 		//try all three moves: paraDrop, deathBlitz, sabotage
 		//compare heuristic with bestValue and store max as bestValue
@@ -74,24 +85,30 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 
 			Board* paraDrop_board = new Board(board);
 			paraDrop_board->makeMove(*it, 1, 0, gamma);//fourth param is gamma, any double will work
-			test_val = minimax(*paraDrop_board, depth-1, true, gamma);
+			test_val = (minimax(*paraDrop_board, depth-1, true, gamma, nodes_expanded))[0];
 			test_val = max(bestValue, test_val);
 
 			Board* deathBlitz_board = new Board(board);
 			deathBlitz_board->makeMove(*it, 1, 1, gamma);//fourth param is gamma, any double will work
-			test_val = minimax(*deathBlitz_board, depth-1, true, gamma);
+			test_val = (minimax(*deathBlitz_board, depth-1, true, gamma, nodes_expanded))[0];
 			test_val = max(bestValue, test_val);
 
 			Board* sabotage_board = new Board(board);
 			sabotage_board->makeMove(*it, 1, 2, gamma);
-			test_val = minimax(*sabotage_board, depth-1, true, gamma);
+			test_val = (minimax(*sabotage_board, depth-1, true, gamma, nodes_expanded))[0];
 			test_val = max(bestValue, test_val);
 		}
 
-		return bestValue;
+		vector<int> retval;
+		retval.push_back(bestValue);
+		retval.push_back(nodes_expanded);
+		return retval;
 	}
 
-	return -1;
+		vector<int> retval;
+		retval.push_back(-1);
+		retval.push_back(nodes_expanded);
+		return retval;
 }
 
 int main(int argc, char* argv[])
