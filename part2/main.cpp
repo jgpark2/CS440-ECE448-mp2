@@ -105,10 +105,113 @@ vector<int> minimax(Board board, int depth, bool maximizingPlayer, double gamma,
 		return retval;
 	}
 
+	vector<int> retval;
+	retval.push_back(-1);
+	retval.push_back(nodes_expanded);
+	return retval;
+}
+
+vector<int> alphabeta(Board board, int depth, int alpha, int beta, bool maximizingPlayer, double gamma, int nodes_expanded)
+{
+	if(depth==0 || board.isBoardFull())
+	{
+		if(maximizingPlayer)
+		{
+			vector <int> retval;
+			retval.push_back(board.getPlayerScore(0));
+			retval.push_back(nodes_expanded);
+			return retval;
+		}
+		else
+		{
+			vector <int> retval;
+			retval.push_back(board.getPlayerScore(1));
+			retval.push_back(nodes_expanded);
+			return retval;		
+		}
+	}
+
+	if(maximizingPlayer)
+	{
+		int v = INT_MIN;
+		
+		//DOUBLE CHECK THIS:
+		//for each child in vector of children from getChildrenIndices
+		//try all three moves: paraDrop, deathBlitz, sabotage
+		//compare heuristic with bestValue and store max as bestValue
+
+		vector<int> maxNeighbors = board.getChildrenIndices(0);
+		for(vector<int>::iterator it = maxNeighbors.begin(); it!=maxNeighbors.end(); ++it)
+		{
+			Board* paraDrop_board = new Board(board);
+			paraDrop_board->makeMove(*it, 0, 0, gamma);//fourth param is gamma, any double will work
+			v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1))[0];
+			alpha = max(alpha, v);
+			if(beta <= alpha)
+				break;	//beta cut-off
+
+			Board* deathBlitz_board = new Board(board);
+			deathBlitz_board->makeMove(*it, 0, 1, gamma);//fourth param is gamma, any double will work
+			v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1))[0];
+			alpha = max(alpha, v);
+			if(beta <= alpha)
+				break;	//beta cut-off
+
+			Board* sabotage_board = new Board(board);
+			sabotage_board->makeMove(*it, 0, 2, gamma);
+			v = (alphabeta(*sabotage_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1))[0];
+			alpha = max(alpha, v);
+			if(beta <= alpha)
+				break;	//beta cut-off
+		}
 		vector<int> retval;
-		retval.push_back(-1);
+		retval.push_back(v);
 		retval.push_back(nodes_expanded);
 		return retval;
+	}
+	else
+	{
+		int v = INT_MAX;
+		//DOUBLE CHECK THIS:
+		//for each child in vector of children from getChildrenIndices
+		//try all three moves: paraDrop, deathBlitz, sabotage
+		//compare heuristic with bestValue and store max as bestValue
+
+		vector<int> maxNeighbors = board.getChildrenIndices(0);
+		for(vector<int>::iterator it = maxNeighbors.begin(); it!=maxNeighbors.end(); ++it)
+		{
+			Board* paraDrop_board = new Board(board);
+			paraDrop_board->makeMove(*it, 1, 0, gamma);//fourth param is gamma, any double will work
+			v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, true, gamma, nodes_expanded))[0];
+			beta = max(beta, v);
+			if(beta <= alpha)
+				break;	//alpha cut-off
+
+			Board* deathBlitz_board = new Board(board);
+			deathBlitz_board->makeMove(*it, 1, 1, gamma);//fourth param is gamma, any double will work
+			v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, true, gamma, nodes_expanded))[0];
+			beta = max(beta, v);
+			if(beta <= alpha)
+				break;	//alpha cut-off
+
+			Board* sabotage_board = new Board(board);
+			sabotage_board->makeMove(*it, 1, 2, gamma);
+			v = (alphabeta(*sabotage_board, depth-1, alpha, beta, true, gamma, nodes_expanded))[0];
+			beta = max(beta, v);
+			if(beta <= alpha)
+				break;	//alpha cut-off
+		}
+
+		vector<int> retval;
+		retval.push_back(v);
+		retval.push_back(nodes_expanded);
+		return retval;
+	}
+
+	vector<int> retval;
+	retval.push_back(-1);
+	retval.push_back(nodes_expanded);
+	return retval;
 }
 
 int main(int argc, char* argv[])
