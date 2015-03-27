@@ -9,6 +9,7 @@
 #include <boost/algorithm/string.hpp>
 #include <utility>
 #include <map>
+#include <time.h>
 
 class Board {
 	public:
@@ -20,7 +21,10 @@ class Board {
 		void printScores();
 		void addPlayer(std::string player_name);
 		void paraDrop(char i_column, int row, std::string playerName);
+		void conquerNeighbors(int column, int row, int playerID);
 		void deathBlitz(char i_column, int row, std::string playerName);
+		int getPlayerScore(string playerName);
+		int findHighestUnclaimedSquare();
 
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		
@@ -32,7 +36,9 @@ class Board {
 
 	private:
 		//helper methods
-		bool checkNeighbors(int column, int row, int playerID); //could be private
+		bool checkFriendlyNeighbors(int column, int row, int playerID); //could be private
+		bool checkEnemyNeighbors(int column, int row, int playerID); //could be private
+		void conquerNeighbors(int column, int row, int playerID);
 };
 
 
