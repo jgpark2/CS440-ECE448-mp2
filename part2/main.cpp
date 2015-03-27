@@ -49,6 +49,10 @@ int main(int argc, char* argv[])
 	b->printBoard();
 	b->printScores();
 
+	b->sabotage('C', 1, "Green", 1.0);
+	b->printBoard();
+	b->printScores();
+
 	delete b;
 	return 0;
 }
