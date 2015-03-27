@@ -4,6 +4,7 @@
 #include <vector>         // std::vector
 #include <algorithm>    // std::find
 #include <limits>
+#include <stdio.h>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, char mode) {
 	this->cmin = cmin;
 	this->cmax = cmax;
-	maxSemester = courses.size()-1; //SemesterID starts at 0 (hence, -1)
+	maxSemesterID = courses.size()-1; //SemesterID starts at 0 (hence, -1)
 	totalBudget = budget; //remaining budget after assigning current semester classes
 
 	this->mode = mode;
@@ -27,7 +28,7 @@ GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, ch
 	
 	semesterHead = new Semester(0,NULL,NULL);
 	Semester* temp = semesterHead;
-	for(int i=1; i<maxSemester+1; ++i) {
+	for(int i=1; i<=maxSemesterID; ++i) {
 		temp->next = new Semester(i,NULL,NULL);
 		temp->next->prev = temp;
 		temp = temp->next;
@@ -44,13 +45,13 @@ GameState::GameState(GameState const &gs){
 	setCoursesFromVector(gs.courseList);
 	cmin = gs.cmin;
 	cmax = gs.cmax;
-	maxSemester = gs.maxSemester;
+	maxSemesterID = gs.maxSemesterID;
 	totalBudget = gs.totalBudget;
 	mode = gs.mode;
 	
 	semesterHead = new Semester(0,NULL,NULL);
 	Semester* temp = semesterHead;
-	for(int i=1; i<maxSemester+1; ++i) {
+	for(int i=1; i<=maxSemesterID; ++i) {
 		temp->next = new Semester(i,NULL,NULL);
 		temp->next->prev = temp;
 		temp = temp->next;
@@ -290,6 +291,7 @@ int GameState::semesterCredit(int semesterID) {
 
 void GameState::printState()
 {
+	/* PRETTY DEBUG PRINTS */
 	//print the map
 	if(assignment.empty()) {
 		cout << "There are no assignments" << endl;
@@ -297,6 +299,7 @@ void GameState::printState()
 	}
 	
 	int printBudget = totalBudget;
+	Semester* curSem = semesterHead;
 	
 	//for each semester in the map
 	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
@@ -306,9 +309,8 @@ void GameState::printState()
 		else cout<<" SPRING\t";
 		
 		cout<<"("<<(it->second).size()<<" classes) Credits Taken: "<< semesterCredit(it->first)<<"\t";
-		int tempBudget = 0;
-		cout<<"Budget Change: "<<printBudget<<"->"<<"TODO:"<<endl;
-		printBudget = tempBudget;
+		cout<<"Budget Change: "<<printBudget<<"->"<< (printBudget-curSem->budget) << "(Used: " << curSem->budget << ")"<<endl;
+		printBudget -= curSem->budget;
 		
 		vector<Course*> assignedList = it->second;
 		//for each course
@@ -325,7 +327,28 @@ void GameState::printState()
 			cout << "\thours: " << assignedList[i]->credit << endl;
 			cout << endl;
 		}
+		curSem = curSem->next;
 	}
+	
+	
+	/* FINAL PRINTS AS PRE MP2 SPECS */
+	cout << "FINAL:" << endl;
+	cout << totalBudget-printBudget << " " << curSem->semesterID << endl;
+	Semester* tempSem = semesterHead;
+	while(tempSem->courses.size()!=0) {
+		cout << tempSem->courses.size() << " ";
+		for (vector<Course*>::iterator it=tempSem->courses.begin(); it != tempSem->courses.end(); it++)
+			cout << (*it)->courseID << " ";
+		cout << endl;
+		tempSem = tempSem->next;
+	}
+	
+	tempSem = semesterHead;
+	while(tempSem->courses.size()!=0) {
+		cout << tempSem->budget << " ";
+		tempSem = tempSem->next;
+	}
+	cout << endl;
 }
 
 int GameState::mostConstrainedCourse() {
@@ -345,17 +368,43 @@ int GameState::mostConstrainedCourse() {
 	//Find max rank...
 	int courseID = -1;
 	int maxReqRank = -1;
+	int leastOfLeast= std::numeric_limits<int>::max();
 	
 	for(unsigned int i=0; i<courseList.size(); ++i) {
 		if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank > maxReqRank) {
 			courseID = i+1; //COURSEID STARTS AT 1
 			maxReqRank = courseList[i]->constrained_rank;
 		}
-		//TODO:this might be needed unless LEASTCONSTVAL fixes it
-		/*else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
-			//Tie breakers must be done via who "fits" in the cmin~cmax window most
+		else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
+			//Tie breakers must be done via who "best-fits" in the cmin~cmax window most for the "lowest unfulfilled semester"
+			Semester* temp = semesterHead;
+			Semester* leastSem = NULL;
+			int least = std::numeric_limits<int>::max();
+			for(int j=0; j<= maxSemesterID; ++j) {
+				if (temp->credit >= cmin)
+					continue;
+					
+				int weight = temp->credit+courseList[i]->credit-cmin;
+				
+				if (weight<0)
+					weight*=-(cmax-cmin+1);
+				else if (weight>cmax-cmin)
+					weight=std::numeric_limits<int>::max();
 			
-		}*/
+				if (weight < least) {
+					least = weight;
+					leastSem = temp;
+				}
+				temp = temp->next;
+			}
+			if (leastSem==NULL)
+				continue;//FUCK
+			
+			if(least<leastOfLeast) {
+				leastOfLeast = least;
+				courseID=i+1;
+			}
+		}
 	}
 	
 	
@@ -380,24 +429,37 @@ void GameState::amplifyRank(vector<int> prereq, int depth) {
 }
 
 vector<int> GameState::leastConstrainingValues(int courseID) {
+	
+	Semester* semPtr = semesterHead;
+	for(int j=0; j<=maxSemesterID; ++j) {
+		semPtr->visited_flag = false;
+		semPtr = semPtr->next;
+	}
+	
 	//Return list of semesterIDs, sorted from least constraining to most constraining
 	vector<int> semesterIDs;
 	
-	Semester* temp = semesterHead;
-	for(int j=0; j<maxSemester+1; ++j) {
-		temp->visited_flag = false;
-		temp = temp->next;
-	}
+	while (semesterIDs.size() <= (unsigned int) maxSemesterID) {
+		//While semesterIDs isn't fully populated...
 		
-	while (semesterIDs.size() <= (unsigned int) maxSemester) {
 		int leastConstraint = std::numeric_limits<int>::max();
 		Semester* leastSemester = NULL;
 		
+		//Find the next least Semester
 		Semester* temp = semesterHead;
-		for(int j=0; j<maxSemester+1; ++j) {
-			if ( 00 < leastConstraint) {//TODO: temp->credit + courseList[courseID-1]->credit//SOME LOGIC
-				leastConstraint = 00;
-				leastSemester = temp;
+		for(int j=0; j<= maxSemesterID; ++j) {
+			if (!(temp->visited_flag)) {
+				int weight = temp->credit + courseList[courseID-1]->credit - cmin;
+			
+				if (weight<0)
+					weight*=-(cmax-cmin+1);
+				else if (weight>cmax-cmin)
+					weight=std::numeric_limits<int>::max();
+			
+				if ( weight < leastConstraint) {
+					leastConstraint = weight;
+					leastSemester = temp;
+				}
 			}
 			temp = temp->next;
 		}

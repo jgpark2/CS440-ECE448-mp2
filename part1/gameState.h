@@ -49,7 +49,7 @@ class GameState {
 		int cmin;
 		int cmax;
 		int totalBudget;
-		int maxSemester; //Domain of values
+		int maxSemesterID; //Domain of values
 		char mode;
 		//int totalCredit; //total credit of all classes thus far
 		

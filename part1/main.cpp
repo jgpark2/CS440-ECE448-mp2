@@ -29,10 +29,12 @@ GameState* recursiveBack(GameState* node)
 		return NULL;
 
 	//Try different values to assign to variable (semesterID starts at 0)
-	//TODO: fuck, shud've just created semester obj for least constraining value (to minimize assignments) and final printing (budget keep track)
 	vector<int> semesterIDCandidates = node->leastConstrainingValues(courseID);
-	
-	for(unsigned int i = 0; i <= semesterIDCandidates.size(); ++i ) {
+				for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i )
+				cout<<semesterIDCandidates[i]<<",";
+				cout<< endl;
+	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
+	//for(int i = 0; i <= node->maxSemester; ++i ) {
 		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
 		//cout<<"assigning "<<courseID<<":"<<semesterID<<"...";//////////////////////////////////
 		
