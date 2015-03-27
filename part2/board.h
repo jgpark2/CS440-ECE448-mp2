@@ -21,10 +21,9 @@ class Board {
 		void printScores();
 		void addPlayer(std::string player_name);
 		void paraDrop(char i_column, int row, std::string playerName);
-		void conquerNeighbors(int column, int row, int playerID);
 		void deathBlitz(char i_column, int row, std::string playerName);
-		void sabotage(char i_column, int row, string playerName, double gamma);
-		int getPlayerScore(string playerName);
+		void sabotage(char i_column, int row, std::string playerName, double gamma);
+		int getPlayerScore(std::string playerName);
 		int findHighestUnclaimedSquare();
 
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
@@ -39,7 +38,7 @@ class Board {
 		//helper methods
 		bool checkFriendlyNeighbors(int column, int row, int playerID); //could be private
 		bool checkEnemyNeighbors(int column, int row, int playerID); //could be private
-		void conquerNeighbors(int column, int row, int playerID);
+		void conquerNeighbors(char i_column, int column, int row, int playerID);
 		int getEnemyNeighborID(int column, int row, int playerID);
 };
 

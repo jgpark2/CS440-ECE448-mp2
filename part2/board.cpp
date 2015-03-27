@@ -150,7 +150,7 @@ bool Board::checkFriendlyNeighbors(int column, int row, int playerID)
 	return false;
 }
 
-bool Board::checkEnemyyNeighbors(int column, int row, int playerID)
+bool Board::checkEnemyNeighbors(int column, int row, int playerID)
 {
 	cout << "Checking neighbors with column=" << column << ", row=" << row << ", playerID=" << playerID << endl;
 
@@ -344,7 +344,7 @@ void Board::paraDrop(char i_column, int row, string playerName)
 
 }
 
-void Board::conquerNeighbors(int column, int row, int playerID)
+void Board::conquerNeighbors(char i_column, int column, int row, int playerID)
 {
 		//conquer every enemy controlled square adjacent to the square to be taken
 		//up
@@ -488,7 +488,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 		//update player's claim to square
 		board[row*6+column].second = playerID;
 
-		conquerNeighbors(column, row, playerID);
+		conquerNeighbors(i_column, column, row, playerID);
 
 		//printBoard();
 	}
@@ -613,7 +613,7 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 		//update player's claim to square
 		board[row*6+column].second = playerID;
 
-		conquerNeighbors(column, row, playerID);
+		conquerNeighbors(i_column, column, row, playerID);
 		//printBoard();
 	}
 
