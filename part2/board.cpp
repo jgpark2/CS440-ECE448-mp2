@@ -628,6 +628,70 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 
 }
 
+void Board::makeMove(int index, int playerID, int move, double gamma)
+{
+	int column = index%6;
+	char i_column;
+	int row = index/6;
+	string playerName = "Unassigned";
+
+	switch(column)
+	{
+		case 0:
+			i_column = 'A';
+			break;
+		case 1:
+			i_column = 'B';
+			break;
+		case 2:
+			i_column = 'C';
+			break;
+		case 3:
+			i_column = 'D';
+			break;
+		case 4:
+			i_column = 'E';
+			break;
+		case 5:
+			i_column = 'F';
+			break;
+		//this should never happen
+		default:
+			cerr << "ERROR IN IMPLEMENTATION OF makeMove (see defuault switch case)" << endl;
+			i_column = 'G';
+			break;
+	}
+	
+	if(playerID > (int)(player_map.size()-1) )
+	{
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive " << endl;
+	}
+
+	playerName = player_map[playerID].second;
+
+	if(playerName.compare("Unassigned")==0)
+	{
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive" << endl;
+	}
+
+	switch(move)
+	{
+		case 0:
+			this->paraDrop(i_column, row, playerName);
+			break;
+		case 1:
+			this->deathBlitz(i_column, row, playerName);
+			break;
+		case 2:
+			this->sabotage(i_column, row, playerName, gamma);
+			break;
+		default:
+			cerr << "Error: Invalid move for makeMove, please select a value between 0 and 2, inclusive" << endl;
+			break;
+	}
+	return;
+}
+
 void Board::parseBoard(string scenario)
 {
 	cout << "parsing board..." << endl;

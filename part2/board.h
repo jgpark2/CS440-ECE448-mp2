@@ -23,6 +23,7 @@ class Board {
 		void paraDrop(char i_column, int row, std::string playerName);
 		void deathBlitz(char i_column, int row, std::string playerName);
 		void sabotage(char i_column, int row, std::string playerName, double gamma);
+		void makeMove(int index, int playerID, int move, double gamma);
 		int getPlayerScore(std::string playerName);
 		int getPlayerScore(int playerID);
 		int findHighestUnclaimedSquare();

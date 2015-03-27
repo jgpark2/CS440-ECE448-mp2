@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <climits>
+#include <algorithm>
 #include "board.h"
 
 
@@ -12,7 +13,8 @@ using namespace boost;
 
 //returns index of board for next move i.e. board[index] s.t. index/6 = row-1 and index%6=column
 //ONLY WORKS FOR 2 PLAYERS - assuming maximizingPlayer is playerID 0 and minimizingPlayer is playerID 1
-int minimax(Board board, int depth, bool maximizingPlayer)
+//move: 0 = paraDrop, 1 = deathBlitz, 2 = sabotage
+int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 {
 	if(depth==0 || board.isBoardFull())
 	{
@@ -29,7 +31,8 @@ int minimax(Board board, int depth, bool maximizingPlayer)
 	if(maximizingPlayer)
 	{
 		int bestValue = INT_MIN;
-		//todo:
+		
+		//DOUBLE CHECK THIS:
 		//for each child in vector of children from getChildrenIndices
 		//try all three moves: paraDrop, deathBlitz, sabotage
 		//compare heuristic with bestValue and store max as bestValue
@@ -37,9 +40,23 @@ int minimax(Board board, int depth, bool maximizingPlayer)
 		vector<int> maxNeighbors = board.getChildrenIndices(0);
 		for(vector<int>::iterator it = maxNeighbors.begin(); it!=maxNeighbors.end(); ++it)
 		{
+			int test_val;
 
+			Board* paraDrop_board = new Board(board);
+			paraDrop_board->makeMove(*it, 0, 0, gamma);//fourth param is gamma, any double will work
+			test_val = minimax(*paraDrop_board, depth-1, false, gamma);
+			test_val = max(bestValue, test_val);
+
+			Board* deathBlitz_board = new Board(board);
+			deathBlitz_board->makeMove(*it, 0, 1, gamma);//fourth param is gamma, any double will work
+			test_val = minimax(*deathBlitz_board, depth-1, false, gamma);
+			test_val = max(bestValue, test_val);
+
+			Board* sabotage_board = new Board(board);
+			sabotage_board->makeMove(*it, 0, 2, gamma);
+			test_val = minimax(*sabotage_board, depth-1, false, gamma);
+			test_val = max(bestValue, test_val);
 		}
-
 		return bestValue;
 	}
 	else
@@ -53,7 +70,22 @@ int minimax(Board board, int depth, bool maximizingPlayer)
 		vector<int> maxNeighbors = board.getChildrenIndices(0);
 		for(vector<int>::iterator it = maxNeighbors.begin(); it!=maxNeighbors.end(); ++it)
 		{
-			
+			int test_val;
+
+			Board* paraDrop_board = new Board(board);
+			paraDrop_board->makeMove(*it, 1, 0, gamma);//fourth param is gamma, any double will work
+			test_val = minimax(*paraDrop_board, depth-1, true, gamma);
+			test_val = max(bestValue, test_val);
+
+			Board* deathBlitz_board = new Board(board);
+			deathBlitz_board->makeMove(*it, 1, 1, gamma);//fourth param is gamma, any double will work
+			test_val = minimax(*deathBlitz_board, depth-1, true, gamma);
+			test_val = max(bestValue, test_val);
+
+			Board* sabotage_board = new Board(board);
+			sabotage_board->makeMove(*it, 1, 2, gamma);
+			test_val = minimax(*sabotage_board, depth-1, true, gamma);
+			test_val = max(bestValue, test_val);
 		}
 
 		return bestValue;
