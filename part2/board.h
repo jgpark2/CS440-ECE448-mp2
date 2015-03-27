@@ -24,8 +24,10 @@ class Board {
 		void deathBlitz(char i_column, int row, std::string playerName);
 		void sabotage(char i_column, int row, std::string playerName, double gamma);
 		int getPlayerScore(std::string playerName);
+		int getPlayerScore(int playerID);
 		int findHighestUnclaimedSquare();
 		bool isBoardFull();
+		std::vector<int> getChildrenIndices(int playerID);
 
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		

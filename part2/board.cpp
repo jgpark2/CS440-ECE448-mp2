@@ -77,6 +77,21 @@ int Board::getPlayerScore(string playerName)
 	return -1;
 }
 
+int Board::getPlayerScore(int playerID)
+{
+	int last_player=-1;
+	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	{	
+		if( (it)->first == playerID)
+		{	
+			return ((it)->second).first;
+		}
+		last_player=(it)->first;
+	}
+	cerr << "Error: Invalid playerID for getPlayerScore. Please add another "<< playerID - last_player <<" players." <<  endl;
+	return -1;	
+}
+
 void Board::addPlayer(string playerName)
 {
 	int counter = -1; //Unassigned is a default player
@@ -694,4 +709,44 @@ bool Board::isBoardFull()
 		}
 	}
 	return true;
+}
+
+vector<int> Board::getChildrenIndices(int playerID)
+{
+	vector<int> indices;
+	int counter = 0;
+	//search the board for matching playerid
+	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	{	
+		//for every board location occupied by playerID
+		if( (it)->first == playerID)
+		{	
+			//check to see if there are unoccupied neighbors
+			int up_index = counter-6;
+			if(up_index >= 0 && board[up_index].second==-1)
+			{
+				indices.push_back(up_index);
+			}
+
+			int right_index = counter+1;
+			if(right_index < 36 && board[right_index].second==-1)
+			{
+				indices.push_back(right_index);
+			}
+
+			int down_index = counter+6;
+			if(down_index < 36 && board[down_index].second==-1)
+			{
+				indices.push_back(down_index);
+			}
+
+			int left_index = counter-1;
+			if(left_index >=0 && board[left_index].second==-1)
+			{
+				indices.push_back(left_index);
+			}
+		}
+		counter++;
+	}
+	return indices;
 }
