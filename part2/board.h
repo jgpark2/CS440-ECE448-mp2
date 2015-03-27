@@ -25,6 +25,7 @@ class Board {
 		void sabotage(char i_column, int row, std::string playerName, double gamma);
 		int getPlayerScore(std::string playerName);
 		int findHighestUnclaimedSquare();
+		bool isBoardFull();
 
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		

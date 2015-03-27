@@ -682,3 +682,16 @@ int Board::findHighestUnclaimedSquare()
 	}
 	return maxScoreLocation;
 }
+
+bool Board::isBoardFull()
+{
+	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
+	{
+		//if claimed
+		if( it->second!=-1)
+		{
+			return false;
+		}
+	}
+	return true;
+}
