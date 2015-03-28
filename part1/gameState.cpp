@@ -3,6 +3,10 @@
 #include <stdexcept>      // std::out_of_range
 #include <vector>         // std::vector
 #include <algorithm>    // std::find
+#include <limits>
+#include <stdio.h>
+#include <queue>
+#include <functional>
 
 using namespace std;
 
@@ -10,17 +14,23 @@ using namespace std;
  * Main constructor. Due to GameState copy constructor, this should ideally only be called once
  * for the root (empty gamestate), and have all other nodes build off of this via assign(...)
  */
-GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget) {
+GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, char mode) {
 	this->cmin = cmin;
 	this->cmax = cmax;
-	maxSemester = courses.size()-1; //SemesterID starts at 0 (hence, -1)
+	maxSemesterID = courses.size()-1; //SemesterID starts at 0 (hence, -1)
 	totalBudget = budget; //remaining budget after assigning current semester classes
-	
+
+	this->mode = mode;
+		
 	parent = NULL;
+	childrenCount = 0;
 	
 	setCoursesFromVector(courses);
-		
+	
 	//updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate
+	
+	for(int i=0; i<=maxSemesterID; ++i)
+		semesters.push_back(new Semester(i));
 }
 
 /*
@@ -33,8 +43,13 @@ GameState::GameState(GameState const &gs){
 	setCoursesFromVector(gs.courseList);
 	cmin = gs.cmin;
 	cmax = gs.cmax;
-	maxSemester = gs.maxSemester;
+	maxSemesterID = gs.maxSemesterID;
 	totalBudget = gs.totalBudget;
+	mode = gs.mode;
+	
+	
+	for(int i=0; i<=maxSemesterID; ++i)
+		semesters.push_back(new Semester(i));
 }
 
 void GameState::updateAssignment() {
@@ -46,6 +61,9 @@ void GameState::updateAssignment() {
 		if (courseList[i]->semesterID!=-1) {
 			//map.operator[] declares value automatically on nonexistent keys
 			(assignment[courseList[i]->semesterID]).push_back(courseList[i]);
+			
+			//Semester crp
+			semesters[courseList[i]->semesterID]->addCourse(courseList[i]);
 		}
 	}
 }
@@ -56,7 +74,11 @@ GameState::~GameState() {
 		delete courseList[i];
 	}
 
-	//TODO:Do we have to delete assignment vectors itself at each semesterID index?
+	//Delete all semester...
+	for(int i=0; i<=maxSemesterID; ++i)
+		delete semesters[i];
+	
+	//Do we have to delete assignment vectors itself at each semesterID index?
 }
 
 /*
@@ -80,6 +102,12 @@ GameState* GameState::assign(int assignCourseID, int assignSemester) {
 	
 	children.push_back(child);
 	child->parent = this;
+	child->childrenCount = 0;
+	GameState* counterProp = this;
+	while(counterProp!=NULL) {
+		counterProp->childrenCount++;
+		counterProp = counterProp->parent;
+	}
 	
 	//Make assignment
 	if (child->courseList[assignCourseID-1]->semesterID==-1) {
@@ -117,7 +145,7 @@ bool GameState::isSolution() {
 	
 	if(!isValid()) //Must be checked first
 		return false;
-	
+		
 	if (!checkCmin())
 		return false;
 	
@@ -174,6 +202,9 @@ bool GameState::isValid() {
 				return false;
 			}
 			
+			if (mode=='A')
+				continue; //Mode A ignores budget and price
+				
 			//BUDGET
 			//Find price for given semester type
 			if ((*it_inner)->semesterID % 2 ==0) //If FALL
@@ -192,11 +223,17 @@ bool GameState::isValid() {
 }
 
 bool GameState::prereqSatisfied() {
+	// Amongst actual function that this is intended for, below also includes a strong prereq *valid* check. This should ideally be in isValid to minimize node expansions, but we couldn't fit it there...
 	for(unsigned int c = 0; c < courseList.size(); ++c) {
+		if (!(courseList[c]->interesting) && (courseList[c]->semesterID<0)) {
+			//Non-needed courses' prereqs need not be checked, unless we actually used this as a filler...
+			continue;
+		}
+			
 		for(unsigned int i = 0; i < courseList[c]->prereqList.size(); ++i)
 		{
 			int prereqID = courseList[c]->prereqList[i];
-			if(courseList[prereqID]->semesterID == -1) { //Doesn't neccessarily have eto check for integrity since validPrereqs already checks it
+			if(courseList[prereqID-1]->semesterID == -1) { //Doesn't neccessarily have to check for integrity since validPrereqs already checks it
 				return false;
 			}
 		}
@@ -205,11 +242,16 @@ bool GameState::prereqSatisfied() {
 	return true;
 }
 
-//Only checks if assigned prereqs so far are valid to begin with
+//Only checks if an assigned course & its *assigned* prereqs are valid
 bool GameState::validPrereqs(Course* course) {
-	
+	if(course->semesterID==0 && course->prereqList.size()>0)
+		return false; //shortcircuit: you cant have this on first semester if there's prereqs
+		
 	for(unsigned int i = 0; i < course->prereqList.size(); ++i)
 	{
+		if(courseList[course->prereqList[i]-1]->semesterID==-1) //Need to skip yet-to-be-assigned...
+			continue;
+		
 		if(courseList[course->prereqList[i]-1]->semesterID >= course->semesterID) {
 			//cout << course->courseID << " taken before " << courseList[course->prereqList[i]-1]->courseID << "!?" << endl;//////////////////////////////////
 			return false;
@@ -240,6 +282,7 @@ int GameState::semesterCredit(int semesterID) {
 
 void GameState::printState()
 {
+	/* PRETTY DEBUG PRINTS */
 	//print the map
 	if(assignment.empty()) {
 		cout << "There are no assignments" << endl;
@@ -247,6 +290,7 @@ void GameState::printState()
 	}
 	
 	int printBudget = totalBudget;
+	int curSem = 0;
 	
 	//for each semester in the map
 	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
@@ -256,9 +300,8 @@ void GameState::printState()
 		else cout<<" SPRING\t";
 		
 		cout<<"("<<(it->second).size()<<" classes) Credits Taken: "<< semesterCredit(it->first)<<"\t";
-		int tempBudget = 0;
-		cout<<"Budget Change: "<<printBudget<<"->"<<"TODO:"<<endl;
-		printBudget = tempBudget;
+		cout<<"Budget Change: "<<printBudget<<"->"<< (printBudget-semesters[curSem]->budget) << "(Used: " << semesters[curSem]->budget << ")"<<endl;
+		printBudget -= semesters[curSem]->budget;
 		
 		vector<Course*> assignedList = it->second;
 		//for each course
@@ -275,13 +318,132 @@ void GameState::printState()
 			cout << "\thours: " << assignedList[i]->credit << endl;
 			cout << endl;
 		}
+		curSem++;
 	}
+	
+	
+	/* FINAL PRINTS AS PRE MP2 SPECS */
+	cout << "FINAL: " << endl;
+	cout << totalBudget-printBudget << " " << curSem << endl;
+	
+	for(int i=0; i<curSem; i++) {
+		cout << semesters[i]->courses.size() << " ";
+		for (vector<Course*>::iterator it=semesters[i]->courses.begin(); it != semesters[i]->courses.end(); it++)
+			cout << (*it)->courseID << " ";
+		cout << endl;
+	}
+	
+	for(int i=0; i<curSem; i++) {
+		cout << semesters[i]->budget << " ";
+	}
+	cout << endl;
 }
 
 int GameState::mostConstrainedCourse() {
+	//Reset RANK...
+	/*for(unsigned int i=0; i<courseList.size(); ++i) {
+		courseList[i]->constrained_rank = 0;
+	}*/
+	
+	//Calculate RANK
 	for(unsigned int i=0; i<courseList.size(); ++i) {
-		if((courseList[i]->semesterID)==-1)
-			return courseList[i]->courseID;
+		if(courseList[i]->interesting) {
+			courseList[i]->constrained_rank += 30;
+			amplifyRank(courseList[i]->prereqList, 1);
+		}
+		else {
+			amplifyRankMini(courseList[i]->prereqList, 0);
+		}
 	}
-	return -1;
+	
+	//Find max rank...
+	int courseID = -1;
+	int maxReqRank = -1;
+	
+	for(unsigned int i=0; i<courseList.size(); ++i) {
+		if (courseList[i]->semesterID!=-1)
+			continue;
+			
+		if (courseList[i]->constrained_rank > maxReqRank) {
+			courseID = i+1; //COURSEID STARTS AT 1
+			maxReqRank = courseList[i]->constrained_rank;
+		}
+		
+	}
+	
+	//if (courseID!=-1)////////////////////
+	//	cout<<"MOST CONST: " << courseID << "   ";	////////////////
+	
+	return courseID;
+}
+
+void GameState::amplifyRank(vector<int> prereq, int depth) {
+	if(prereq.size()==0)
+		return;
+		
+	depth++;
+	
+	for(unsigned int i=0; i<prereq.size(); ++i) {
+		courseList[prereq[i]-1]->constrained_rank += depth*30;
+		amplifyRank(courseList[prereq[i]-1]->prereqList, depth);
+	}
+	
+	return;
+}
+
+void GameState::amplifyRankMini(vector<int> prereq, int depth) {
+	if(prereq.size()==0)
+		return;
+		
+	depth++;
+	
+	for(unsigned int i=0; i<prereq.size(); ++i) {
+		courseList[prereq[i]-1]->constrained_rank += depth;
+		amplifyRankMini(courseList[prereq[i]-1]->prereqList, depth);
+	}
+	
+	return;
+}
+
+vector<int> GameState::leastConstrainingValues(int courseID) {
+
+	if (mode=='B' || mode=='C') {
+	}
+	
+	//MODE A
+	/*for(int j=0; j<=maxSemesterID; ++j) {
+		semesters[j]->visited_flag = false;
+	}*/
+	
+	//Return list of semesterIDs, sorted from least constraining to most constraining
+	vector<int> semesterIDs;
+	
+	while (semesterIDs.size() <= (unsigned int) maxSemesterID) {
+		//While semesterIDs isn't fully populated...
+		
+		int leastConstraint = std::numeric_limits<int>::max();
+		int leastSemester = -1;
+		
+		//Find the next least Semester
+		for(int j=0; j<= maxSemesterID; ++j) {
+			if (!(semesters[j]->visited_flag)) {
+				int weight = semesters[j]->credit + courseList[courseID-1]->credit - cmin;
+			
+				if (weight<0)
+					weight=-weight;//*=-(cmax-cmin+1);
+				else if (weight>cmax-cmin)
+					weight=std::numeric_limits<int>::max();
+			
+				if ( weight < leastConstraint) {
+					leastConstraint = weight;
+					leastSemester = j;
+				}
+			}
+		}
+		
+		semesters[leastSemester]->visited_flag = true;
+		semesterIDs.push_back(semesters[leastSemester]->semesterID);
+	}
+	
+	return semesterIDs;
 }

@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 
 #include "course.h"
+#include "semester.h"
 #include <vector>
 #include <cstddef>
 #include <map>
@@ -14,7 +15,7 @@ class GameState {
 		//default constructor
 		//A new blank GameState must be defined with a list of Courses. Or it can be copied from an existing GameState.
 		//Thus, there cannot be a default constructor
-		GameState(std::vector<Course*> courseList, int cmin, int cmax, int budget);
+		GameState(std::vector<Course*> courseList, int cmin, int cmax, int budget, char mode);
 		GameState(GameState const &gs);
 		~GameState();
 		
@@ -34,17 +35,23 @@ class GameState {
 		
 		int semesterCredit(int semesterID);
 		void printState();
+		std::vector<int> leastConstrainingValues(int courseID);
 		int mostConstrainedCourse();
+		void amplifyRank(std::vector<int> prereq, int depth);
+		void amplifyRankMini(std::vector<int> prereq, int depth);
 		
-		std::vector<GameState*> children;
+		std::vector<GameState*> children; int childrenCount;
 		std::vector<Course*> courseList;
-		GameState const * parent; //pointer to const GS. You can't modify a parent from a child...
+		GameState * parent; //pointer to const GS.
 		std::map<int, std::vector<Course*> > assignment;
+		
+		std::vector<Semester*> semesters;
 		
 		int cmin;
 		int cmax;
 		int totalBudget;
-		int maxSemester; //Domain of values
+		int maxSemesterID; //Domain of values
+		char mode;
 		//int totalCredit; //total credit of all classes thus far
 		
 };

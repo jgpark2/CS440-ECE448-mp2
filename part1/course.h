@@ -23,13 +23,15 @@ class Course
 		//destructor
 		~Course();
 		
+		void evaluateConstrainedRank();
+		
 		int courseID;
 		int fallPrice;
 		int springPrice;
 		int credit;
 		int semesterID;
-		std::vector <int> prereqList;
-		std::vector <int> is_prereq_for;
+		std::vector <int> prereqList; //Contains COURSEID's (1 based)
+		std::vector <int> is_prereq_for; //Contains COURSEID's (1 based)
 		bool interesting;
 		int constrained_rank;
 		

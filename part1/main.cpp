@@ -4,6 +4,7 @@
 //#include <stdlib.h>
 #include <vector>
 #include "course.h"
+#include "semester.h"
 #include "parse.h"
 #include "gameTree.h"
 #include "gameState.h"
@@ -28,23 +29,33 @@ GameState* recursiveBack(GameState* node)
 		return NULL;
 
 	//Try different values to assign to variable (semesterID starts at 0)
-	for(int semesterID = 0; semesterID <= node->maxSemester; ++semesterID ) {
-		GameState* assignment = node->assign(courseID, semesterID);
-		//cout<<"assigning "<<courseID<<":"<<semesterID<<"...";//////////////////////////////////
+	vector<int> semesterIDCandidates = node->leastConstrainingValues(courseID);
+				/*for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i )
+				cout<<semesterIDCandidates[i]<<",";
+				cout<< endl;*/
+	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
+	//for(int i = 0; i <= node->maxSemesterID; ++i ) {
+		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
+		//cout<<"assigning "<<courseID<<":"<<semesterIDCandidates[i]<<"...";//////////////////////////////////
 		
-		if (assignment==NULL) //Probably exhausted all variables
+		if (assignment==NULL) {//Probably exhausted all variables
+			cout<<";";//////////////
 			return NULL;
+		}
 			
 		GameState* result = NULL;
 		if (assignment->isValid()) {
-			//cout<<" ...was valid";//////////////////////////////////
+			cout<<">";//////////////////////////////////
 			result = recursiveBack(assignment);
 		}
 		
-		if (result != NULL)
+		if (result != NULL) {
+			cout<<"!";//////////////
 			return result;
+		}
 	}
 
+	cout<<";";//////////////
 	return NULL;
 }
 
@@ -54,7 +65,7 @@ int main(int argc, char* argv[])
 
 	if (argc!=3) 
 	{
-		cout << "Error, usage: ./mp2 [search flag] [scenario file name]" << endl;
+		cout << "Error, usage: ./mp2 <task A,B,C> <scenario file>" << endl;
 		return 1;
 	}
 	
@@ -63,10 +74,27 @@ int main(int argc, char* argv[])
 	
 	switch(mode)
 	{
-		default:
-			cout << "Search flag mode: " << mode << endl;
+		case 'a':
+		case 'A':
+			mode = 'A';
 			break;
+			
+		case 'b':
+		case 'B':
+			mode = 'B';
+			break;
+			
+		case 'c':
+		case 'C':
+			mode = 'C';
+			break;
+			
+		default:
+			mode = 'A';
+			cout << "Invalid task mode. Defaulting to A" << endl;
 	}
+	
+	cout << "Task mode: " << mode << endl;
 
 	Parse* p = new Parse();
 	p->parseCourses(scenario);
@@ -83,7 +111,7 @@ int main(int argc, char* argv[])
 	cout << " Budget: " << budget;
 	cout << endl;
 
-	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget));
+	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget, mode));
 	
 	GameState* solution = recursiveBack(tree->root);
 	if (solution == NULL) {
@@ -93,6 +121,7 @@ int main(int argc, char* argv[])
 	
 	cout << "Solution found: " << endl;
 	solution->printState();
+	cout << "Nodes Expanded: " << tree->root->childrenCount+1 << endl;
 
 	return 0;
 }
