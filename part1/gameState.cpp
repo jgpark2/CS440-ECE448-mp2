@@ -341,14 +341,14 @@ void GameState::printState()
 
 int GameState::mostConstrainedCourse() {
 	//Reset RANK...
-	for(unsigned int i=0; i<courseList.size(); ++i) {
+	/*for(unsigned int i=0; i<courseList.size(); ++i) {
 		courseList[i]->constrained_rank = 0;
-	}
+	}*/
 	
 	//Calculate RANK
 	for(unsigned int i=0; i<courseList.size(); ++i) {
 		if(courseList[i]->interesting) {
-			courseList[i]->constrained_rank += 10;
+			courseList[i]->constrained_rank += 30;
 			amplifyRank(courseList[i]->prereqList, 1);
 		}
 		else {
@@ -359,7 +359,6 @@ int GameState::mostConstrainedCourse() {
 	//Find max rank...
 	int courseID = -1;
 	int maxReqRank = -1;
-	int leastOfLeast= std::numeric_limits<int>::max();
 	
 	for(unsigned int i=0; i<courseList.size(); ++i) {
 		if (courseList[i]->semesterID!=-1)
@@ -368,54 +367,9 @@ int GameState::mostConstrainedCourse() {
 		if (courseList[i]->constrained_rank > maxReqRank) {
 			courseID = i+1; //COURSEID STARTS AT 1
 			maxReqRank = courseList[i]->constrained_rank;
-		}/*
-		else if ( courseList[i]->constrained_rank == maxReqRank) {
-			//cheap: tie breakers, assuming tie breakers are uninteresting courses to some degree
-			//we can then assume all important courses have been assigned already, and we're mostlye tiebreaking only to get filler courses.
-			//so we can use the *biggest credit courses* first.
-			if (courseID == -1)
-				courseID = i+1;
-			else if (courseList[courseID-1]->credit < courseList[i]->credit)
-				courseID = i+1;
-		}*/
-		else if ( courseList[i]->constrained_rank == maxReqRank) {
-			//Tie breakers must be done via who "best-fits" in the cmin~cmax window most for the "lowest unfulfilled semester"... BUT MUST TAKE INTO ACCOUNT PREREQS
-			int leastSem = -1;
-			int least = std::numeric_limits<int>::max();
-			for(int j=0; j<= maxSemesterID; ++j) {
-				if (semesters[j]->credit >= cmin)
-					continue;
-				
-				int real_credit = courseList[i]->credit;
-				for(unsigned int x=0; x<courseList[i]->prereqList.size(); x++) {
-					real_credit+=courseList[courseList[i]->prereqList[x]-1]->credit;
-				}
-				
-				int weight = semesters[j]->credit + real_credit -cmin;
-				
-				if (weight<0)
-					weight=-weight;//*=-(cmax-cmin+1);
-				else if (weight>cmax-cmin)
-					weight=std::numeric_limits<int>::max();
-			
-				if (weight < least) {
-					least = weight;
-					leastSem = j;
-				}
-			}
-			
-			if (leastSem==-1)
-				continue;//FUCK
-			
-			if(least<leastOfLeast) {
-				leastOfLeast = least;
-				courseID=i+1;
-			}
 		}
 		
-		
 	}
-	
 	
 	//if (courseID!=-1)////////////////////
 	//	cout<<"MOST CONST: " << courseID << "   ";	////////////////
@@ -430,7 +384,7 @@ void GameState::amplifyRank(vector<int> prereq, int depth) {
 	depth++;
 	
 	for(unsigned int i=0; i<prereq.size(); ++i) {
-		courseList[prereq[i]-1]->constrained_rank += depth*10;
+		courseList[prereq[i]-1]->constrained_rank += depth*30;
 		amplifyRank(courseList[prereq[i]-1]->prereqList, depth);
 	}
 	
@@ -453,84 +407,13 @@ void GameState::amplifyRankMini(vector<int> prereq, int depth) {
 
 vector<int> GameState::leastConstrainingValues(int courseID) {
 
-	/*if (mode=='B' || mode=='C') {
-		//Return list of semesterIDs, sorted from cheapest to most expensive
-		vector<int> semesterIDs;
-		bool fallCheap = false;
-	
-		if (courseList[courseID-1]->fallPrice < courseList[courseID-1]->springPrice) 
-			fallCheap = true;
-		
-		int faBrk=maxSemesterID;
-		int spBrk=maxSemesterID;
-		//INCLUDE LOGIC: cant do a sem w/o finishing prev sem first;
-		
-		if (fallCheap) {
-			for(int i=0; i<=maxSemesterID; i+=2) {
-				if (semesters[i]->credit>=cmax)
-					continue;
-				
-				if (assignment[i].size()==0) {
-					faBrk = i;
-					break;
-				}
-					
-				semesterIDs.push_back(i);
-			}
-			
-			for(int i=1; i<=maxSemesterID; i+=2) {
-				if (semesters[i]->credit>=cmax)
-					continue;
-				
-				if (assignment[i].size()==0) {
-					spBrk = i;
-					break;
-				}
-					
-				semesterIDs.push_back(i);
-			}
-			
-			semesterIDs.push_back(faBrk);
-			semesterIDs.push_back(spBrk);
-		}
-		else {
-			for(int i=1; i<=maxSemesterID; i+=2) {
-				if (semesters[i]->credit>=cmax)
-					continue;
-				
-				if (assignment[i].size()==0) {
-					spBrk = i;
-					break;
-				}
-					
-				semesterIDs.push_back(i);
-			}
-			
-			for(int i=0; i<=maxSemesterID; i+=2) {
-				if (semesters[i]->credit>=cmax)
-					continue;
-				
-				if (assignment[i].size()==0) {
-					faBrk = i;
-					break;
-				}
-					
-				semesterIDs.push_back(i);
-			}
-			
-			semesterIDs.push_back(spBrk);
-			semesterIDs.push_back(faBrk);
-		}
-	
-	return semesterIDs;
+	if (mode=='B' || mode=='C') {
 	}
-	*/
+	
 	//MODE A
-	
-	
-	for(int j=0; j<=maxSemesterID; ++j) {
+	/*for(int j=0; j<=maxSemesterID; ++j) {
 		semesters[j]->visited_flag = false;
-	}
+	}*/
 	
 	//Return list of semesterIDs, sorted from least constraining to most constraining
 	vector<int> semesterIDs;

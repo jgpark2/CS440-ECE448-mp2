@@ -36,7 +36,7 @@ GameState* recursiveBack(GameState* node)
 	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
 	//for(int i = 0; i <= node->maxSemesterID; ++i ) {
 		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
-		cout<<"assigning "<<courseID<<":"<<semesterIDCandidates[i]<<"...";//////////////////////////////////
+		//cout<<"assigning "<<courseID<<":"<<semesterIDCandidates[i]<<"...";//////////////////////////////////
 		
 		if (assignment==NULL) {//Probably exhausted all variables
 			cout<<";";//////////////
