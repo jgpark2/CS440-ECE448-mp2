@@ -30,27 +30,32 @@ GameState* recursiveBack(GameState* node)
 
 	//Try different values to assign to variable (semesterID starts at 0)
 	vector<int> semesterIDCandidates = node->leastConstrainingValues(courseID);
-				for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i )
+				/*for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i )
 				cout<<semesterIDCandidates[i]<<",";
-				cout<< endl;
+				cout<< endl;*/
 	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
-	//for(int i = 0; i <= node->maxSemester; ++i ) {
+	//for(int i = 0; i <= node->maxSemesterID; ++i ) {
 		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
-		//cout<<"assigning "<<courseID<<":"<<semesterID<<"...";//////////////////////////////////
+		cout<<"assigning "<<courseID<<":"<<semesterIDCandidates[i]<<"...";//////////////////////////////////
 		
-		if (assignment==NULL) //Probably exhausted all variables
+		if (assignment==NULL) {//Probably exhausted all variables
+			cout<<";";//////////////
 			return NULL;
+		}
 			
 		GameState* result = NULL;
 		if (assignment->isValid()) {
-			//cout<<" ...was valid";//////////////////////////////////
+			cout<<">";//////////////////////////////////
 			result = recursiveBack(assignment);
 		}
 		
-		if (result != NULL)
+		if (result != NULL) {
+			cout<<"!";//////////////
 			return result;
+		}
 	}
 
+	cout<<";";//////////////
 	return NULL;
 }
 
@@ -116,6 +121,7 @@ int main(int argc, char* argv[])
 	
 	cout << "Solution found: " << endl;
 	solution->printState();
+	cout << "Nodes Expanded: " << tree->root->childrenCount+1 << endl;
 
 	return 0;
 }

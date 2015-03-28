@@ -4,11 +4,9 @@
 using namespace std;
 
 //default constructor
-Semester::Semester(int semesterID, Semester* prev, Semester* next) {
+Semester::Semester(int semesterID) {
 	(this->courses).clear();
 	this->semesterID = semesterID;
-	this->prev = prev;
-	this->next = next;
 	budget = 0;
 	credit = 0; //Current credit taken
 	visited_flag = false;

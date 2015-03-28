@@ -5,6 +5,8 @@
 #include <algorithm>    // std::find
 #include <limits>
 #include <stdio.h>
+#include <queue>
+#include <functional>
 
 using namespace std;
 
@@ -21,18 +23,14 @@ GameState::GameState(vector<Course*> courses, int cmin, int cmax, int budget, ch
 	this->mode = mode;
 		
 	parent = NULL;
+	childrenCount = 0;
 	
 	setCoursesFromVector(courses);
 	
 	//updateAssignment(); //Unnecessary if caller uses this only for an empty gamestate
 	
-	semesterHead = new Semester(0,NULL,NULL);
-	Semester* temp = semesterHead;
-	for(int i=1; i<=maxSemesterID; ++i) {
-		temp->next = new Semester(i,NULL,NULL);
-		temp->next->prev = temp;
-		temp = temp->next;
-	}
+	for(int i=0; i<=maxSemesterID; ++i)
+		semesters.push_back(new Semester(i));
 }
 
 /*
@@ -49,13 +47,9 @@ GameState::GameState(GameState const &gs){
 	totalBudget = gs.totalBudget;
 	mode = gs.mode;
 	
-	semesterHead = new Semester(0,NULL,NULL);
-	Semester* temp = semesterHead;
-	for(int i=1; i<=maxSemesterID; ++i) {
-		temp->next = new Semester(i,NULL,NULL);
-		temp->next->prev = temp;
-		temp = temp->next;
-	}
+	
+	for(int i=0; i<=maxSemesterID; ++i)
+		semesters.push_back(new Semester(i));
 }
 
 void GameState::updateAssignment() {
@@ -69,10 +63,7 @@ void GameState::updateAssignment() {
 			(assignment[courseList[i]->semesterID]).push_back(courseList[i]);
 			
 			//Semester crp
-			Semester* temp = semesterHead;
-			for(int j=0; j<courseList[i]->semesterID; ++j)
-				temp = temp->next;
-			temp->addCourse(courseList[i]);
+			semesters[courseList[i]->semesterID]->addCourse(courseList[i]);
 		}
 	}
 }
@@ -83,15 +74,9 @@ GameState::~GameState() {
 		delete courseList[i];
 	}
 
-
-	//Delete all chain of pointers to semester...
-	Semester* temp_old = semesterHead;
-	Semester* temp;
-	while (temp!=NULL) {
-		temp=temp_old->next;
-		delete temp_old;
-		temp_old = temp;
-	}
+	//Delete all semester...
+	for(int i=0; i<=maxSemesterID; ++i)
+		delete semesters[i];
 	
 	//Do we have to delete assignment vectors itself at each semesterID index?
 }
@@ -117,6 +102,12 @@ GameState* GameState::assign(int assignCourseID, int assignSemester) {
 	
 	children.push_back(child);
 	child->parent = this;
+	child->childrenCount = 0;
+	GameState* counterProp = this;
+	while(counterProp!=NULL) {
+		counterProp->childrenCount++;
+		counterProp = counterProp->parent;
+	}
 	
 	//Make assignment
 	if (child->courseList[assignCourseID-1]->semesterID==-1) {
@@ -299,7 +290,7 @@ void GameState::printState()
 	}
 	
 	int printBudget = totalBudget;
-	Semester* curSem = semesterHead;
+	int curSem = 0;
 	
 	//for each semester in the map
 	for(map<int, vector<Course*> >::const_iterator it = assignment.begin(); it!=assignment.end(); ++it) {
@@ -309,8 +300,8 @@ void GameState::printState()
 		else cout<<" SPRING\t";
 		
 		cout<<"("<<(it->second).size()<<" classes) Credits Taken: "<< semesterCredit(it->first)<<"\t";
-		cout<<"Budget Change: "<<printBudget<<"->"<< (printBudget-curSem->budget) << "(Used: " << curSem->budget << ")"<<endl;
-		printBudget -= curSem->budget;
+		cout<<"Budget Change: "<<printBudget<<"->"<< (printBudget-semesters[curSem]->budget) << "(Used: " << semesters[curSem]->budget << ")"<<endl;
+		printBudget -= semesters[curSem]->budget;
 		
 		vector<Course*> assignedList = it->second;
 		//for each course
@@ -327,26 +318,23 @@ void GameState::printState()
 			cout << "\thours: " << assignedList[i]->credit << endl;
 			cout << endl;
 		}
-		curSem = curSem->next;
+		curSem++;
 	}
 	
 	
 	/* FINAL PRINTS AS PRE MP2 SPECS */
-	cout << "FINAL:" << endl;
-	cout << totalBudget-printBudget << " " << curSem->semesterID << endl;
-	Semester* tempSem = semesterHead;
-	while(tempSem->courses.size()!=0) {
-		cout << tempSem->courses.size() << " ";
-		for (vector<Course*>::iterator it=tempSem->courses.begin(); it != tempSem->courses.end(); it++)
+	cout << "FINAL: " << endl;
+	cout << totalBudget-printBudget << " " << curSem << endl;
+	
+	for(int i=0; i<curSem; i++) {
+		cout << semesters[i]->courses.size() << " ";
+		for (vector<Course*>::iterator it=semesters[i]->courses.begin(); it != semesters[i]->courses.end(); it++)
 			cout << (*it)->courseID << " ";
 		cout << endl;
-		tempSem = tempSem->next;
 	}
 	
-	tempSem = semesterHead;
-	while(tempSem->courses.size()!=0) {
-		cout << tempSem->budget << " ";
-		tempSem = tempSem->next;
+	for(int i=0; i<curSem; i++) {
+		cout << semesters[i]->budget << " ";
 	}
 	cout << endl;
 }
@@ -363,6 +351,9 @@ int GameState::mostConstrainedCourse() {
 			courseList[i]->constrained_rank += 10;
 			amplifyRank(courseList[i]->prereqList, 1);
 		}
+		else {
+			amplifyRankMini(courseList[i]->prereqList, 0);
+		}
 	}
 	
 	//Find max rank...
@@ -371,33 +362,49 @@ int GameState::mostConstrainedCourse() {
 	int leastOfLeast= std::numeric_limits<int>::max();
 	
 	for(unsigned int i=0; i<courseList.size(); ++i) {
-		if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank > maxReqRank) {
+		if (courseList[i]->semesterID!=-1)
+			continue;
+			
+		if (courseList[i]->constrained_rank > maxReqRank) {
 			courseID = i+1; //COURSEID STARTS AT 1
 			maxReqRank = courseList[i]->constrained_rank;
-		}
-		else if ( courseList[i]->semesterID==-1 && courseList[i]->constrained_rank == maxReqRank) {
-			//Tie breakers must be done via who "best-fits" in the cmin~cmax window most for the "lowest unfulfilled semester"
-			Semester* temp = semesterHead;
-			Semester* leastSem = NULL;
+		}/*
+		else if ( courseList[i]->constrained_rank == maxReqRank) {
+			//cheap: tie breakers, assuming tie breakers are uninteresting courses to some degree
+			//we can then assume all important courses have been assigned already, and we're mostlye tiebreaking only to get filler courses.
+			//so we can use the *biggest credit courses* first.
+			if (courseID == -1)
+				courseID = i+1;
+			else if (courseList[courseID-1]->credit < courseList[i]->credit)
+				courseID = i+1;
+		}*/
+		else if ( courseList[i]->constrained_rank == maxReqRank) {
+			//Tie breakers must be done via who "best-fits" in the cmin~cmax window most for the "lowest unfulfilled semester"... BUT MUST TAKE INTO ACCOUNT PREREQS
+			int leastSem = -1;
 			int least = std::numeric_limits<int>::max();
 			for(int j=0; j<= maxSemesterID; ++j) {
-				if (temp->credit >= cmin)
+				if (semesters[j]->credit >= cmin)
 					continue;
-					
-				int weight = temp->credit+courseList[i]->credit-cmin;
+				
+				int real_credit = courseList[i]->credit;
+				for(unsigned int x=0; x<courseList[i]->prereqList.size(); x++) {
+					real_credit+=courseList[courseList[i]->prereqList[x]-1]->credit;
+				}
+				
+				int weight = semesters[j]->credit + real_credit -cmin;
 				
 				if (weight<0)
-					weight*=-(cmax-cmin+1);
+					weight=-weight;//*=-(cmax-cmin+1);
 				else if (weight>cmax-cmin)
 					weight=std::numeric_limits<int>::max();
 			
 				if (weight < least) {
 					least = weight;
-					leastSem = temp;
+					leastSem = j;
 				}
-				temp = temp->next;
 			}
-			if (leastSem==NULL)
+			
+			if (leastSem==-1)
 				continue;//FUCK
 			
 			if(least<leastOfLeast) {
@@ -405,11 +412,13 @@ int GameState::mostConstrainedCourse() {
 				courseID=i+1;
 			}
 		}
+		
+		
 	}
 	
 	
-	if (courseID!=-1)////////////////////
-		cout<<"MOST CONST: " << courseID << "   ";	////////////////
+	//if (courseID!=-1)////////////////////
+	//	cout<<"MOST CONST: " << courseID << "   ";	////////////////
 	
 	return courseID;
 }
@@ -428,12 +437,99 @@ void GameState::amplifyRank(vector<int> prereq, int depth) {
 	return;
 }
 
-vector<int> GameState::leastConstrainingValues(int courseID) {
+void GameState::amplifyRankMini(vector<int> prereq, int depth) {
+	if(prereq.size()==0)
+		return;
+		
+	depth++;
 	
-	Semester* semPtr = semesterHead;
+	for(unsigned int i=0; i<prereq.size(); ++i) {
+		courseList[prereq[i]-1]->constrained_rank += depth;
+		amplifyRankMini(courseList[prereq[i]-1]->prereqList, depth);
+	}
+	
+	return;
+}
+
+vector<int> GameState::leastConstrainingValues(int courseID) {
+
+	/*if (mode=='B' || mode=='C') {
+		//Return list of semesterIDs, sorted from cheapest to most expensive
+		vector<int> semesterIDs;
+		bool fallCheap = false;
+	
+		if (courseList[courseID-1]->fallPrice < courseList[courseID-1]->springPrice) 
+			fallCheap = true;
+		
+		int faBrk=maxSemesterID;
+		int spBrk=maxSemesterID;
+		//INCLUDE LOGIC: cant do a sem w/o finishing prev sem first;
+		
+		if (fallCheap) {
+			for(int i=0; i<=maxSemesterID; i+=2) {
+				if (semesters[i]->credit>=cmax)
+					continue;
+				
+				if (assignment[i].size()==0) {
+					faBrk = i;
+					break;
+				}
+					
+				semesterIDs.push_back(i);
+			}
+			
+			for(int i=1; i<=maxSemesterID; i+=2) {
+				if (semesters[i]->credit>=cmax)
+					continue;
+				
+				if (assignment[i].size()==0) {
+					spBrk = i;
+					break;
+				}
+					
+				semesterIDs.push_back(i);
+			}
+			
+			semesterIDs.push_back(faBrk);
+			semesterIDs.push_back(spBrk);
+		}
+		else {
+			for(int i=1; i<=maxSemesterID; i+=2) {
+				if (semesters[i]->credit>=cmax)
+					continue;
+				
+				if (assignment[i].size()==0) {
+					spBrk = i;
+					break;
+				}
+					
+				semesterIDs.push_back(i);
+			}
+			
+			for(int i=0; i<=maxSemesterID; i+=2) {
+				if (semesters[i]->credit>=cmax)
+					continue;
+				
+				if (assignment[i].size()==0) {
+					faBrk = i;
+					break;
+				}
+					
+				semesterIDs.push_back(i);
+			}
+			
+			semesterIDs.push_back(spBrk);
+			semesterIDs.push_back(faBrk);
+		}
+	
+	return semesterIDs;
+	}
+	*/
+	//MODE A
+	
+	
 	for(int j=0; j<=maxSemesterID; ++j) {
-		semPtr->visited_flag = false;
-		semPtr = semPtr->next;
+		semesters[j]->visited_flag = false;
 	}
 	
 	//Return list of semesterIDs, sorted from least constraining to most constraining
@@ -443,29 +539,27 @@ vector<int> GameState::leastConstrainingValues(int courseID) {
 		//While semesterIDs isn't fully populated...
 		
 		int leastConstraint = std::numeric_limits<int>::max();
-		Semester* leastSemester = NULL;
+		int leastSemester = -1;
 		
 		//Find the next least Semester
-		Semester* temp = semesterHead;
 		for(int j=0; j<= maxSemesterID; ++j) {
-			if (!(temp->visited_flag)) {
-				int weight = temp->credit + courseList[courseID-1]->credit - cmin;
+			if (!(semesters[j]->visited_flag)) {
+				int weight = semesters[j]->credit + courseList[courseID-1]->credit - cmin;
 			
 				if (weight<0)
-					weight*=-(cmax-cmin+1);
+					weight=-weight;//*=-(cmax-cmin+1);
 				else if (weight>cmax-cmin)
 					weight=std::numeric_limits<int>::max();
 			
 				if ( weight < leastConstraint) {
 					leastConstraint = weight;
-					leastSemester = temp;
+					leastSemester = j;
 				}
 			}
-			temp = temp->next;
 		}
 		
-		leastSemester->visited_flag = true;
-		semesterIDs.push_back(leastSemester->semesterID);
+		semesters[leastSemester]->visited_flag = true;
+		semesterIDs.push_back(semesters[leastSemester]->semesterID);
 	}
 	
 	return semesterIDs;

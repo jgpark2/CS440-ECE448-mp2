@@ -38,13 +38,14 @@ class GameState {
 		std::vector<int> leastConstrainingValues(int courseID);
 		int mostConstrainedCourse();
 		void amplifyRank(std::vector<int> prereq, int depth);
+		void amplifyRankMini(std::vector<int> prereq, int depth);
 		
-		std::vector<GameState*> children;
+		std::vector<GameState*> children; int childrenCount;
 		std::vector<Course*> courseList;
-		GameState const * parent; //pointer to const GS. You can't modify a parent from a child...
+		GameState * parent; //pointer to const GS.
 		std::map<int, std::vector<Course*> > assignment;
 		
-		Semester* semesterHead;
+		std::vector<Semester*> semesters;
 		
 		int cmin;
 		int cmax;

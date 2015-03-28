@@ -11,12 +11,10 @@ class Semester
 {
 	public:		
 		//default constructor
-		Semester(int semesterID, Semester* prev, Semester* next);
+		Semester(int semesterID);
 		
 		std::vector<Course*> courses;
 		int semesterID;
-		Semester* prev;
-		Semester* next;
 		int budget; //Current budget USED after signing up for *this* semester
 		int credit; //Current credit taken
 		

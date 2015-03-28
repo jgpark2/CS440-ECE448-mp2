@@ -21,7 +21,7 @@ bool GameTree::isEmpty() {
 
 void GameTree::clearTree() {
 	//TODO: free mem -> loop through all nodes and its children and delete them
-	root = NULL;
+	root = NULL; //lol f that
 }
 
 void GameTree::printTree() {
