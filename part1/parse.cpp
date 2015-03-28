@@ -179,26 +179,38 @@ void Parse::parseCourses(string scenario)
 			courses[interesting_courses[i]-1]->interesting = true;
 		}
 
+		//forward checking - populates legal semester assignments for each course's legal_semesters (a vector of ints)
+		for(unsigned int i = 0; i < num_courses; i++)
+		{
+			//queries number of prereqs s.t. legal_assignment's least value in legal_semesters is the number of prereqs (1 prereq, least value is 1)
+			unsigned int least_legal_value = courses[i]->prereqList.size();
+
+			for(unsigned int j = least_legal_value; j < courses.size(); j++)
+			{
+				courses[i]->legal_semesters.push_back(j);
+			}
+		}
+
 
 		for(unsigned int i = 0; i < num_courses; i++)
 		{
 			cout << "Course " << courses[i]->courseID;
-			cout << " Fall price: " << courses[i]->fallPrice;
-			cout << " Spring price: " << courses[i]->springPrice;
-			cout << " Credits: " << courses[i]->credit;
-			cout << " Prerequisites: ";
+			cout << "\tFall price: " << courses[i]->fallPrice;
+			cout << "\tSpring price: " << courses[i]->springPrice;
+			cout << "\tCredits: " << courses[i]->credit;
+			cout << "\tPrerequisites: ";
 			for(unsigned int j = 0; j < courses[i]->prereqList.size(); j++)
 			{
 				cout << courses[i]->prereqList[j] << ", ";
 			}
-			cout << " Is prereq for: ";
+			cout << "\tIs prereq for: ";
 			for(unsigned int j = 0; j < courses[i]->is_prereq_for.size(); j++)
 			{
 				int prereq_index = courses[i]->is_prereq_for[j];
 				Course* temp_ptr = courses[prereq_index];
 				cout << temp_ptr->courseID << ", ";
 			}
-			cout << "Interesting flag: ";
+			cout << "\tInteresting flag: ";
 			if(courses[i]->interesting==true)
 			{
 				cout << "true";
@@ -207,8 +219,10 @@ void Parse::parseCourses(string scenario)
 			{
 				cout << "false";
 			}
+			cout <<"\tLegal Semester assignments: " << courses[i]->legal_semesters[0] << " through " << courses[i]->legal_semesters[(courses[i]->legal_semesters.size())-1] << endl;
 			cout << endl;
 		}
+
 		cout << "There are " << interesting_courses[0] << " interesting courses: ";
 		for(unsigned int j = 1; j < interesting_courses.size(); j++)
 		{

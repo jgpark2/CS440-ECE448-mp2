@@ -9,7 +9,7 @@ Course::Course() {
 	springPrice = 0; //
 	credit = 0; //no hours
 	semesterID = -1;
-	//is_prereq_for = vector<int>();
+	//is_prereq_for = vector<int>();	//vectors are initialized upon declaration
 	interesting = false;
 	constrained_rank = 0;
 }
@@ -28,6 +28,9 @@ Course::Course(int courseID, int fallPrice, int springPrice, int creditHours)
 	this->prereqList = vector<int>();
 	this->interesting = false;
 	this->constrained_rank = 0;
+
+	this->legal_semesters = vector<int>();
+
 	evaluateConstrainedRank();
 }
 
@@ -43,6 +46,8 @@ Course::Course(Course const &other)
 	is_prereq_for = other.is_prereq_for;
 	interesting = other.interesting;
 	constrained_rank = other.constrained_rank;
+
+	legal_semesters = other.legal_semesters;
 }
 
 //destructor

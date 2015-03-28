@@ -35,6 +35,9 @@ class Course
 		bool interesting;
 		int constrained_rank;
 		
+		//forward checking
+		std::vector<int> legal_semesters;
+
 		//map of semesterID's (value domain) to bool (assignable or no longer possible)
 		std::map <int, bool> reaminingValues;
 };
