@@ -348,7 +348,7 @@ int GameState::mostConstrainedCourse() {
 	//Calculate RANK
 	for(unsigned int i=0; i<courseList.size(); ++i) {
 		if(courseList[i]->interesting) {
-			courseList[i]->constrained_rank += 30;
+			courseList[i]->constrained_rank += maxSemesterID;
 			amplifyRank(courseList[i]->prereqList, 1);
 		}
 		else {
@@ -384,7 +384,7 @@ void GameState::amplifyRank(vector<int> prereq, int depth) {
 	depth++;
 	
 	for(unsigned int i=0; i<prereq.size(); ++i) {
-		courseList[prereq[i]-1]->constrained_rank += depth*30;
+		courseList[prereq[i]-1]->constrained_rank += depth*maxSemesterID;
 		amplifyRank(courseList[prereq[i]-1]->prereqList, depth);
 	}
 	
@@ -418,31 +418,23 @@ vector<int> GameState::leastConstrainingValues(int courseID) {
 	//Return list of semesterIDs, sorted from least constraining to most constraining
 	vector<int> semesterIDs;
 	
-	while (semesterIDs.size() <= (unsigned int) maxSemesterID) {
-		//While semesterIDs isn't fully populated...
-		
-		int leastConstraint = std::numeric_limits<int>::max();
-		int leastSemester = -1;
-		
-		//Find the next least Semester
+	//CASE: REQUIRED COURSES
+	if(courseList[courseID-1]->constrained_rank>=maxSemesterID) {
+		//Lowest SemID has priority, loop from 0~max
 		for(int j=0; j<= maxSemesterID; ++j) {
-			if (!(semesters[j]->visited_flag)) {
-				int weight = semesters[j]->credit + courseList[courseID-1]->credit - cmin;
-			
-				if (weight<0)
-					weight=-weight;//*=-(cmax-cmin+1);
-				else if (weight>cmax-cmin)
-					weight=std::numeric_limits<int>::max();
-			
-				if ( weight < leastConstraint) {
-					leastConstraint = weight;
-					leastSemester = j;
-				}
-			}
+			if (semesters[j]->credit>cmax)
+				continue;
+			semesterIDs.push_back(semesters[j]->semesterID);
 		}
 		
-		semesters[leastSemester]->visited_flag = true;
-		semesterIDs.push_back(semesters[leastSemester]->semesterID);
+		return semesterIDs;
+	}
+	
+	//CASE: filler courses
+	//Lowest SemID has priority, loop from 0~max
+	for(int j=0; j<= maxSemesterID; ++j) {
+		if (semesters[j]->credit<cmin && semesters[j]->credit>0)
+			semesterIDs.push_back(semesters[j]->semesterID);
 	}
 	
 	return semesterIDs;
