@@ -46,6 +46,7 @@ vector<int> minimax(Board board, int depth, bool maximizingPlayer, double gamma,
 		//compare heuristic with bestValue and store max as bestValue
 
 		vector<int> maxNeighbors = board.getChildrenIndices(0);
+		//if there is no claimed square by player 0 (playerID=0)
 		if(maxNeighbors.empty())
 		{
 			int test_val;
@@ -109,7 +110,7 @@ vector<int> minimax(Board board, int depth, bool maximizingPlayer, double gamma,
 		//compare heuristic with bestValue and store max as bestValue
 
 		vector<int> minNeighbors = board.getChildrenIndices(0);
-		//if there is no claimed square by player 0 (playerID=0)
+		//if there is no claimed square by player 1 (playerID=1)
 		if(minNeighbors.empty())
 		{
 			int test_val;
@@ -273,6 +274,7 @@ vector<int> alphabeta(Board board, int depth, int alpha, int beta, bool maximizi
 		//compare heuristic with bestValue and store max as bestValue
 
 		vector<int> minNeighbors = board.getChildrenIndices(0);
+		//if there is no claimed square by player 1 (playerID=1)
 		if(minNeighbors.empty())
 		{
 			Board* paraDrop_board = new Board(board);
@@ -392,6 +394,7 @@ int main(int argc, char* argv[])
 
 	Board* c = new Board(*b);
 	c->printBoard();
+
 
 	delete b;
 	delete c;

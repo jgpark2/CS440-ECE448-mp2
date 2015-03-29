@@ -36,6 +36,8 @@ class Board {
 		int heuristic;
 		void parseBoard(std::string scenario);
 
+		std::vector<Board*>children;
+
 	private:
 		//helper methods
 		bool checkFriendlyNeighbors(int column, int row, int playerID); //could be private

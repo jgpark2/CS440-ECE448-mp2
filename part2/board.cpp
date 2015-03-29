@@ -11,6 +11,7 @@ Board::Board()
 	my_map.insert(pair<int, pair<int, string> >(-1, my_pair)); //score initial score of -1
 	player_map = my_map;
 	heuristic = -1;
+	children = vector<Board*>();
 }
 
 Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_player_map, int i_heuristic)
@@ -18,6 +19,7 @@ Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_pl
 	board = i_board;
 	player_map = i_player_map;
 	heuristic = i_heuristic;
+	children = vector<Board*>(); //double check
 }
 
 Board::Board(Board const &other)
@@ -25,12 +27,17 @@ Board::Board(Board const &other)
 	board = other.board;
 	player_map = other.player_map;
 	heuristic = other.heuristic;
+	children = other.children;
 }
 
 //destructor
 Board::~Board()
 {
-
+	//this should erase the current node as well as all of its descendents
+	for(vector<Board*>::iterator it = children.begin(); it!=children.end(); ++it)
+	{
+		delete *it;
+	}
 }
 
 void Board::printBoard()
