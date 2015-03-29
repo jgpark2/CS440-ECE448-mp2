@@ -395,8 +395,18 @@ int main(int argc, char* argv[])
 	Board* c = new Board(*b);
 	c->printBoard();
 
+	Board* d = new Board();
+	d->parseBoard(scenario);
+	d->addPlayer("Blue");
+	d->addPlayer("Green");
+	d->printBoard();
+	cout << "Running minimax" << endl;
+	vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
+	cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
+
 
 	delete b;
 	delete c;
+	delete d;
 	return 0;
 }

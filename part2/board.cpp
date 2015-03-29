@@ -777,7 +777,7 @@ bool Board::isBoardFull()
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
 	{
 		//if claimed
-		if( it->second!=-1)
+		if( it->second==-1)
 		{
 			return false;
 		}
