@@ -10,18 +10,21 @@ Board::Board()
 	pair<int, string> my_pair (0, "Unassigned"); //score of 0 and name is "Unassigned", printed as "U" on the board
 	my_map.insert(pair<int, pair<int, string> >(-1, my_pair)); //score initial score of -1
 	player_map = my_map;
+	heuristic = -1;
 }
 
-Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_player_map)
+Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_player_map, int i_heuristic)
 {
 	board = i_board;
 	player_map = i_player_map;
+	heuristic = i_heuristic;
 }
 
 Board::Board(Board const &other)
 {
 	board = other.board;
 	player_map = other.player_map;
+	heuristic = other.heuristic;
 }
 
 //destructor
