@@ -14,7 +14,7 @@
 class Board {
 	public:
 		Board();
-		Board(std::vector< std::pair<int, int> > i_board, std::map<int, std::pair<int, std::string> > i_player_map);
+		Board(std::vector< std::pair<int, int> > i_board, std::map<int, std::pair<int, std::string> > i_player_map, int heuristic);
 		Board(Board const &other);
 		~Board();
 		void printBoard();
@@ -23,17 +23,20 @@ class Board {
 		void paraDrop(char i_column, int row, std::string playerName);
 		void deathBlitz(char i_column, int row, std::string playerName);
 		void sabotage(char i_column, int row, std::string playerName, double gamma);
+		void makeMove(int index, int playerID, int move, double gamma);
 		int getPlayerScore(std::string playerName);
+		int getPlayerScore(int playerID);
 		int findHighestUnclaimedSquare();
 		bool isBoardFull();
-
+		std::vector<int> getChildrenIndices(int playerID);
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
-		
 		//maps playerID with int representing score and string e.g., blue, green, etc.
 		//-1 is "unassigned", default score is 0
 		std::map< int, std::pair <int, std::string> > player_map;
-
+		int heuristic;
 		void parseBoard(std::string scenario);
+
+		std::vector<Board*>children;
 
 	private:
 		//helper methods

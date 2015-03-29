@@ -7,7 +7,7 @@ GameTree::GameTree() {
 	//Empty Game Tree
 }
 
-GameTree::GameTree(GameState* root) {
+GameTree::GameTree(Board* root) {
 	this->root = root;
 }
 

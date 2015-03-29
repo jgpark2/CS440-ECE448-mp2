@@ -10,24 +10,34 @@ Board::Board()
 	pair<int, string> my_pair (0, "Unassigned"); //score of 0 and name is "Unassigned", printed as "U" on the board
 	my_map.insert(pair<int, pair<int, string> >(-1, my_pair)); //score initial score of -1
 	player_map = my_map;
+	heuristic = -1;
+	children = vector<Board*>();
 }
 
-Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_player_map)
+Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_player_map, int i_heuristic)
 {
 	board = i_board;
 	player_map = i_player_map;
+	heuristic = i_heuristic;
+	children = vector<Board*>(); //double check
 }
 
 Board::Board(Board const &other)
 {
 	board = other.board;
 	player_map = other.player_map;
+	heuristic = other.heuristic;
+	children = other.children;
 }
 
 //destructor
 Board::~Board()
 {
-
+	//this should erase the current node as well as all of its descendents
+	for(vector<Board*>::iterator it = children.begin(); it!=children.end(); ++it)
+	{
+		delete *it;
+	}
 }
 
 void Board::printBoard()
@@ -75,6 +85,21 @@ int Board::getPlayerScore(string playerName)
 	}
 	cerr << "Error: Invalid playerName for getPlayerScore. Please call addPlayer(" << playerName << ")" << endl;
 	return -1;
+}
+
+int Board::getPlayerScore(int playerID)
+{
+	int last_player=-1;
+	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	{	
+		if( (it)->first == playerID)
+		{	
+			return ((it)->second).first;
+		}
+		last_player=(it)->first;
+	}
+	cerr << "Error: Invalid playerID for getPlayerScore. Please add another "<< playerID - last_player <<" players." <<  endl;
+	return -1;	
 }
 
 void Board::addPlayer(string playerName)
@@ -613,6 +638,70 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 
 }
 
+void Board::makeMove(int index, int playerID, int move, double gamma)
+{
+	int column = index%6;
+	char i_column;
+	int row = index/6;
+	string playerName = "Unassigned";
+
+	switch(column)
+	{
+		case 0:
+			i_column = 'A';
+			break;
+		case 1:
+			i_column = 'B';
+			break;
+		case 2:
+			i_column = 'C';
+			break;
+		case 3:
+			i_column = 'D';
+			break;
+		case 4:
+			i_column = 'E';
+			break;
+		case 5:
+			i_column = 'F';
+			break;
+		//this should never happen
+		default:
+			cerr << "ERROR IN IMPLEMENTATION OF makeMove (see defuault switch case)" << endl;
+			i_column = 'G';
+			break;
+	}
+	
+	if(playerID > (int)(player_map.size()-1) )
+	{
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive " << endl;
+	}
+
+	playerName = player_map[playerID].second;
+
+	if(playerName.compare("Unassigned")==0)
+	{
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive" << endl;
+	}
+
+	switch(move)
+	{
+		case 0:
+			this->paraDrop(i_column, row, playerName);
+			break;
+		case 1:
+			this->deathBlitz(i_column, row, playerName);
+			break;
+		case 2:
+			this->sabotage(i_column, row, playerName, gamma);
+			break;
+		default:
+			cerr << "Error: Invalid move for makeMove, please select a value between 0 and 2, inclusive" << endl;
+			break;
+	}
+	return;
+}
+
 void Board::parseBoard(string scenario)
 {
 	cout << "parsing board..." << endl;
@@ -688,10 +777,50 @@ bool Board::isBoardFull()
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
 	{
 		//if claimed
-		if( it->second!=-1)
+		if( it->second==-1)
 		{
 			return false;
 		}
 	}
 	return true;
+}
+
+vector<int> Board::getChildrenIndices(int playerID)
+{
+	vector<int> indices;
+	int counter = 0;
+	//search the board for matching playerid
+	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	{	
+		//for every board location occupied by playerID
+		if( (it)->first == playerID)
+		{	
+			//check to see if there are unoccupied neighbors
+			int up_index = counter-6;
+			if(up_index >= 0 && board[up_index].second==-1)
+			{
+				indices.push_back(up_index);
+			}
+
+			int right_index = counter+1;
+			if(right_index < 36 && board[right_index].second==-1)
+			{
+				indices.push_back(right_index);
+			}
+
+			int down_index = counter+6;
+			if(down_index < 36 && board[down_index].second==-1)
+			{
+				indices.push_back(down_index);
+			}
+
+			int left_index = counter-1;
+			if(left_index >=0 && board[left_index].second==-1)
+			{
+				indices.push_back(left_index);
+			}
+		}
+		counter++;
+	}
+	return indices;
 }

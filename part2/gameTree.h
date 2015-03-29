@@ -2,7 +2,7 @@
 #define GAMETREE_H
 
 #include <vector>
-#include "gameState.h"
+#include "board.h"
 
 /*
  * gameTree class that represents the Game Tree used to backtrack.
@@ -12,13 +12,13 @@ class GameTree {
 	public:
 		GameTree();
 		~GameTree();
-		GameTree(GameState* root);
+		GameTree(Board* root);
 		
 		bool isEmpty();
 		void printTree();
 		void clearTree();
 		
-		GameState* root;
+		Board* root;
 		
 };
 
