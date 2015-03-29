@@ -358,7 +358,12 @@ void Board::paraDrop(char i_column, int row, string playerName)
 
 		//update player's claim to square
 		board[row*6+column].second = playerID;
-		//printBoard();
+		
+		if(DEBUG==true)
+		{
+			printBoard();
+			usleep(500000);
+		}
 	}
 
 }
@@ -509,7 +514,11 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 
 		conquerNeighbors(i_column, column, row, playerID);
 
-		//printBoard();
+		if(DEBUG==true)
+		{
+			printBoard();
+			usleep(500000);
+		}
 	}
 }
 
@@ -633,7 +642,12 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 		board[row*6+column].second = playerID;
 
 		conquerNeighbors(i_column, column, row, playerID);
-		//printBoard();
+		
+		if(DEBUG==true)
+		{
+			printBoard();
+			usleep(500000);
+		}
 	}
 
 }

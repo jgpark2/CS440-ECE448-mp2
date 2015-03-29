@@ -10,6 +10,9 @@
 #include <utility>
 #include <map>
 #include <time.h>
+#include <unistd.h>
+
+#define DEBUG true
 
 class Board {
 	public:
