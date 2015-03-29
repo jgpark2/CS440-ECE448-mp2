@@ -4,6 +4,7 @@
 #include <vector>
 #include <climits>
 #include <algorithm>
+#include <unistd.h>
 #include "board.h"
 
 
@@ -404,9 +405,21 @@ int main(int argc, char* argv[])
 	vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
 
+	cout << endl << "\n\npausing for 5 seconds..." << endl;
+	usleep(5000000);
+
+	Board* e = new Board();
+	e->parseBoard(scenario);
+	e->addPlayer("Blue");
+	e->addPlayer("Green");
+	e->printBoard();
+	cout << "Running alphabeta" << endl;
+	vector<int> alphabeta_val = alphabeta(*e, 3, INT_MIN, INT_MAX, true, 1.0, 0, false);
+	cout << "Index: " << alphabeta_val[0] << "\tHeuristic Value: " << alphabeta_val[1] << endl;
 
 	delete b;
 	delete c;
 	delete d;
+	delete e;
 	return 0;
 }
