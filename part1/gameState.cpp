@@ -101,11 +101,13 @@ GameState* GameState::assign(int assignCourseID, int assignSemester) {
 	//referenced: http://www.cplusplus.com/reference/algorithm/find/
 	vector<int>::iterator it;
 	it = find(courseList[assignCourseID-1]->legal_semesters.begin(), courseList[assignCourseID-1]->legal_semesters.end(), assignSemester);
-	if(it!=courseList[assignCourseID-1]->legal_semesters.end())
+	if(it==courseList[assignCourseID-1]->legal_semesters.end())
 	{
+		//not found
 		cout << "Not a legal assignment: " << assignSemester << " is not in course " << assignCourseID << "'s " << " legal_semesters field" << endl;
+		//return NULL; //FOR SOME REASON THIS BREAKS THE ALGORITHMMMM!!!
 	}
-	
+
 	GameState* child = new GameState(*this);
 	
 	children.push_back(child);
