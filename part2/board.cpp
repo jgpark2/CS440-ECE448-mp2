@@ -19,7 +19,7 @@ Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_pl
 	board = i_board;
 	player_map = i_player_map;
 	heuristic = i_heuristic;
-	children = vector<Board*>(); //double check
+	children = vector<Board*>(); //double check (maybe need to deep copy)
 }
 
 Board::Board(Board const &other)
@@ -284,7 +284,7 @@ void Board::paraDrop(char i_column, int row, string playerName)
 	row--;
 	if(row<0 || row>=6)
 	{
-		cerr << "Error: Invalid i_column for paraDrop" << endl;
+		cerr << "Error: Invalid i_column for paraDrop. Please enter a row value from 1 to 6." << endl;
 	}
 
 	int column = -1;
@@ -316,14 +316,14 @@ void Board::paraDrop(char i_column, int row, string playerName)
 			column = 5;
 			break;
 		default:
-			cerr << "Error: Invalid column for paraDrop" << endl;
+			cerr << "Error: Invalid column for paraDrop. Please enter a column value between A and F, inclusive." << endl;
 			break;
 	}
 
 	//this should never happen
 	if(column<0 || column>=6)
 	{
-		cerr << "Error: Invalid column for paraDrop" << endl;
+		cerr << "Error: Invalid column for paraDrop. Please enter a column value between A and F, inclusive." << endl;
 		return;
 	}
 	
@@ -370,59 +370,59 @@ void Board::paraDrop(char i_column, int row, string playerName)
 
 void Board::conquerNeighbors(char i_column, int column, int row, int playerID)
 {
-		//conquer every enemy controlled square adjacent to the square to be taken
-		//up
-		//if the up square is assigned and is not occupied by the player making the move
-		int up_square_location = (row-1)*6+column;
-		if(board[up_square_location].second!=-1 && board[up_square_location].second!=playerID)
-		{
-			cout << "Conquering up neighbor [" << i_column << "," << (row-1)+1 << "]" << endl;
-			//conquer the square, update the score, etc.
-			int enemy_playerID = board[up_square_location].second;
-			int neighbor_square_score = board[up_square_location].first;
-			player_map[enemy_playerID].first -= neighbor_square_score;
-			player_map[playerID].first += neighbor_square_score;
-			board[up_square_location].second=playerID;
-		}
-		//right
-		//if the right square is assigned and is not occupied by the player making the move
-		int right_square_location = (row)*6+(column+1);
-		if(board[right_square_location].second!=-1 && board[right_square_location].second!=playerID)
-		{
-			cout << "Conquering right neighbor [" << (char)(i_column+1) << "," << (row)+1 << "]" << endl;
-			//conquer the square, update the score, etc.
-			int enemy_playerID = board[right_square_location].second;
-			int neighbor_square_score = board[right_square_location].first;
-			player_map[enemy_playerID].first -= neighbor_square_score;
-			player_map[playerID].first += neighbor_square_score;
-			board[right_square_location].second=playerID;
-		}
-		//down
-		//if the down square is assigned and is not occupied by the player making the move
-		int down_square_location = (row+1)*6+column;
-		if(board[down_square_location].second!=-1 && board[down_square_location].second!=playerID)
-		{
-			cout << "Conquering down neighbor [" << i_column << "," << (row+1)+1 << "]" << endl;
-			//conquer the square, update the score, etc.
-			int enemy_playerID = board[down_square_location].second;
-			int neighbor_square_score = board[down_square_location].first;
-			player_map[enemy_playerID].first -= neighbor_square_score;
-			player_map[playerID].first += neighbor_square_score;
-			board[down_square_location].second=playerID;
-		}
-		//left
-		//if the right square is assigned and is not occupied by the player making the move
-		int left_square_location = (row)*6+(column-1);
-		if(board[left_square_location].second!=-1 && board[left_square_location].second!=playerID)
-		{
-			cout << "Conquering left neighbor [" << (char)(i_column-1) << "," << (row)+1 << "]" << endl;
-			//conquer the square, update the score, etc.
-			int enemy_playerID = board[left_square_location].second;
-			int neighbor_square_score = board[left_square_location].first;
-			player_map[enemy_playerID].first -= neighbor_square_score;
-			player_map[playerID].first += neighbor_square_score;
-			board[left_square_location].second=playerID;
-		}
+	//conquer every enemy controlled square adjacent to the square to be taken
+	//up
+	//if the up square is assigned and is not occupied by the player making the move
+	int up_square_location = (row-1)*6+column;
+	if(board[up_square_location].second!=-1 && board[up_square_location].second!=playerID)
+	{
+		cout << "Conquering up neighbor [" << i_column << "," << (row-1)+1 << "]" << endl;
+		//conquer the square, update the score, etc.
+		int enemy_playerID = board[up_square_location].second;
+		int neighbor_square_score = board[up_square_location].first;
+		player_map[enemy_playerID].first -= neighbor_square_score;
+		player_map[playerID].first += neighbor_square_score;
+		board[up_square_location].second=playerID;
+	}
+	//right
+	//if the right square is assigned and is not occupied by the player making the move
+	int right_square_location = (row)*6+(column+1);
+	if(board[right_square_location].second!=-1 && board[right_square_location].second!=playerID)
+	{
+		cout << "Conquering right neighbor [" << (char)(i_column+1) << "," << (row)+1 << "]" << endl;
+		//conquer the square, update the score, etc.
+		int enemy_playerID = board[right_square_location].second;
+		int neighbor_square_score = board[right_square_location].first;
+		player_map[enemy_playerID].first -= neighbor_square_score;
+		player_map[playerID].first += neighbor_square_score;
+		board[right_square_location].second=playerID;
+	}
+	//down
+	//if the down square is assigned and is not occupied by the player making the move
+	int down_square_location = (row+1)*6+column;
+	if(board[down_square_location].second!=-1 && board[down_square_location].second!=playerID)
+	{
+		cout << "Conquering down neighbor [" << i_column << "," << (row+1)+1 << "]" << endl;
+		//conquer the square, update the score, etc.
+		int enemy_playerID = board[down_square_location].second;
+		int neighbor_square_score = board[down_square_location].first;
+		player_map[enemy_playerID].first -= neighbor_square_score;
+		player_map[playerID].first += neighbor_square_score;
+		board[down_square_location].second=playerID;
+	}
+	//left
+	//if the right square is assigned and is not occupied by the player making the move
+	int left_square_location = (row)*6+(column-1);
+	if(board[left_square_location].second!=-1 && board[left_square_location].second!=playerID)
+	{
+		cout << "Conquering left neighbor [" << (char)(i_column-1) << "," << (row)+1 << "]" << endl;
+		//conquer the square, update the score, etc.
+		int enemy_playerID = board[left_square_location].second;
+		int neighbor_square_score = board[left_square_location].first;
+		player_map[enemy_playerID].first -= neighbor_square_score;
+		player_map[playerID].first += neighbor_square_score;
+		board[left_square_location].second=playerID;
+	}
 }
 
 void Board::deathBlitz(char i_column, int row, string playerName)
@@ -430,7 +430,7 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 	row--;
 	if(row<0 || row>=6)
 	{
-		cerr << "Error: Invalid row for deathBlitz" << endl;
+		cerr << "Error: Invalid i_column for deathBlitz. Please enter a row value from 1 to 6." << endl;
 	}
 
 	int column = -1;
@@ -462,14 +462,14 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 			column = 5;
 			break;
 		default:
-			cerr << "Error: Invalid column for deathBlitz" << endl;
+			cerr << "Error: Invalid column for deathBlitz. Please enter a column value between A and F, inclusive." << endl;
 			break;
 	}
 
 	//this should never happen
 	if(column<0 || column>=6)
 	{
-		cerr << "Error: Invalid column for deathBlitz" << endl;
+		cerr << "Error: Invalid column for deathBlitz. Please enter a column value between A and F, inclusive." << endl;
 		return;
 	}
 
@@ -527,7 +527,7 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 	row--;
 	if(row<0 || row>=6)
 	{
-		cerr << "Error: Invalid i_column for paraDrop" << endl;
+		cerr << "Error: Invalid i_column for sabotage. Please enter a row value from 1 to 6." << endl;
 	}
 
 	int column = -1;
@@ -559,14 +559,14 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 			column = 5;
 			break;
 		default:
-			cerr << "Error: Invalid column for sabotage" << endl;
+			cerr << "Error: Invalid column for sabotage. Please enter a column value between A and F, inclusive." << endl;
 			break;
 	}
 
 	//this should never happen
 	if(column<0 || column>=6)
 	{
-		cerr << "Error: Invalid column for sabotage" << endl;
+		cerr << "Error: Invalid column for sabotage. Please enter a column value between A and F, inclusive." << endl;
 		return;
 	}
 	
@@ -603,17 +603,21 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 	{
 		cout << "Error: invalid gamma for sabotage. Please enter a value between 0 and 1, inclusive" << endl;
 	}
-	gamma *=100; //if gamma is initially 0.2, 20% chance of failing, compare with 20. If random number <= 20, fail. If random number > 20, success.
+	gamma *=100; //if gamma is initially 0.2, 20% chance of success, compare with 20. If random number <= 20, succeed. If random number > 20, fail.
 	srand(time(NULL));
 	int delta = rand() % 100 + 1; //returns a number between 1 and 100
 	if(delta>gamma)
+	{
+		success = false;
+	}
+	else
 	{
 		success = true;
 	}
 
 	if(!success)
 	{
-		cout << "unsuccessful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
+		cout << "Unsuccessful sabotage by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 		
 		int enemy_playerID = getEnemyNeighborID(column, row, playerID);
 		
@@ -623,9 +627,10 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 			cerr << "ERROR IN IMPLEMENTATION OF SABOTAGE (see getEnemyNeighborID call)" << endl;
 		}
 
+		//ONLY WORKS IF THERE IS ONE OTHER PLAYER
 		int square_score = board[row*6+column].first;
 		player_map[enemy_playerID].first += square_score;
-		//player_map[playerID].first -= square_score; //don't do this, only the enemy's score is affected
+		player_map[playerID].first -= square_score; //only affects unassigned player
 
 		//update player's claim to square
 		board[row*6+column].second = enemy_playerID;
@@ -681,21 +686,21 @@ void Board::makeMove(int index, int playerID, int move, double gamma)
 			break;
 		//this should never happen
 		default:
-			cerr << "ERROR IN IMPLEMENTATION OF makeMove (see defuault switch case)" << endl;
+			cerr << "ERROR IN IMPLEMENTATION OF makeMove (see defuault switch case) or call in respective algorithm (minimax or alphabeta)" << endl;
 			i_column = 'G';
 			break;
 	}
 	
-	if(playerID > (int)(player_map.size()-1) )
+	if(playerID<0 || playerID > (int)(player_map.size()-2))	//due to index -1 being player "Unassigned"
 	{
-		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive " << endl;
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-2 << ", inclusive " << endl;
 	}
 
 	playerName = player_map[playerID].second;
 
 	if(playerName.compare("Unassigned")==0)
 	{
-		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-1 << ", inclusive" << endl;
+		cerr << "Error: Invalid playerID for makeMove, please select a value between 0 and " << player_map.size()-2 << ", inclusive" << endl;
 	}
 
 	switch(move)
@@ -741,7 +746,7 @@ void Board::parseBoard(string scenario)
 		//get the line
 		if(getline(myfile, curr_line)==NULL)
 		{
-			cerr << "Error: invalid line in input file" << endl;
+			cerr << "Error: file is empty" << endl;
 			return;
 		}
 
@@ -749,10 +754,10 @@ void Board::parseBoard(string scenario)
 		split(fields, curr_line, is_any_of("\t"), token_compress_on);
 		if(fields.size()!=6)
 		{
-			cerr << "Error: input file has invalid number of columns" << endl;
+			cerr << "Error: input file has invalid number of columns for row " << i+1 << endl;
 		}
 
-		//write to the board in Parse object
+		//write to the board in Board object
 		for(unsigned int j = 0; j < fields.size(); j++)
 		{
 			temp_string = fields[j];
@@ -779,6 +784,7 @@ int Board::findHighestUnclaimedSquare()
 		//if unclaimed and score greater than maxScore
 		if( it->second==-1 && it->first > maxScore)
 		{
+			maxScore = it->first;
 			maxScoreLocation = counter;
 		}
 		counter++;
@@ -803,36 +809,45 @@ vector<int> Board::getChildrenIndices(int playerID)
 {
 	vector<int> indices;
 	int counter = 0;
-	//search the board for matching playerid
-	for(map< int, pair <int, string> >::const_iterator it = player_map.begin(); it!=player_map.end(); ++it)
+	//search the board for matching playerID
+	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
 	{	
 		//for every board location occupied by playerID
 		if( (it)->first == playerID)
 		{	
-			//check to see if there are unoccupied neighbors
+			//check to see if there are unoccupied neighbors and push their indices to the vector
 			int up_index = counter-6;
 			if(up_index >= 0 && board[up_index].second==-1)
 			{
-				indices.push_back(up_index);
+				if(find(indices.begin(), indices.end(), up_index)==indices.end()) //don't push repeats
+				{
+					indices.push_back(up_index);
+				}
 			}
 
 			int right_index = counter+1;
 			if(right_index < 36 && board[right_index].second==-1)
 			{
-				indices.push_back(right_index);
-			}
+				if(find(indices.begin(), indices.end(), right_index)==indices.end())
+				{
+					indices.push_back(right_index);
+				}			}
 
 			int down_index = counter+6;
 			if(down_index < 36 && board[down_index].second==-1)
 			{
-				indices.push_back(down_index);
-			}
+				if(find(indices.begin(), indices.end(), down_index)==indices.end())
+				{
+					indices.push_back(down_index);
+				}			}
 
 			int left_index = counter-1;
 			if(left_index >=0 && board[left_index].second==-1)
 			{
-				indices.push_back(left_index);
-			}
+				if(find(indices.begin(), indices.end(), left_index)==indices.end())
+				{
+					indices.push_back(left_index);
+				}			}
 		}
 		counter++;
 	}
