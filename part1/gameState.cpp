@@ -66,6 +66,12 @@ void GameState::updateAssignment() {
 			semesters[courseList[i]->semesterID]->addCourse(courseList[i]);
 		}
 	}
+	
+	//Loop again and fill in completely empty semesters with at least empty vector of course pointers
+	//int semesterIDCount = 0;
+	for(unsigned int i=0; i<assignment.size(); ++i) {
+		assignment[i];
+	}
 }
 
 //destructor
@@ -368,6 +374,18 @@ int GameState::mostConstrainedCourse() {
 			courseID = i+1; //COURSEID STARTS AT 1
 			maxReqRank = courseList[i]->constrained_rank;
 		}
+		//C CASE - this saves some nodes... ~328k -> ~276k, but the former gave loewr budget soln
+		/*if(mode=='C' && courseList[i]->constrained_rank == maxReqRank &&
+				( (courseList[i]->fallPrice < courseList[courseID-1]->fallPrice && 
+					courseList[i]->fallPrice < courseList[courseID-1]->springPrice)
+						|| 
+					(courseList[i]->springPrice < courseList[courseID-1]->fallPrice && 
+					courseList[i]->springPrice < courseList[courseID-1]->springPrice) )
+			) {
+			//Tie break with cheapest in both fall/spring field??
+			courseID = i+1; //COURSEID STARTS AT 1
+			maxReqRank = courseList[i]->constrained_rank;
+		}*/
 		
 	}
 	
@@ -407,7 +425,45 @@ void GameState::amplifyRankMini(vector<int> prereq, int depth) {
 
 vector<int> GameState::leastConstrainingValues(int courseID) {
 
-	if (mode=='B' || mode=='C') {
+	if (mode=='C') { // ||mode'B'
+		//Return list of semesterIDs, sorted from least constraining to most constraining
+		vector<int> semesterIDs;
+
+		int spring = -1;
+		if(courseList[courseID-1]->fallPrice < courseList[courseID-1]->springPrice)
+			spring = 1;
+
+		int beginIdx;
+		spring>0? beginIdx=0:beginIdx=1;
+
+		//CASE: REQUIRED COURSES
+		if(courseList[courseID-1]->constrained_rank>=maxSemesterID) {
+			//Lowest 2 SemIDs have priority, tie break for cheaper price.	
+			for(int j=beginIdx; j<= maxSemesterID; j+=2) {
+				if (semesters[j]->credit<cmax)
+					semesterIDs.push_back(semesters[j]->semesterID);
+
+				if(semesters[j+(1*spring)]->credit>=cmax)
+					continue;
+
+				semesterIDs.push_back(semesters[j+(1*spring)]->semesterID);
+			}
+			
+			return semesterIDs;
+		}
+		
+		int preferred_final_semester = semesters.back()->semesterID;
+		//CASE: FILLERS
+		for(int j=beginIdx; j<= maxSemesterID; j+=2) {
+			//Lowest 2 SemIDs tie break for cheaper price iff former is filled to cmin
+			if (semesters[j]->credit<cmin && j<=preferred_final_semester)
+				semesterIDs.push_back(semesters[j]->semesterID);
+
+			if (semesters[j+(1*spring)]->credit<cmin && j+(1*spring)<=preferred_final_semester)
+				semesterIDs.push_back(semesters[j+(1*spring)]->semesterID);
+		}
+		
+		return semesterIDs;
 	}
 	
 	//MODE A

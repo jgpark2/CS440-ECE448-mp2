@@ -30,35 +30,73 @@ GameState* recursiveBack(GameState* node)
 
 	//Try different values to assign to variable (semesterID starts at 0)
 	vector<int> semesterIDCandidates = node->leastConstrainingValues(courseID);
-				/*for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i )
-				cout<<semesterIDCandidates[i]<<",";
-				cout<< endl;*/
+	
 	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
-	//for(int i = 0; i <= node->maxSemesterID; ++i ) {
 		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
 		//cout<<"assigning "<<courseID<<":"<<semesterIDCandidates[i]<<"...";//////////////////////////////////
 		
 		if (assignment==NULL) {//Probably exhausted all variables
-			cout<<";";//////////////
+			//cout<<";";//////////////
 			return NULL;
 		}
 			
 		GameState* result = NULL;
 		if (assignment->isValid()) {
-			cout<<">";//////////////////////////////////
+			//cout<<">";//////////////////////////////////
 			result = recursiveBack(assignment);
 		}
 		
 		if (result != NULL) {
-			cout<<"!";//////////////
+			//cout<<"!";//////////////
 			return result;
 		}
 	}
 
-	cout<<";";//////////////
+	//cout<<";";//////////////
 	return NULL;
 }
 
+/*
+ * Modifeid Recursive Backtracking algorithm. Lasts longer to try to find a minimal solution.
+ * Returns NULL if no solution node is found for the CSP.
+ * Return type only used for NULL or non-NULL checks... doesn't really matter
+ */
+GameState* recursiveBackNoStop(GameState* node, vector<GameState*>* solutions_ptr)
+{
+	if(node->isSolution()) {
+		solutions_ptr->push_back(node);
+		return node;
+	}
+	
+	//Select a variable to assign
+	int courseID = node->mostConstrainedCourse();
+	
+	if(courseID==-1) //Although assign() catches it anyways...
+		return NULL;
+
+	//Try different values to assign to variable (semesterID starts at 0)
+	vector<int> semesterIDCandidates = node->leastConstrainingValues(courseID);
+	
+	for(unsigned int i = 0; i < semesterIDCandidates.size(); ++i ) {
+		GameState* assignment = node->assign(courseID, semesterIDCandidates[i]);
+		
+		if (assignment==NULL) {//Probably exhausted all variables
+			return NULL;
+		}
+			
+		GameState* result = NULL;
+		
+		if (assignment->isValid()) {
+			result = recursiveBackNoStop(assignment, solutions_ptr);
+		}
+		
+		/*if (result != NULL) { Simply continues to finihs all semester assignments! I think there's some fwd checkign to reduce the domain of semesters here... if not, we can sure use it :/
+			return result;
+		}*/
+	}
+	
+	return NULL;
+}
 
 int main(int argc, char* argv[])
 {
@@ -113,17 +151,47 @@ int main(int argc, char* argv[])
 
 	GameTree* tree = new GameTree(new GameState(courses, Cmin, Cmax, budget, mode));
 	
-	GameState* solution = recursiveBack(tree->root);
-	if (solution == NULL) {
-		cout << "No solution found!!" << endl;
-		return 0;
-	}
-	
-	cout << "Solution found: " << endl;
-	solution->printState();
-	cout << "Nodes Expanded: " << tree->root->childrenCount+1 << endl;
+	/*if (mode=='C') {
+		vector<GameState*> solutions;
+		vector<GameState*>* solutions_ptr = &solutions;
+		recursiveBackNoStop(tree->root, solutions_ptr);
+		
+		if(solutions.empty()) {
+			cout << "No solutions found!!" << endl;
+			return 0;
+		}
 
-	return 0;
+		GameState* solution;
+		int minimumBudget = budget+1;
+		for(unsigned int i=0; i< solutions.size(); ++i) {
+			int totalUsed = 0;
+			for(unsigned int j=0; j<(solutions[i]->semesters).size(); j++) {
+				totalUsed+=solutions[i]->semesters[j]->budget;
+			}
+
+			if(totalUsed<minimumBudget) {
+				minimumBudget = totalUsed;
+				solution = solutions[i];
+			}
+		}
+
+		cout << "Solution found: " << endl;
+		solution->printState();
+		cout << "Nodes Expanded: " << tree->root->childrenCount+1 << endl;
+	}
+	else {*/
+		GameState* solution = recursiveBack(tree->root);
+		if (solution == NULL) {
+			cout << "No solution found!!" << endl;
+			return 0;
+		}
+		
+		cout << "Solution found: " << endl;
+		solution->printState();
+		cout << "Nodes Expanded: " << tree->root->childrenCount+1 << endl;
+
+		return 0;
+	//}
 }
 
 
