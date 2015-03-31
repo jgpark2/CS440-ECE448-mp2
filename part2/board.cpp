@@ -53,6 +53,21 @@ Board::~Board()
 	// }
 }
 
+void Board::deleteDescendants()
+{
+	if(!children.empty())
+	{
+		for(vector<Board*>::iterator it = children.begin(); it!=children.end(); ++it)
+		{
+			(*it)->deleteDescendants();
+		}
+	}
+	else
+	{
+		delete this;
+	}
+}
+
 bool Board::isRoot()
 {
 	if(parent==NULL)
@@ -136,7 +151,7 @@ void Board::addPlayer(string playerName)
 		}
 		counter++;
 	}
-
+	cout << "Adding player " << counter << " ("<< playerName << ") " << endl;
 	pair<int, string> my_pair (0, playerName);
 	player_map.insert(pair<int, pair<int, string> >(counter, my_pair));
 }
@@ -383,7 +398,10 @@ void Board::paraDrop(char i_column, int row, string playerName)
 		if(DEBUG==true)
 		{
 			printBoard();
-			usleep(500000);
+			if(FAST==false)
+			{
+				usleep(500000);
+			}
 		}
 	}
 
@@ -538,7 +556,10 @@ void Board::deathBlitz(char i_column, int row, string playerName)
 		if(DEBUG==true)
 		{
 			printBoard();
-			usleep(500000);
+			if(FAST==false)
+			{
+				usleep(500000);
+			}
 		}
 	}
 }
@@ -672,7 +693,10 @@ void Board::sabotage(char i_column, int row, string playerName, double gamma)
 		if(DEBUG==true)
 		{
 			printBoard();
-			usleep(500000);
+			if(FAST==false)
+			{
+				usleep(500000);
+			}
 		}
 	}
 
@@ -682,7 +706,7 @@ void Board::makeMove(int index, int playerID, int move, double gamma)
 {
 	int column = index%6;
 	char i_column;
-	int row = index/6;
+	int row = index/6 + 1;
 	string playerName = "Unassigned";
 
 	switch(column)

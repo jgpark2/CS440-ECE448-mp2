@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #define DEBUG true
+#define FAST true
 
 class Board {
 	public:
@@ -32,6 +33,7 @@ class Board {
 		int findHighestUnclaimedSquare();
 		bool isBoardFull();
 		bool isRoot();
+		void deleteDescendants();
 		std::vector<int> getChildrenIndices(int playerID);
 		std::vector<int> getUnoccupiedIndices();
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
