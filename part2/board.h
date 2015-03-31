@@ -33,6 +33,7 @@ class Board {
 		bool isBoardFull();
 		bool isRoot();
 		std::vector<int> getChildrenIndices(int playerID);
+		std::vector<int> getUnoccupiedIndices();
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		//maps playerID with int representing score and string e.g., blue, green, etc.
 		//-1 is "unassigned", default score is 0

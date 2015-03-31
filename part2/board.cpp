@@ -813,6 +813,21 @@ int Board::findHighestUnclaimedSquare()
 	return maxScoreLocation;
 }
 
+vector<int> Board::getUnoccupiedIndices()
+{
+	vector<int> retval;
+	int counter = 0;
+	for(vector<pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
+	{
+		if(it->second==-1)
+		{
+			retval.push_back(counter);
+		}
+		counter++;
+	}
+	return retval;
+}
+
 bool Board::isBoardFull()
 {
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
