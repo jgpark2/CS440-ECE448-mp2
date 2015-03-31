@@ -31,6 +31,7 @@ class Board {
 		int getPlayerScore(int playerID);
 		int findHighestUnclaimedSquare();
 		bool isBoardFull();
+		bool isRoot();
 		std::vector<int> getChildrenIndices(int playerID);
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		//maps playerID with int representing score and string e.g., blue, green, etc.
@@ -39,6 +40,7 @@ class Board {
 		int heuristic;
 		void parseBoard(std::string scenario);
 
+		Board* parent;
 		std::vector<Board*>children;
 
 	private:

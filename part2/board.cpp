@@ -11,6 +11,7 @@ Board::Board()
 	my_map.insert(pair<int, pair<int, string> >(-1, my_pair)); //score initial score of -1
 	player_map = my_map;
 	heuristic = -1;
+	parent = NULL;
 	children = vector<Board*>();
 }
 
@@ -19,6 +20,7 @@ Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_pl
 	board = i_board;
 	player_map = i_player_map;
 	heuristic = i_heuristic;
+	parent = NULL;
 	children = vector<Board*>(); //double check (maybe need to deep copy)
 }
 
@@ -27,17 +29,36 @@ Board::Board(Board const &other)
 	board = other.board;
 	player_map = other.player_map;
 	heuristic = other.heuristic;
+	parent = other.parent;
 	children = other.children;
 }
 
 //destructor
 Board::~Board()
 {
-	//this should erase the current node as well as all of its descendents
-	for(vector<Board*>::iterator it = children.begin(); it!=children.end(); ++it)
-	{
-		delete *it;
-	}
+	//I don't think there's a need to do anything here as no new is called in Board.cpp
+
+	//todo: delete nodes from the tree of Boards
+	// if(!children.empty() && !(isRoot()))
+	// {
+	// 	//assign all the children's parent pointers to point to the current board's parent
+	// 	for(vector<Board*>::iterator it = children.begin(); it!=children.end(); ++it)
+	// 	{
+	// 		(*it)->parent = this->parent;
+	// 	}
+	// 	delete this;
+	// }
+	// else if(isRoot())
+	// {
+	// }
+}
+
+bool Board::isRoot()
+{
+	if(parent==NULL)
+		return true;
+	else
+		return false;
 }
 
 void Board::printBoard()
