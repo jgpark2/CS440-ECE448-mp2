@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define DEBUG true
+#define DEBUG false
 #define FAST true
 
 class Board {
