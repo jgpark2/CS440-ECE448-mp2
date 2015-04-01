@@ -9,6 +9,7 @@
 #include <boost/algorithm/string.hpp>
 #include <utility>
 #include <map>
+#include <set>
 #include <time.h>
 #include <unistd.h>
 
@@ -24,9 +25,9 @@ class Board {
 		void printBoard();
 		void printScores();
 		void addPlayer(std::string player_name);
-		void paraDrop(char i_column, int row, std::string playerName);
-		void deathBlitz(char i_column, int row, std::string playerName);
-		void sabotage(char i_column, int row, std::string playerName, double gamma);
+		void paraDrop(char i_column, int i_row, std::string playerName);
+		void deathBlitz(char i_column, int i_row, std::string playerName);
+		void sabotage(char i_column, int i_row, std::string playerName, double gamma);
 		void makeMove(int index, int playerID, int move, double gamma);
 		int getPlayerScore(std::string playerName);
 		int getPlayerScore(int playerID);
@@ -36,7 +37,7 @@ class Board {
 		bool isRoot();
 		bool isSameBoard(Board rhs);
 		void deleteDescendants();
-		std::vector<int> getEmptyNeighboringSquares(int playerID);
+		std::set<int> getEmptyNeighboringSquares(int playerID);
 		std::vector<int> getUnoccupiedIndices();
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		//maps playerID with int representing score and string e.g., blue, green, etc.
@@ -54,6 +55,8 @@ class Board {
 		bool checkEnemyNeighbors(int column, int row, int playerID); //could be private
 		void conquerNeighbors(char i_column, int column, int row, int playerID);
 		int getEnemyNeighborID(int column, int row, int playerID);
+		int player_stoi(std::string playerName) ;
+		std::vector<int> findNeighborIDs(int col, int row);
 };
 
 

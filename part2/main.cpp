@@ -36,7 +36,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		int bestValueMax = INT_MIN;
 
 		//paraDrop
-		vector<int>possible_moves = board.getUnoccupiedIndices();
+		vector<int> possible_moves = board.getUnoccupiedIndices();
 		if(!possible_moves.empty())
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
@@ -54,11 +54,11 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		}
 
 		//deathBlitz
-		possible_moves.clear();
-		possible_moves = board.getEmptyNeighboringSquares(0);
-		if(!possible_moves.empty())
-		{
-			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+		//possible_moves.clear();
+		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(0);
+		//if(!possible_moves_2.empty())
+		//{
+			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
 			{
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
@@ -70,7 +70,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 					bestValueMax = max(bestValueMax, test_val1);
 				}
 			}
-		}
+		//}
 
 		//sabotage (FOR EXPECTIMINIMAX, NOT FOR MINIMAX)
 		// possible_moves.clear();
@@ -115,11 +115,11 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		}
 
 		//deathBlitz
-		possible_moves.clear();
-		possible_moves = board.getEmptyNeighboringSquares(1);
-		if(!possible_moves.empty())
-		{
-			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+		//possible_moves.clear();
+		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(1);
+		//if(!possible_moves_2.empty())
+		//{
+			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
 			{		
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
@@ -131,7 +131,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 					bestValueMin = min(bestValueMin, test_val1);
 				}
 			}
-		}
+		//}
 
 		//sabotage (FOR EXPECTIMINIMAX, NOT FOR MINIMAX)
 		// possible_moves.clear();
