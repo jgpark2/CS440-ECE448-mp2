@@ -278,28 +278,36 @@ int main(int argc, char* argv[])
 			break;
 	}
 
-	// Board* b = new Board();
-	// b->parseBoard(scenario);
-	// b->addPlayer("Blue");
-	// b->addPlayer("Green");
+	Board* b = new Board();
+	b->parseBoard(scenario);
+	b->addPlayer("Blue");
+	b->addPlayer("Green");
 
-	// b->paraDrop('D', 1, "Blue");
-	// b->paraDrop('C', 2, "Blue");
-	// b->paraDrop('D', 2, "Blue");
-	// b->paraDrop('E', 2, "Blue");
-	// b->paraDrop('C', 4, "Green");
-	// b->paraDrop('D', 4, "Green");
-	// b->printBoard();
-	// b->printScores();
+	b->paraDrop('D', 1, "Blue");
+	b->paraDrop('C', 2, "Blue");
+	b->paraDrop('D', 2, "Blue");
+	b->paraDrop('E', 2, "Blue");
+	b->paraDrop('C', 4, "Green");
+	b->paraDrop('D', 4, "Green");
+	b->printBoard();
+	b->printScores();
 
-	// b->deathBlitz('D', 3, "Green");
-	// b->printBoard();
-	// b->printScores();
+	b->deathBlitz('D', 3, "Green");
+	b->printBoard();
+	b->printScores();
 
-	// b->deathBlitz('C', 3, "Blue");
-	// b->printBoard();
-	// b->printScores();
+	b->deathBlitz('C', 3, "Blue");
+	b->printBoard();
+	b->printScores();
 
+	b->paraDrop('D', 4, "Blue");
+	b->printBoard();
+	b->printScores();
+
+	b->deathBlitz('D', 4, "Blue");
+	b->printBoard();
+	b->printScores();
+	
 	// b->sabotage('C', 1, "Green", 1.0);
 	// b->printBoard();
 	// b->printScores();
@@ -312,15 +320,15 @@ int main(int argc, char* argv[])
 	// c->printBoard();
 
 
-	Board* d = new Board();
-	d->parseBoard(scenario);
-	d->addPlayer("Blue");
-	d->addPlayer("Green");
-	//d->printBoard();
-	//d->printScores();
-	cout << "Running minimax" << endl;
-	int minimax_heuristic = minimax(*d, 3, false, 1.0);
-	cout << "Minimax heuristic: " << minimax_heuristic << endl;
+	// Board* d = new Board();
+	// d->parseBoard(scenario);
+	// d->addPlayer("Blue");
+	// d->addPlayer("Green");
+	// //d->printBoard();
+	// //d->printScores();
+	// cout << "Running minimax" << endl;
+	// int minimax_heuristic = minimax(*d, 3, false, 1.0);
+	// cout << "Minimax heuristic: " << minimax_heuristic << endl;
 
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
@@ -349,9 +357,9 @@ int main(int argc, char* argv[])
 	// 	cout << "not ";
 	// cout << "the same" << endl;
 
-	//delete b;
+	delete b;
 	//delete c;
-	delete d;
+	//delete d;
 	//delete e;
 	return 0;
 }

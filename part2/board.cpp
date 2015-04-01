@@ -299,7 +299,7 @@ void Board::deathBlitz(char i_column, int i_row, string playerName)
 	
 	int orig_playerID = board[row*6+col].second;
 	if(orig_playerID!=-1) {
-		cerr << "Error: Invalid paradrop - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
+		cerr << "Error: Invalid deathBlitz - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
 		return;
 	}
 	
