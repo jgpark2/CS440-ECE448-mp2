@@ -821,7 +821,7 @@ void Board::parseBoard(string scenario)
 //returns -1 if there is no unclaimed square
 int Board::findHighestUnclaimedSquare()
 {
-	int maxScore = -1;
+	int maxScore = INT_MIN;
 	int maxScoreLocation = -1;
 	int counter = 0;
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
@@ -839,7 +839,7 @@ int Board::findHighestUnclaimedSquare()
 
 int Board::findLowestUnclaimedSquare()
 {
-	int minScore = -1;
+	int minScore = INT_MAX;
 	int minScoreLocation = -1;
 	int counter = 0;
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
