@@ -13,6 +13,7 @@ using namespace boost;
 
 int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 {
+	board.printBoard();
 	if(depth==0 || board.isBoardFull())
 	{
 		//cout << "Base case for ";
@@ -21,14 +22,12 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		{
 			//cout << " maximizingPlayer" << endl;
 			retval = board.getPlayerScore(0);
-			board.printBoard();
 			return retval;
 		}
 		else
 		{
 			//cout << " minimizingPlayer" << endl;
 			retval = board.getPlayerScore(1);
-			board.printBoard();
 			return retval;
 		}
 	}
@@ -263,7 +262,7 @@ int main(int argc, char* argv[])
 	//d->printBoard();
 	//d->printScores();
 	cout << "Running minimax" << endl;
-	int minimax_heuristic = minimax(*d, 3, true, 1.0);
+	int minimax_heuristic = minimax(*d, 3, false, 1.0);
 	cout << "Minimax heuristic: " << minimax_heuristic << endl;
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;

@@ -812,7 +812,7 @@ void Board::parseBoard(string scenario)
 	}
 	cout << "end of parse" << endl;
 
-	printBoard();
+	//printBoard();
 
 }
 
