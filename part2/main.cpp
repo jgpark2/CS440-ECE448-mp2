@@ -21,36 +21,39 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		{
 			//cout << " maximizingPlayer" << endl;
 			retval = board.getPlayerScore(0);
+			board.printBoard();
 			return retval;
 		}
 		else
 		{
 			//cout << " minimizingPlayer" << endl;
 			retval = board.getPlayerScore(1);
+			board.printBoard();
 			return retval;
 		}
 	}
 	if(maximizingPlayer)
 	{
 		int bestValueMax = INT_MIN;
-		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
-		{
+		//vector<int> unoccupied_squares = board.getUnoccupiedIndices();
+		// for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		// {
 			//paraDrop
 			Board* paraDrop_board = new Board(board);
  			paraDrop_board->parent = &board;
   			board.children.push_back(paraDrop_board);
-   			paraDrop_board->makeMove(*it, 0, 0, gamma);
+   			//paraDrop_board->makeMove(*it, 0, 0, gamma);
+      		paraDrop_board->makeMove(paraDrop_board->findHighestUnclaimedSquare(), 0, 0, gamma);
    			int test_val0 = minimax(*paraDrop_board, depth-1, false, gamma);
  			bestValueMax = max(bestValueMax, test_val0);
 
- 			//deathBlitz
-			Board* deathBlitz_board = new Board(board);
- 			deathBlitz_board->parent = &board;
-  			board.children.push_back(deathBlitz_board);
-   			deathBlitz_board->makeMove(*it, 0, 1, gamma);
-   			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
- 			bestValueMax = max(bestValueMax, test_val1);
+ 		// 	//deathBlitz
+			// Board* deathBlitz_board = new Board(board);
+ 		// 	deathBlitz_board->parent = &board;
+  	// 		board.children.push_back(deathBlitz_board);
+   // 			deathBlitz_board->makeMove(*it, 0, 1, gamma);
+   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
+ 		// 	bestValueMax = max(bestValueMax, test_val1);
 
  			// //sabotage
  			// Board* sabotage_board = new Board(board);
@@ -60,30 +63,31 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    	// 		int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
  			// bestValueMax = max(bestValueMax, test_val2);
 
-		}
+		//}
 		return bestValueMax;
 	}
 	else
 	{
 		int bestValueMin = INT_MAX;
-		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
-		{
+		// vector<int> unoccupied_squares = board.getUnoccupiedIndices();
+		// for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		// {
 			//paraDrop
 			Board* paraDrop_board = new Board(board);
  			paraDrop_board->parent = &board;
   			board.children.push_back(paraDrop_board);
-   			paraDrop_board->makeMove(*it, 1, 0, gamma);
+   			//paraDrop_board->makeMove(*it, 1, 0, gamma);
+      		paraDrop_board->makeMove(paraDrop_board->findLowestUnclaimedSquare(), 1, 0, gamma);
    			int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
  			bestValueMin = min(bestValueMin, test_val0);
 
- 			//deathBlitz
-			Board* deathBlitz_board = new Board(board);
- 			deathBlitz_board->parent = &board;
-  			board.children.push_back(deathBlitz_board);
-   			deathBlitz_board->makeMove(*it, 1, 1, gamma);
-   			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
- 			bestValueMin = min(bestValueMin, test_val1);
+ 		// 	//deathBlitz
+			// Board* deathBlitz_board = new Board(board);
+ 		// 	deathBlitz_board->parent = &board;
+  	// 		board.children.push_back(deathBlitz_board);
+   // 			deathBlitz_board->makeMove(*it, 1, 1, gamma);
+   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
+ 		// 	bestValueMin = min(bestValueMin, test_val1);
 
  			// //sabotage
  			// Board* sabotage_board = new Board(board);
@@ -92,7 +96,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
    	// 		int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
  			// bestValueMin = min(bestValueMin, test_val2);
-		}
+		//}
 		return bestValueMin;	
 	}
 }
@@ -259,7 +263,7 @@ int main(int argc, char* argv[])
 	//d->printBoard();
 	//d->printScores();
 	cout << "Running minimax" << endl;
-	int minimax_heuristic = minimax(*d, 2, true, 1.0);
+	int minimax_heuristic = minimax(*d, 3, true, 1.0);
 	cout << "Minimax heuristic: " << minimax_heuristic << endl;
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;

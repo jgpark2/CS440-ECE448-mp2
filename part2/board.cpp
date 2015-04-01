@@ -837,6 +837,24 @@ int Board::findHighestUnclaimedSquare()
 	return maxScoreLocation;
 }
 
+int Board::findLowestUnclaimedSquare()
+{
+	int minScore = -1;
+	int minScoreLocation = -1;
+	int counter = 0;
+	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
+	{
+		//if unclaimed and score greater than maxScore
+		if( it->second==-1 && it->first < minScore)
+		{
+			minScore = it->first;
+			minScoreLocation = counter;
+		}
+		counter++;
+	}
+	return minScoreLocation;
+}
+
 vector<int> Board::getUnoccupiedIndices()
 {
 	vector<int> retval;

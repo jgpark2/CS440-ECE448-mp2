@@ -31,6 +31,7 @@ class Board {
 		int getPlayerScore(std::string playerName);
 		int getPlayerScore(int playerID);
 		int findHighestUnclaimedSquare();
+		int findLowestUnclaimedSquare();
 		bool isBoardFull();
 		bool isRoot();
 		void deleteDescendants();
