@@ -159,106 +159,162 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 	}
 }
 
-
-//only paraDrop
-int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta, double gamma)
+Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int alpha, int beta, double gamma)
 {
+	Move move;
+	//board.printBoard();
 	if(depth==0 || board.isBoardFull())
 	{
-		int retval;
-		if(maximizingPlayer)
-		{
-			retval = board.getPlayerScore(0);
-			return retval;
-		}
-		else
-		{
-			retval = board.getPlayerScore(1);
-			return retval;
-		}
+		move.score = board.getPlayerScore(orig_id);
+		return move;
 	}
 	if(maximizingPlayer)
 	{
-		int vMax = INT_MIN;
-		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		Move bestMove(INT_MIN, -1);
+
+		//paraDrop
+		vector<int> possible_moves = board.getUnoccupiedIndices();
+		if(!possible_moves.empty())
 		{
-			//paraDrop
-			Board* paraDrop_board = new Board(board);
- 			paraDrop_board->parent = &board;
-  			board.children.push_back(paraDrop_board);
-   			paraDrop_board->makeMove(*it, 0, 0, gamma);
-   			int test_val0 = alphabeta(*paraDrop_board, depth-1, false, alpha, beta, gamma);
- 			vMax = max(vMax, test_val0);
- 			alpha = max(alpha, vMax);
- 			if(beta <= alpha)
- 				break;
+			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+			{
+				Board* paraDrop_board = new Board(board);
+		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
+		  		Move curMove(-1, *it);
 
- 			//deathBlitz
-			Board* deathBlitz_board = new Board(board);
- 			deathBlitz_board->parent = &board;
-  			board.children.push_back(deathBlitz_board);
-   			deathBlitz_board->makeMove(*it, 0, 1, gamma);
-   			int test_val1 = alphabeta(*deathBlitz_board, depth-1, false, alpha, beta, gamma);
- 			vMax = max(vMax, test_val1);
- 			alpha = max(alpha, vMax);
- 			if(beta <= alpha)
- 				break;
-
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
-   	// 		int test_val2 = alphabeta(*sabotage_board, depth-1, false, alpha, beta, gamma);
- 			// vMax = max(vMax, test_val2);
- 			// alpha = max(alpha, vMax);
- 			// if(beta <= alpha)
- 			// 	break;
-
+				if( !(paraDrop_board->isSameBoard(board)) )
+				{
+			  		paraDrop_board->parent = &board;
+					board.children.push_back(paraDrop_board);
+					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					if(curMove.score > bestMove.score)
+						bestMove = curMove;
+					alpha = max(alpha, bestMove.score);
+					if(beta<=alpha)
+						break;
+				}
+			}
 		}
-		return vMax;
+
+		//deathBlitz
+		//possible_moves.clear();
+		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(0);
+		//if(!possible_moves_2.empty())
+		//{
+			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
+			{
+				Board* deathBlitz_board = new Board(board);
+				deathBlitz_board->makeMove(*it, 0, 1, gamma);
+				Move curMove(-1, *it);
+
+				if( !(deathBlitz_board->isSameBoard(board)) )
+				{
+					deathBlitz_board->parent = &board;
+					board.children.push_back(deathBlitz_board);
+					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					if(curMove.score > bestMove.score)
+						bestMove = curMove;
+					alpha = max(alpha, bestMove.score);
+					if(beta<=alpha)
+						break;
+				}
+			}
+		//}
+
+		//sabotage (FOR EXPECTIMINIMAX, NOT FOR MINIMAX)
+		// possible_moves.clear();
+		// possible_moves = board.getEmptyNeighboringSquares(1); //want neighbors to enemy squares
+		// if(!possible_moves.empty())
+		// {
+		// 	for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+		// 	{
+		// 		Board* sabotage_board = new Board(board);
+		// 		sabotage_board->makeMove(*it, 0, 2, gamma);
+		// 		if( !(sabotage_board->isSameBoard(board)) )
+		// 		{
+		// 			sabotage_board->parent = &board;
+		// 			board.children.push_back(sabotage_board);
+		// 			int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
+		// 			bestValueMax = max(bestValueMax, test_val2);
+		// 		}
+		// 	}
+		// }
+
+		return bestMove;
 	}
 	else
 	{
-		int vMin = INT_MAX;
-		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		Move bestMove(INT_MAX, -1);
+
+		//paraDrop
+		vector<int>possible_moves = board.getUnoccupiedIndices();
+		if(!possible_moves.empty())
 		{
-			//paraDrop
-			Board* paraDrop_board = new Board(board);
- 			paraDrop_board->parent = &board;
-  			board.children.push_back(paraDrop_board);
-   			paraDrop_board->makeMove(*it, 1, 0, gamma);
-   			int test_val0 = alphabeta(*paraDrop_board, depth-1, true, alpha, beta, gamma);
- 			vMin = min(vMin, test_val0);
- 			beta = min(beta, vMin);
- 			if(beta <= alpha)
- 				break;
+			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+			{
+				Board* paraDrop_board = new Board(board);
+		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
+		  		Move curMove(-1, *it);
 
- 			//deathBlitz
-			Board* deathBlitz_board = new Board(board);
- 			deathBlitz_board->parent = &board;
-  			board.children.push_back(deathBlitz_board);
-   			deathBlitz_board->makeMove(*it, 1, 1, gamma);
-   			int test_val1 = alphabeta(*deathBlitz_board, depth-1, true, alpha, beta, gamma);
- 			vMin = min(vMin, test_val1);
-  			beta = min(beta, vMin);
- 			if(beta <= alpha)
- 				break;
-
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
-   	// 		int test_val2 = alphabeta(*sabotage_board, depth-1, true, alpha, beta, gamma);
- 			// vMin = min(vMin, test_val2);
-  		// 	beta = min(beta, vMin);
- 			// if(beta <= alpha)
- 			// 	break;
+				if( !(paraDrop_board->isSameBoard(board)) )
+				{
+			  		paraDrop_board->parent = &board;
+					board.children.push_back(paraDrop_board);
+					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					if(curMove.score < bestMove.score)
+						bestMove = curMove;
+					beta = min(alpha, bestMove.score);
+					if(beta<=alpha)
+						break;
+				}
+			}
 		}
-		return vMin;	
+
+		//deathBlitz
+		//possible_moves.clear();
+		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(1);
+		//if(!possible_moves_2.empty())
+		//{
+			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
+			{		
+				Board* deathBlitz_board = new Board(board);
+				deathBlitz_board->makeMove(*it, 1, 1, gamma);
+			  	Move curMove(-1, *it);
+
+				if( !(deathBlitz_board->isSameBoard(board)) )
+				{
+					deathBlitz_board->parent = &board;
+					board.children.push_back(deathBlitz_board);
+					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					if(curMove.score < bestMove.score)
+						bestMove = curMove;
+					beta = min(alpha, bestMove.score);
+					if(beta<=alpha)
+						break;
+				}
+			}
+		//}
+
+		//sabotage (FOR EXPECTIMINIMAX, NOT FOR MINIMAX)
+		// possible_moves.clear();
+		// possible_moves = board.getEmptyNeighboringSquares(1); //want neighbors to enemy squares
+		// if(!possible_moves.empty())
+		// {
+		// 	for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+		// 	{
+		// 		Board* sabotage_board = new Board(board);
+		// 		sabotage_board->makeMove(*it, 1, 2, gamma);
+		// 		if( !(sabotage_board->isSameBoard(board)) )
+		// 		{
+		// 			sabotage_board->parent = &board;
+		// 			board.children.push_back(sabotage_board);
+		// 			int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
+		// 			bestValueMin = min(bestValueMin, test_val2);
+		// 		}
+		// 	}
+		// }
+		
+		return bestMove;
 	}
 }
 
