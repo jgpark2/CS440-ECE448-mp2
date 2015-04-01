@@ -8,6 +8,7 @@ class Move {
 		Move(Move const &rhs);
 		~Move();
 		void setIndex(int i_index);
+		void setScore(int i_score);
 
 		int score;
 		int index;

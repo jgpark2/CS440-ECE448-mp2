@@ -24,3 +24,7 @@ void Move::setIndex(int i_index)
 	if(index<0)
 		index = i_index;
 }
+void Move::setScore(int i_score)
+{
+	score = i_score;
+}
