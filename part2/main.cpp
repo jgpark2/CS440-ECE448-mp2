@@ -12,24 +12,14 @@
 using namespace std;
 using namespace boost;
 
-Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move move)
+Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double gamma)
 {
-	board.printBoard();
+	Move move;
+	//board.printBoard();
 	if(depth==0 || board.isBoardFull())
 	{
-		//cout << "Base case for ";
-		if(maximizingPlayer)
-		{
-			//cout << " maximizingPlayer" << endl;
-			move.score = board.getPlayerScore(1);
-			return move;
-		}
-		else
-		{
-			//cout << " minimizingPlayer" << endl;
-			move.score = board.getPlayerScore(1);
-			return move;
-		}
+		move.score = board.getPlayerScore(orig_id);
+		return move;
 	}
 	if(maximizingPlayer)
 	{
@@ -43,12 +33,13 @@ Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move m
 			{
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
-		  		move.setIndex(*it);
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					int test_val0 = (minimax(*paraDrop_board, depth-1, false, gamma, move)).score;
+					int test_val0 = (minimax(*paraDrop_board, depth-1, orig_id, false, gamma)).score;
+					if(test_val0 > bestValueMax)
+						move.setIndex(*it);
 					bestValueMax = max(bestValueMax, test_val0);
 				}
 			}
@@ -63,12 +54,13 @@ Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move m
 			{
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
-				move.setIndex(*it);
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					int test_val1 = (minimax(*deathBlitz_board, depth-1, false, gamma, move)).score;
+					int test_val1 = (minimax(*deathBlitz_board, depth-1, orig_id, false, gamma)).score;
+					if(test_val1 > bestValueMax)
+						move.setIndex(*it);
 					bestValueMax = max(bestValueMax, test_val1);
 				}
 			}
@@ -108,12 +100,13 @@ Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move m
 			{
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
-		  		move.setIndex(*it);
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					int test_val0 = (minimax(*paraDrop_board, depth-1, true, gamma, move)).score;
+					int test_val0 = (minimax(*paraDrop_board, depth-1, orig_id, true, gamma)).score;
+					if(test_val0 < bestValueMin)
+						move.setIndex(*it);
 					bestValueMin = min(bestValueMin, test_val0);
 				}
 			}
@@ -128,12 +121,13 @@ Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move m
 			{		
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
-			  	move.setIndex(*it);
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					int test_val1 = (minimax(*deathBlitz_board, depth-1, true, gamma, move)).score;
+					int test_val1 = (minimax(*deathBlitz_board, depth-1, orig_id, true, gamma)).score;
+					if(test_val1 < bestValueMin)
+						move.setIndex(*it);
 					bestValueMin = min(bestValueMin, test_val1);
 				}
 			}
@@ -285,35 +279,35 @@ int main(int argc, char* argv[])
 			break;
 	}
 
-	Board* b = new Board();
-	b->parseBoard(scenario);
-	b->addPlayer("Blue");
-	b->addPlayer("Green");
+	// Board* b = new Board();
+	// b->parseBoard(scenario);
+	// b->addPlayer("Blue");
+	// b->addPlayer("Green");
 
-	b->paraDrop('D', 1, "Blue");
-	b->paraDrop('C', 2, "Blue");
-	b->paraDrop('D', 2, "Blue");
-	b->paraDrop('E', 2, "Blue");
-	b->paraDrop('C', 4, "Green");
-	b->paraDrop('D', 4, "Green");
-	b->printBoard();
-	b->printScores();
+	// b->paraDrop('D', 1, "Blue");
+	// b->paraDrop('C', 2, "Blue");
+	// b->paraDrop('D', 2, "Blue");
+	// b->paraDrop('E', 2, "Blue");
+	// b->paraDrop('C', 4, "Green");
+	// b->paraDrop('D', 4, "Green");
+	// b->printBoard();
+	// b->printScores();
 
-	b->deathBlitz('D', 3, "Green");
-	b->printBoard();
-	b->printScores();
+	// b->deathBlitz('D', 3, "Green");
+	// b->printBoard();
+	// b->printScores();
 
-	b->deathBlitz('C', 3, "Blue");
-	b->printBoard();
-	b->printScores();
+	// b->deathBlitz('C', 3, "Blue");
+	// b->printBoard();
+	// b->printScores();
 
-	b->paraDrop('D', 4, "Blue");
-	b->printBoard();
-	b->printScores();
+	// b->paraDrop('D', 4, "Blue");
+	// b->printBoard();
+	// b->printScores();
 
-	b->deathBlitz('D', 4, "Blue");
-	b->printBoard();
-	b->printScores();
+	// b->deathBlitz('D', 4, "Blue");
+	// b->printBoard();
+	// b->printScores();
 
 	// b->sabotage('C', 1, "Green", 1.0);
 	// b->printBoard();
@@ -327,16 +321,14 @@ int main(int argc, char* argv[])
 	// c->printBoard();
 
 
-	// Board* d = new Board();
-	// d->parseBoard(scenario);
-	// d->addPlayer("Blue");
-	// d->addPlayer("Green");
-	// //d->printBoard();
-	// //d->printScores();
-	// cout << "Running minimax" << endl;
-	// int minimax_heuristic = minimax(*d, 3, false, 1.0);
-	// cout << "Minimax heuristic: " << minimax_heuristic << endl;
-
+	Board* d = new Board();
+	d->parseBoard(scenario);
+	d->addPlayer("Blue");
+	d->addPlayer("Green");
+	cout << "Running minimax" << endl;
+	Move minimax_heuristic = minimax(*d, 3, 0, true, 1.0);
+	cout << "Minimax heuristic score: " << minimax_heuristic.score << endl;
+	cout << "Minimax heuristic index: " << minimax_heuristic.index << endl;
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
@@ -364,9 +356,9 @@ int main(int argc, char* argv[])
 	// 	cout << "not ";
 	// cout << "the same" << endl;
 
-	delete b;
+	//delete b;
 	//delete c;
-	//delete d;
+	delete d;
 	//delete e;
 	return 0;
 }
