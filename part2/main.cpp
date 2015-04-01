@@ -52,13 +52,13 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
  			bestValueMax = max(bestValueMax, test_val1);
 
- 			//sabotage
- 			Board* sabotage_board = new Board(board);
- 			sabotage_board->parent = &board;
-  			board.children.push_back(sabotage_board);
-   			sabotage_board->makeMove(*it, 0, 2, gamma);
-   			int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
- 			bestValueMax = max(bestValueMax, test_val2);
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
+   	// 		int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
+ 			// bestValueMax = max(bestValueMax, test_val2);
 
 		}
 		return bestValueMax;
@@ -85,13 +85,13 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
  			bestValueMin = min(bestValueMin, test_val1);
 
- 			//sabotage
- 			Board* sabotage_board = new Board(board);
- 			sabotage_board->parent = &board;
-  			board.children.push_back(sabotage_board);
-   			sabotage_board->makeMove(*it, 1, 2, gamma);
-   			int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
- 			bestValueMin = min(bestValueMin, test_val2);
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
+   	// 		int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
+ 			// bestValueMin = min(bestValueMin, test_val2);
 		}
 		return bestValueMin;	
 	}
@@ -143,16 +143,16 @@ int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta
  			if(beta <= alpha)
  				break;
 
- 			//sabotage
- 			Board* sabotage_board = new Board(board);
- 			sabotage_board->parent = &board;
-  			board.children.push_back(sabotage_board);
-   			sabotage_board->makeMove(*it, 0, 2, gamma);
-   			int test_val2 = alphabeta(*sabotage_board, depth-1, false, alpha, beta, gamma);
- 			vMax = max(vMax, test_val2);
- 			alpha = max(alpha, vMax);
- 			if(beta <= alpha)
- 				break;
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
+   	// 		int test_val2 = alphabeta(*sabotage_board, depth-1, false, alpha, beta, gamma);
+ 			// vMax = max(vMax, test_val2);
+ 			// alpha = max(alpha, vMax);
+ 			// if(beta <= alpha)
+ 			// 	break;
 
 		}
 		return vMax;
@@ -185,16 +185,16 @@ int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta
  			if(beta <= alpha)
  				break;
 
- 			//sabotage
- 			Board* sabotage_board = new Board(board);
- 			sabotage_board->parent = &board;
-  			board.children.push_back(sabotage_board);
-   			sabotage_board->makeMove(*it, 1, 2, gamma);
-   			int test_val2 = alphabeta(*sabotage_board, depth-1, true, alpha, beta, gamma);
- 			vMin = min(vMin, test_val2);
-  			beta = min(beta, vMin);
- 			if(beta <= alpha)
- 				break;
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
+   	// 		int test_val2 = alphabeta(*sabotage_board, depth-1, true, alpha, beta, gamma);
+ 			// vMin = min(vMin, test_val2);
+  		// 	beta = min(beta, vMin);
+ 			// if(beta <= alpha)
+ 			// 	break;
 		}
 		return vMin;	
 	}
