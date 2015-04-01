@@ -34,6 +34,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
 		  		Move curMove(-1, *it);
+		  		curMove.moveTypes = 0;
 
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
@@ -56,6 +57,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
 				Move curMove(-1, *it);
+				curMove.moveTypes = 1;
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
@@ -102,6 +104,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
 		  		Move curMove(-1, *it);
+		  		curMove.moveTypes = 0;
 
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
@@ -124,6 +127,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
 			  	Move curMove(-1, *it);
+			  	curMove.moveTypes = 1;
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
@@ -265,21 +269,26 @@ int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta
 int main(int argc, char* argv[])
 {
 
-	if (argc!=3) 
+	if (argc!=4) 
 	{
-		cout << "Error, usage: ./mp2 [search flag] [scenario file name]" << endl;
+		cout << "Error, usage: ./mp2 [player 1 stragegy a/m] [player 2 strategy a/m] [scenario file name]" << endl;
 		return 1;
 	}
 	
-	char mode = argv[1][0];
-	string scenario = argv[2];
+	char player1Mode = argv[1][0];
+	char player2Mode = argv[2][0]
+	string scenario = argv[3];
+	vector<int> strategyType;
+	if(player1Mode == 'm')
+		strategyType.push_back(0);
+	else
+		strategyType.push_back(1);
+	if(player2Mode == 'm')
+		strategyType.push_back(0);
+	else
+		strategyType.push_back(1);
+
 	
-	switch(mode)
-	{
-		default:
-			cout << "Search flag mode: " << mode << endl;
-			break;
-	}
 
 	// Board* b = new Board();
 	// b->parseBoard(scenario);
@@ -328,7 +337,23 @@ int main(int argc, char* argv[])
 	d->addPlayer("Blue");
 	d->addPlayer("Green");
 	cout << "Running minimax" << endl;
-	Move minimax_heuristic = minimax(*d, 3, 0, true, 1.0);
+	int curPlayer = 0;
+
+	//minimax vs minimax
+
+	while(!(d->isBoardFull()))
+	{
+		if(strategyType[curPlayer] == 0)
+			Move minimax_heuristic = minimax(*d, 3, curPlayer, true, 1.0);
+		else
+			Move minimax_heuristic = alphabeta(*d, 3, curPlayer, true, 1.0);
+		d->makeMove(minimax_hueristic.index,curPlayer,minimax_hueristic.moveTypes,1.0);
+		curPlayer = (curPlayer == 1)?0:1;
+
+	}
+
+	//
+
 	cout << "Minimax heuristic score: " << minimax_heuristic.score << endl;
 	cout << "Minimax heuristic index: " << minimax_heuristic.index << endl;
 

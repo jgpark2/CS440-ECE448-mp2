@@ -4,6 +4,7 @@ Move::Move()
 {
 	score = 0;
 	index = -1;
+	moveType = -1;
 }
 Move::Move(int i_score, int i_index)
 {
