@@ -29,8 +29,6 @@ Board::Board(Board const &other)
 	board = other.board;
 	player_map = other.player_map;
 	heuristic = other.heuristic;
-	parent = other.parent;
-	children = other.children;
 }
 
 //destructor
