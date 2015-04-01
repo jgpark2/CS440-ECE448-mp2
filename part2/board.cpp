@@ -27,11 +27,17 @@ Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_pl
 Board::Board(Board const &other)
 {
 	board = other.board;
-	map<int, pair<int, string> > rhs_map = other.player_map;
-	player_map = rhs_map;
+	map<int, pair<int, string> > rhs_map;
 	heuristic = other.heuristic;
 	parent = NULL;
 	children = vector<Board*>();
+	
+	for(map<int, pair<int, string> >::const_iterator it = other.player_map.begin(); it!=other.player_map.end(); ++it)
+	{
+		pair<int, string> my_pair ((it->second).first, (it->second).second);
+		rhs_map.insert(pair<int, pair<int, string> >(it->first, my_pair  )); 
+	}
+	player_map = rhs_map;
 }
 
 //destructor
