@@ -895,37 +895,52 @@ vector<int> Board::getEmptyNeighboringSquares(int playerID)
 		{	
 			//check to see if there are unoccupied neighbors and push their indices to the vector
 			int up_index = counter-6;
-			if(up_index >= 0 && board[up_index].second==-1)
+			if(up_index >= 0)
 			{
-				if(find(indices.begin(), indices.end(), up_index)==indices.end()) //don't push repeats
+				if(board[up_index].second==-1)
 				{
-					indices.push_back(up_index);
+					if(find(indices.begin(), indices.end(), up_index)==indices.end()) //don't push repeats
+					{
+						indices.push_back(up_index);
+					}
 				}
 			}
 
 			int right_index = counter+1;
-			if(right_index < 36 && board[right_index].second==-1)
+			if(right_index < 36)
 			{
-				if(find(indices.begin(), indices.end(), right_index)==indices.end())
+				if(board[right_index].second==-1)
 				{
-					indices.push_back(right_index);
-				}			}
+					if(find(indices.begin(), indices.end(), right_index)==indices.end())
+					{
+						indices.push_back(right_index);
+					}			
+				}
+			}
 
 			int down_index = counter+6;
-			if(down_index < 36 && board[down_index].second==-1)
+			if(down_index < 36)
 			{
-				if(find(indices.begin(), indices.end(), down_index)==indices.end())
+				if(board[down_index].second==-1)
 				{
-					indices.push_back(down_index);
-				}			}
+					if(find(indices.begin(), indices.end(), down_index)==indices.end())
+					{
+						indices.push_back(down_index);
+					}
+				}
+			}
 
 			int left_index = counter-1;
-			if(left_index >=0 && board[left_index].second==-1)
+			if(left_index >=0)
 			{
-				if(find(indices.begin(), indices.end(), left_index)==indices.end())
+				if(board[left_index].second==-1)
 				{
-					indices.push_back(left_index);
-				}			}
+					if(find(indices.begin(), indices.end(), left_index)==indices.end())
+					{
+						indices.push_back(left_index);
+					}	
+				}		
+			}
 		}
 		counter++;
 	}
