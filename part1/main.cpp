@@ -90,9 +90,9 @@ GameState* recursiveBackNoStop(GameState* node, vector<GameState*>* solutions_pt
 			result = recursiveBackNoStop(assignment, solutions_ptr);
 		}
 		
-		/*if (result != NULL) { Simply continues to finihs all semester assignments! I think there's some fwd checkign to reduce the domain of semesters here... if not, we can sure use it :/
+		if (result != NULL) { //Simply continues to finihs all semester assignments! I think there's some fwd checkign to reduce the domain of semesters here... if not, we can sure use it :/
 			return result;
-		}*/
+		}
 	}
 	
 	return NULL;

@@ -11,13 +11,12 @@
 using namespace std;
 using namespace boost;
 
-//only paraDrop
 int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 {
 	if(depth==0 || board.isBoardFull())
 	{
 		//cout << "Base case for ";
-		int retval = -1;
+		int retval;
 		if(maximizingPlayer)
 		{
 			//cout << " maximizingPlayer" << endl;
@@ -53,13 +52,13 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    // 			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
  		// 	bestValueMax = max(bestValueMax, test_val1);
 
- 		// 	//sabotage
- 		// 	Board* sabotage_board = new Board(board);
- 		// 	sabotage_board->parent = &board;
-  	// 		board.children.push_back(sabotage_board);
-   // 			sabotage_board->makeMove(*it, 0, 2, gamma);
-   // 			int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
- 		// 	bestValueMax = max(bestValueMax, test_val2);
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
+   	// 		int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
+ 			// bestValueMax = max(bestValueMax, test_val2);
 
 		}
 		return bestValueMax;
@@ -78,7 +77,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    			int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
  			bestValueMin = min(bestValueMin, test_val0);
 
- 			//deathBlitz
+ 		// 	//deathBlitz
 			// Board* deathBlitz_board = new Board(board);
  		// 	deathBlitz_board->parent = &board;
   	// 		board.children.push_back(deathBlitz_board);
@@ -86,216 +85,123 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    // 			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
  		// 	bestValueMin = min(bestValueMin, test_val1);
 
- 		// 	//sabotage
- 		// 	Board* sabotage_board = new Board(board);
- 		// 	sabotage_board->parent = &board;
-  	// 		board.children.push_back(sabotage_board);
-   // 			sabotage_board->makeMove(*it, 1, 2, gamma);
-   // 			int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
- 		// 	bestValueMin = min(bestValueMin, test_val2);
+ 			// //sabotage
+ 			// Board* sabotage_board = new Board(board);
+ 			// sabotage_board->parent = &board;
+  		// 	board.children.push_back(sabotage_board);
+   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
+   	// 		int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
+ 			// bestValueMin = min(bestValueMin, test_val2);
 		}
 		return bestValueMin;	
 	}
 }
 
 
-// //returns heuristic of player and number of nodes expanded
-// //ONLY WORKS FOR 2 PLAYERS - assuming maximizingPlayer is playerID 0 and minimizingPlayer is playerID 1
-// //nodes_expanded: put in 0 for initial call
-// //sabotage: whether or not to perform sabotage (2.2.1 vs 2.2.2)
-// //returns a vector that contains heuristic at 0, number of nodes expanded at 1
-// vector<int> alphabeta(Board board, int depth, int alpha, int beta, bool maximizingPlayer, double gamma, int nodes_expanded, bool sabotage)
-// {
-// 	if(depth==0 || board.isBoardFull())
-// 	{
-// 		if(maximizingPlayer)
-// 		{
-// 			vector <int> retval;
-// 			retval.push_back(board.getPlayerScore(0));
-// 			retval.push_back(nodes_expanded);
-// 			return retval;
-// 		}
-// 		else
-// 		{
-// 			vector <int> retval;
-// 			retval.push_back(board.getPlayerScore(1));
-// 			retval.push_back(nodes_expanded);
-// 			return retval;		
-// 		}
-// 	}
+//only paraDrop
+int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta, double gamma)
+{
+	if(depth==0 || board.isBoardFull())
+	{
+		//cout << "Base case for ";
+		int retval;
+		if(maximizingPlayer)
+		{
+			//cout << " maximizingPlayer" << endl;
+			retval = board.getPlayerScore(0);
+			return retval;
+		}
+		else
+		{
+			//cout << " minimizingPlayer" << endl;
+			retval = board.getPlayerScore(1);
+			return retval;
+		}
+	}
+	if(maximizingPlayer)
+	{
+		int vMax = INT_MIN;
+		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
+		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		{
+			//paraDrop
+			Board* paraDrop_board = new Board(board);
+ 			paraDrop_board->parent = &board;
+  			board.children.push_back(paraDrop_board);
+   			paraDrop_board->makeMove(*it, 0, 0, gamma);
+   			int test_val0 = alphabeta(*paraDrop_board, depth-1, false, alpha, beta, gamma);
+ 			vMax = max(vMax, test_val0);
+ 			alpha = max(alpha, vMax);
+ 			if(beta <= alpha)
+ 				break;
 
-// 	if(maximizingPlayer)
-// 	{
-// 		int v = INT_MIN;
-		
-// 		//DOUBLE CHECK THIS:
-// 		//for each child in vector of children from getChildrenIndices
-// 		//try all three moves: paraDrop, deathBlitz, sabotage
-// 		//compare heuristic with bestValue and store max as bestValue
+ 			//deathBlitz
+			Board* deathBlitz_board = new Board(board);
+ 			deathBlitz_board->parent = &board;
+  			board.children.push_back(deathBlitz_board);
+   			deathBlitz_board->makeMove(*it, 0, 1, gamma);
+   			int test_val1 = alphabeta(*deathBlitz_board, depth-1, false, alpha, beta, gamma);
+ 			vMax = max(vMax, test_val1);
+ 			alpha = max(alpha, vMax);
+ 			if(beta <= alpha)
+ 				break;
 
-// 		vector<int> maxNeighbors = board.getChildrenIndices(0);
-// 		//if there is no claimed square by player 0 (playerID=0)
-// 		if(maxNeighbors.empty())
-// 		{
-// 			Board* paraDrop_board = new Board(board);
-// 			paraDrop_board->parent = &board;
-// 			board.children.push_back(paraDrop_board);
-// 			paraDrop_board->makeMove(paraDrop_board->findHighestUnclaimedSquare(), 0, 0, gamma);//fourth param is gamma, any double will work
-// 			v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 			alpha = max(alpha, v);
-// 			// if(beta <= alpha)
-// 			// 	break;	//beta cut-off
+ 			//sabotage
+ 			Board* sabotage_board = new Board(board);
+ 			sabotage_board->parent = &board;
+  			board.children.push_back(sabotage_board);
+   			sabotage_board->makeMove(*it, 0, 2, gamma);
+   			int test_val2 = alphabeta(*sabotage_board, depth-1, false, alpha, beta, gamma);
+ 			vMax = max(vMax, test_val2);
+ 			alpha = max(alpha, vMax);
+ 			if(beta <= alpha)
+ 				break;
 
-// 			Board* deathBlitz_board = new Board(board);
-// 			deathBlitz_board->parent = &board;
-// 			board.children.push_back(deathBlitz_board);
-// 			deathBlitz_board->makeMove(deathBlitz_board->findHighestUnclaimedSquare(), 0, 1, gamma);//fourth param is gamma, any double will work
-// 			v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 			alpha = max(alpha, v);
-// 			// if(beta <= alpha)
-// 			// 	break;	//beta cut-off
+		}
+		return vMax;
+	}
+	else
+	{
+		int vMin = INT_MAX;
+		vector<int> unoccupied_squares = board.getUnoccupiedIndices();
+		for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
+		{
+			//paraDrop
+			Board* paraDrop_board = new Board(board);
+ 			paraDrop_board->parent = &board;
+  			board.children.push_back(paraDrop_board);
+   			paraDrop_board->makeMove(*it, 1, 0, gamma);
+   			int test_val0 = alphabeta(*paraDrop_board, depth-1, true, alpha, beta, gamma);
+ 			vMin = min(vMin, test_val0);
+ 			beta = min(beta, vMin);
+ 			if(beta <= alpha)
+ 				break;
 
-// 			if(sabotage)
-// 			{
-// 				Board* sabotage_board = new Board(board);
-// 				sabotage_board->parent = &board;
-// 				board.children.push_back(sabotage_board);
-// 				sabotage_board->makeMove(sabotage_board->findHighestUnclaimedSquare(), 0, 2, gamma);
-// 				v = (alphabeta(*sabotage_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 				alpha = max(alpha, v);
-// 				// if(beta <= alpha)
-// 				// 	break;	//beta cut-off
-// 			}
-// 		}
-// 		else
-// 		{
-// 			for(vector<int>::iterator it = maxNeighbors.begin(); it!=maxNeighbors.end(); ++it)
-// 			{
-// 				Board* paraDrop_board = new Board(board);
-// 				paraDrop_board->parent = &board;
-// 				board.children.push_back(paraDrop_board);
-// 				paraDrop_board->makeMove(*it, 0, 0, gamma);//fourth param is gamma, any double will work
-// 				v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 				alpha = max(alpha, v);
-// 				if(beta <= alpha)
-// 					break;	//beta cut-off
+ 			//deathBlitz
+			Board* deathBlitz_board = new Board(board);
+ 			deathBlitz_board->parent = &board;
+  			board.children.push_back(deathBlitz_board);
+   			deathBlitz_board->makeMove(*it, 1, 1, gamma);
+   			int test_val1 = alphabeta(*deathBlitz_board, depth-1, true, alpha, beta, gamma);
+ 			vMin = min(vMin, test_val1);
+  			beta = min(beta, vMin);
+ 			if(beta <= alpha)
+ 				break;
 
-// 				Board* deathBlitz_board = new Board(board);
-// 				deathBlitz_board->parent = &board;
-// 				board.children.push_back(deathBlitz_board);
-// 				deathBlitz_board->makeMove(*it, 0, 1, gamma);//fourth param is gamma, any double will work
-// 				v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 				alpha = max(alpha, v);
-// 				if(beta <= alpha)
-// 					break;	//beta cut-off
-
-// 				if(sabotage)
-// 				{
-// 					Board* sabotage_board = new Board(board);
-// 					sabotage_board->parent = &board;
-// 					board.children.push_back(sabotage_board);
-// 					sabotage_board->makeMove(*it, 0, 2, gamma);
-// 					v = (alphabeta(*sabotage_board, depth-1, alpha, beta, false, gamma, nodes_expanded+1, sabotage))[0];
-// 					alpha = max(alpha, v);
-// 					if(beta <= alpha)
-// 						break;	//beta cut-off
-// 				}
-// 			}
-// 		}
-// 		vector<int> retval;
-// 		retval.push_back(v);
-// 		retval.push_back(nodes_expanded);
-// 		return retval;
-// 	}
-// 	else
-// 	{
-// 		int v = INT_MAX;
-// 		//DOUBLE CHECK THIS:
-// 		//for each child in vector of children from getChildrenIndices
-// 		//try all three moves: paraDrop, deathBlitz, sabotage
-// 		//compare heuristic with bestValue and store max as bestValue
-
-// 		vector<int> minNeighbors = board.getChildrenIndices(0);
-// 		//if there is no claimed square by player 1 (playerID=1)
-// 		if(minNeighbors.empty())
-// 		{
-// 			Board* paraDrop_board = new Board(board);
-// 			paraDrop_board->parent = &board;
-// 			board.children.push_back(paraDrop_board);
-// 			paraDrop_board->makeMove(paraDrop_board->findHighestUnclaimedSquare(), 1, 0, gamma);//fourth param is gamma, any double will work
-// 			v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 			beta = max(beta, v);
-// 			// if(beta <= alpha)
-// 			// 	break;	//alpha cut-off
-
-// 			Board* deathBlitz_board = new Board(board);
-// 			deathBlitz_board->parent = &board;
-// 			board.children.push_back(deathBlitz_board);
-// 			deathBlitz_board->makeMove(deathBlitz_board->findHighestUnclaimedSquare(), 1, 1, gamma);//fourth param is gamma, any double will work
-// 			v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 			beta = max(beta, v);
-// 			// if(beta <= alpha)
-// 			// 	break;	//alpha cut-off
-
-// 			if(sabotage)
-// 			{
-// 				Board* sabotage_board = new Board(board);
-// 				sabotage_board->parent = &board;
-// 				board.children.push_back(sabotage_board);
-// 				sabotage_board->makeMove(sabotage_board->findHighestUnclaimedSquare(), 1, 2, gamma);
-// 				v = (alphabeta(*sabotage_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 				beta = max(beta, v);
-// 				// if(beta <= alpha)
-// 				// 	break;	//alpha cut-off
-// 			}
-// 		}
-// 		else
-// 		{
-// 			for(vector<int>::iterator it = minNeighbors.begin(); it!=minNeighbors.end(); ++it)
-// 			{
-// 				Board* paraDrop_board = new Board(board);
-// 				paraDrop_board->parent = &board;
-// 				board.children.push_back(paraDrop_board);
-// 				paraDrop_board->makeMove(*it, 1, 0, gamma);//fourth param is gamma, any double will work
-// 				v = (alphabeta(*paraDrop_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 				beta = max(beta, v);
-// 				if(beta <= alpha)
-// 					break;	//alpha cut-off
-
-// 				Board* deathBlitz_board = new Board(board);
-// 				deathBlitz_board->parent = &board;
-// 				board.children.push_back(deathBlitz_board);
-// 				deathBlitz_board->makeMove(*it, 1, 1, gamma);//fourth param is gamma, any double will work
-// 				v = (alphabeta(*deathBlitz_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 				beta = max(beta, v);
-// 				if(beta <= alpha)
-// 					break;	//alpha cut-off
-
-// 				if(sabotage)
-// 				{
-// 					Board* sabotage_board = new Board(board);
-// 					sabotage_board->parent = &board;
-// 					board.children.push_back(sabotage_board);
-// 					sabotage_board->makeMove(*it, 1, 2, gamma);
-// 					v = (alphabeta(*sabotage_board, depth-1, alpha, beta, true, gamma, nodes_expanded, sabotage))[0];
-// 					beta = max(beta, v);
-// 					if(beta <= alpha)
-// 						break;	//alpha cut-off
-// 				}
-// 			}
-// 		}
-
-// 		vector<int> retval;
-// 		retval.push_back(v);
-// 		retval.push_back(nodes_expanded);
-// 		return retval;
-// 	}
-
-// 	vector<int> retval;
-// 	retval.push_back(-1);
-// 	retval.push_back(nodes_expanded);
-// 	return retval;
-// }
+ 			//sabotage
+ 			Board* sabotage_board = new Board(board);
+ 			sabotage_board->parent = &board;
+  			board.children.push_back(sabotage_board);
+   			sabotage_board->makeMove(*it, 1, 2, gamma);
+   			int test_val2 = alphabeta(*sabotage_board, depth-1, true, alpha, beta, gamma);
+ 			vMin = min(vMin, test_val2);
+  			beta = min(beta, vMin);
+ 			if(beta <= alpha)
+ 				break;
+		}
+		return vMin;	
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -353,11 +259,10 @@ int main(int argc, char* argv[])
 	d->parseBoard(scenario);
 	d->addPlayer("Blue");
 	d->addPlayer("Green");
-	d->printBoard();
-	cout << "Index of highest unclaimed square: " << d->findHighestUnclaimedSquare() << endl;
-	d->printScores();
+	//d->printBoard();
+	//d->printScores();
 	cout << "Running minimax" << endl;
-	int minimax_heuristic = minimax(*d, 3, true, 1.0);
+	int minimax_heuristic = minimax(*d, 1, true, 1.0);
 	cout << "Minimax heuristic: " << minimax_heuristic << endl;
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
