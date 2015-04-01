@@ -53,10 +53,11 @@ class Board {
 		//helper methods
 		bool checkFriendlyNeighbors(int column, int row, int playerID); //could be private
 		bool checkEnemyNeighbors(int column, int row, int playerID); //could be private
-		void conquerNeighbors(char i_column, int column, int row, int playerID);
+		void conquerNeighbors(int col, int row, int playerID);
 		int getEnemyNeighborID(int column, int row, int playerID);
 		int player_stoi(std::string playerName) ;
 		std::vector<int> findNeighborIDs(int col, int row);
+		void conquer(int index, int playerID);
 };
 
 
