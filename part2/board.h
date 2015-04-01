@@ -35,7 +35,7 @@ class Board {
 		bool isBoardFull();
 		bool isRoot();
 		void deleteDescendants();
-		std::vector<int> getChildrenIndices(int playerID);
+		std::vector<int> getEmptyNeighboringSquares(int playerID);
 		std::vector<int> getUnoccupiedIndices();
 		std::vector< std::pair <int, int> > board; //first is score, second is playerID
 		//maps playerID with int representing score and string e.g., blue, green, etc.

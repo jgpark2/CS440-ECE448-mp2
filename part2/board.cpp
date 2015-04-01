@@ -883,7 +883,7 @@ bool Board::isBoardFull()
 	return true;
 }
 
-vector<int> Board::getChildrenIndices(int playerID)
+vector<int> Board::getEmptyNeighboringSquares(int playerID)
 {
 	vector<int> indices;
 	int counter = 0;

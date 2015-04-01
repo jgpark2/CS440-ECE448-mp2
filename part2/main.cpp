@@ -34,68 +34,73 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 	if(maximizingPlayer)
 	{
 		int bestValueMax = INT_MIN;
-		//vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		// for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
-		// {
-			//paraDrop
-			Board* paraDrop_board = new Board(board);
- 			paraDrop_board->parent = &board;
-  			board.children.push_back(paraDrop_board);
-   			//paraDrop_board->makeMove(*it, 0, 0, gamma);
-      		paraDrop_board->makeMove(paraDrop_board->findHighestUnclaimedSquare(), 0, 0, gamma);
-   			int test_val0 = minimax(*paraDrop_board, depth-1, false, gamma);
- 			bestValueMax = max(bestValueMax, test_val0);
 
- 		// 	//deathBlitz
-			// Board* deathBlitz_board = new Board(board);
- 		// 	deathBlitz_board->parent = &board;
-  	// 		board.children.push_back(deathBlitz_board);
-   // 			deathBlitz_board->makeMove(*it, 0, 1, gamma);
-   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
- 		// 	bestValueMax = max(bestValueMax, test_val1);
+		//paraDrop
+		Board* paraDrop_board = new Board(board);
+		paraDrop_board->parent = &board;
+		board.children.push_back(paraDrop_board);
+  		paraDrop_board->makeMove(paraDrop_board->findHighestUnclaimedSquare(), 0, 0, gamma);
+		int test_val0 = minimax(*paraDrop_board, depth-1, false, gamma);
+		bestValueMax = max(bestValueMax, test_val0);
 
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
-   	// 		int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
- 			// bestValueMax = max(bestValueMax, test_val2);
+		//deathBlitz
+		vector<int> possible_moves = board.getEmptyNeighboringSquares(0);
+		if(!possible_moves.empty())
+		{
+			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+			{
+				Board* deathBlitz_board = new Board(board);
+				deathBlitz_board->parent = &board;
+				board.children.push_back(deathBlitz_board);
+				deathBlitz_board->makeMove(*it, 0, 1, gamma);
+				int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
+				bestValueMax = max(bestValueMax, test_val1);
+			}
+		}
 
-		//}
+		// //sabotage
+		// Board* sabotage_board = new Board(board);
+		// sabotage_board->parent = &board;
+		// board.children.push_back(sabotage_board);
+		// sabotage_board->makeMove(*it, 0, 2, gamma);
+		// int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
+		// bestValueMax = max(bestValueMax, test_val2);
+
 		return bestValueMax;
 	}
 	else
 	{
 		int bestValueMin = INT_MAX;
-		// vector<int> unoccupied_squares = board.getUnoccupiedIndices();
-		// for(vector<int>::const_iterator it = unoccupied_squares.begin(); it!=unoccupied_squares.end(); ++it)
-		// {
-			//paraDrop
-			Board* paraDrop_board = new Board(board);
- 			paraDrop_board->parent = &board;
-  			board.children.push_back(paraDrop_board);
-   			//paraDrop_board->makeMove(*it, 1, 0, gamma);
-      		paraDrop_board->makeMove(paraDrop_board->findLowestUnclaimedSquare(), 1, 0, gamma);
-   			int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
- 			bestValueMin = min(bestValueMin, test_val0);
+		//paraDrop
+		Board* paraDrop_board = new Board(board);
+		paraDrop_board->parent = &board;
+		board.children.push_back(paraDrop_board);
+  		paraDrop_board->makeMove(paraDrop_board->findLowestUnclaimedSquare(), 1, 0, gamma);
+		int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
+		bestValueMin = min(bestValueMin, test_val0);
 
- 		// 	//deathBlitz
-			// Board* deathBlitz_board = new Board(board);
- 		// 	deathBlitz_board->parent = &board;
-  	// 		board.children.push_back(deathBlitz_board);
-   // 			deathBlitz_board->makeMove(*it, 1, 1, gamma);
-   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
- 		// 	bestValueMin = min(bestValueMin, test_val1);
-
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
-   	// 		int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
- 			// bestValueMin = min(bestValueMin, test_val2);
-		//}
+		//deathBlitz
+		vector<int> possible_moves = board.getEmptyNeighboringSquares(1);
+		if(!possible_moves.empty())
+		{
+			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
+			{		
+				Board* deathBlitz_board = new Board(board);
+				deathBlitz_board->parent = &board;
+				board.children.push_back(deathBlitz_board);
+				deathBlitz_board->makeMove(*it, 1, 1, gamma);
+				int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
+				bestValueMin = min(bestValueMin, test_val1);
+			}
+		}
+		// //sabotage
+		// Board* sabotage_board = new Board(board);
+		// sabotage_board->parent = &board;
+		// board.children.push_back(sabotage_board);
+		// sabotage_board->makeMove(*it, 1, 2, gamma);
+		// int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
+		// bestValueMin = min(bestValueMin, test_val2);
+		
 		return bestValueMin;	
 	}
 }
