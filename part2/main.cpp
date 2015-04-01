@@ -263,7 +263,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
-					beta = min(alpha, bestMove.score);
+					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
 				}
@@ -288,7 +288,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
-					beta = min(alpha, bestMove.score);
+					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
 				}
@@ -384,7 +384,8 @@ int main(int argc, char* argv[])
 	d->addPlayer("Blue");
 	d->addPlayer("Green");
 	cout << "Running minimax" << endl;
-	Move minimax_heuristic = minimax(*d, 3, 0, true, 1.0);
+	//Move minimax_heuristic = minimax(*d, 3, 0, true, 1.0);
+	Move minimax_heuristic = alphabeta(*d, 3, 0, true, INT_MIN, INT_MAX, 1.0);
 	cout << "Minimax heuristic score: " << minimax_heuristic.score << endl;
 	cout << "Minimax heuristic index: " << minimax_heuristic.index << endl;
 
