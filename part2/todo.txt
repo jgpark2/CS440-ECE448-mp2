@@ -1,0 +1,1 @@
+test deathBlitz on intersection of sets of unoccupied neighbors for both max and min

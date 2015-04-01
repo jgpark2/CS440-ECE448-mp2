@@ -27,8 +27,11 @@ Board::Board(vector< pair<int, int> > i_board, map<int, pair<int, string> > i_pl
 Board::Board(Board const &other)
 {
 	board = other.board;
-	player_map = other.player_map;
+	map<int, pair<int, string> > rhs_map = other.player_map;
+	player_map = rhs_map;
 	heuristic = other.heuristic;
+	parent = NULL;
+	children = vector<Board*>();
 }
 
 //destructor
