@@ -19,3 +19,8 @@ Move::~Move()
 {
 
 }
+void Move::setIndex(int i_index)
+{
+	if(index<0)
+		index = i_index;
+}

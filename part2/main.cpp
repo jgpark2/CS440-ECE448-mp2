@@ -6,29 +6,29 @@
 #include <algorithm>
 #include <unistd.h>
 #include "board.h"
+#include "move.h"
 
 
 using namespace std;
 using namespace boost;
 
-int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
+Move minimax(Board board, int depth, bool maximizingPlayer, double gamma, Move move)
 {
 	board.printBoard();
 	if(depth==0 || board.isBoardFull())
 	{
 		//cout << "Base case for ";
-		int retval;
 		if(maximizingPlayer)
 		{
 			//cout << " maximizingPlayer" << endl;
-			retval = board.getPlayerScore(1);
-			return retval;
+			move.score = board.getPlayerScore(1);
+			return move;
 		}
 		else
 		{
 			//cout << " minimizingPlayer" << endl;
-			retval = board.getPlayerScore(1);
-			return retval;
+			move.score = board.getPlayerScore(1);
+			return move;
 		}
 	}
 	if(maximizingPlayer)
@@ -43,11 +43,12 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			{
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
+		  		move.setIndex(*it);
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					int test_val0 = minimax(*paraDrop_board, depth-1, false, gamma);
+					int test_val0 = (minimax(*paraDrop_board, depth-1, false, gamma, move)).score;
 					bestValueMax = max(bestValueMax, test_val0);
 				}
 			}
@@ -62,11 +63,12 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			{
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
+				move.setIndex(*it);
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
+					int test_val1 = (minimax(*deathBlitz_board, depth-1, false, gamma, move)).score;
 					bestValueMax = max(bestValueMax, test_val1);
 				}
 			}
@@ -91,7 +93,9 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		// 	}
 		// }
 
-		return bestValueMax;
+		//return bestValueMax;
+		move.score = bestValueMax;
+		return move;
 	}
 	else
 	{
@@ -104,11 +108,12 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			{
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
+		  		move.setIndex(*it);
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
+					int test_val0 = (minimax(*paraDrop_board, depth-1, true, gamma, move)).score;
 					bestValueMin = min(bestValueMin, test_val0);
 				}
 			}
@@ -123,11 +128,12 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			{		
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
+			  	move.setIndex(*it);
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
+					int test_val1 = (minimax(*deathBlitz_board, depth-1, true, gamma, move)).score;
 					bestValueMin = min(bestValueMin, test_val1);
 				}
 			}
@@ -152,7 +158,8 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		// 	}
 		// }
 		
-		return bestValueMin;	
+		move.score = bestValueMin;
+		return move;
 	}
 }
 
