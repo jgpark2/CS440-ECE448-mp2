@@ -44,21 +44,21 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    			int test_val0 = minimax(*paraDrop_board, depth-1, false, gamma);
  			bestValueMax = max(bestValueMax, test_val0);
 
- 		// 	//deathBlitz
-			// Board* deathBlitz_board = new Board(board);
- 		// 	deathBlitz_board->parent = &board;
-  	// 		board.children.push_back(deathBlitz_board);
-   // 			deathBlitz_board->makeMove(*it, 0, 1, gamma);
-   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
- 		// 	bestValueMax = max(bestValueMax, test_val1);
+ 			//deathBlitz
+			Board* deathBlitz_board = new Board(board);
+ 			deathBlitz_board->parent = &board;
+  			board.children.push_back(deathBlitz_board);
+   			deathBlitz_board->makeMove(*it, 0, 1, gamma);
+   			int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
+ 			bestValueMax = max(bestValueMax, test_val1);
 
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 0, 2, gamma);
-   	// 		int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
- 			// bestValueMax = max(bestValueMax, test_val2);
+ 			//sabotage
+ 			Board* sabotage_board = new Board(board);
+ 			sabotage_board->parent = &board;
+  			board.children.push_back(sabotage_board);
+   			sabotage_board->makeMove(*it, 0, 2, gamma);
+   			int test_val2 = minimax(*sabotage_board, depth-1, false, gamma);
+ 			bestValueMax = max(bestValueMax, test_val2);
 
 		}
 		return bestValueMax;
@@ -77,21 +77,21 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
    			int test_val0 = minimax(*paraDrop_board, depth-1, true, gamma);
  			bestValueMin = min(bestValueMin, test_val0);
 
- 		// 	//deathBlitz
-			// Board* deathBlitz_board = new Board(board);
- 		// 	deathBlitz_board->parent = &board;
-  	// 		board.children.push_back(deathBlitz_board);
-   // 			deathBlitz_board->makeMove(*it, 1, 1, gamma);
-   // 			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
- 		// 	bestValueMin = min(bestValueMin, test_val1);
+ 			//deathBlitz
+			Board* deathBlitz_board = new Board(board);
+ 			deathBlitz_board->parent = &board;
+  			board.children.push_back(deathBlitz_board);
+   			deathBlitz_board->makeMove(*it, 1, 1, gamma);
+   			int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
+ 			bestValueMin = min(bestValueMin, test_val1);
 
- 			// //sabotage
- 			// Board* sabotage_board = new Board(board);
- 			// sabotage_board->parent = &board;
-  		// 	board.children.push_back(sabotage_board);
-   	// 		sabotage_board->makeMove(*it, 1, 2, gamma);
-   	// 		int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
- 			// bestValueMin = min(bestValueMin, test_val2);
+ 			//sabotage
+ 			Board* sabotage_board = new Board(board);
+ 			sabotage_board->parent = &board;
+  			board.children.push_back(sabotage_board);
+   			sabotage_board->makeMove(*it, 1, 2, gamma);
+   			int test_val2 = minimax(*sabotage_board, depth-1, true, gamma);
+ 			bestValueMin = min(bestValueMin, test_val2);
 		}
 		return bestValueMin;	
 	}
@@ -103,17 +103,14 @@ int alphabeta(Board board, int depth, bool maximizingPlayer, int alpha, int beta
 {
 	if(depth==0 || board.isBoardFull())
 	{
-		//cout << "Base case for ";
 		int retval;
 		if(maximizingPlayer)
 		{
-			//cout << " maximizingPlayer" << endl;
 			retval = board.getPlayerScore(0);
 			return retval;
 		}
 		else
 		{
-			//cout << " minimizingPlayer" << endl;
 			retval = board.getPlayerScore(1);
 			return retval;
 		}
@@ -262,7 +259,7 @@ int main(int argc, char* argv[])
 	//d->printBoard();
 	//d->printScores();
 	cout << "Running minimax" << endl;
-	int minimax_heuristic = minimax(*d, 1, true, 1.0);
+	int minimax_heuristic = minimax(*d, 2, true, 1.0);
 	cout << "Minimax heuristic: " << minimax_heuristic << endl;
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
