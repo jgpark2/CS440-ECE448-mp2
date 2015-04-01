@@ -34,6 +34,7 @@ class Board {
 		int findLowestUnclaimedSquare();
 		bool isBoardFull();
 		bool isRoot();
+		bool isSameBoard(Board rhs);
 		void deleteDescendants();
 		std::vector<int> getEmptyNeighboringSquares(int playerID);
 		std::vector<int> getUnoccupiedIndices();

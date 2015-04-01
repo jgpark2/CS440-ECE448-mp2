@@ -50,11 +50,14 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
 			{
 				Board* deathBlitz_board = new Board(board);
-				deathBlitz_board->parent = &board;
-				board.children.push_back(deathBlitz_board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
-				int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
-				bestValueMax = max(bestValueMax, test_val1);
+				if( !(deathBlitz_board->isSameBoard(board)) )
+				{
+					deathBlitz_board->parent = &board;
+					board.children.push_back(deathBlitz_board);
+					int test_val1 = minimax(*deathBlitz_board, depth-1, false, gamma);
+					bestValueMax = max(bestValueMax, test_val1);
+				}
 			}
 		}
 
@@ -86,13 +89,17 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
 			{		
 				Board* deathBlitz_board = new Board(board);
-				deathBlitz_board->parent = &board;
-				board.children.push_back(deathBlitz_board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
-				int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
-				bestValueMin = min(bestValueMin, test_val1);
+				if( !(deathBlitz_board->isSameBoard(board)) )
+				{
+					deathBlitz_board->parent = &board;
+					board.children.push_back(deathBlitz_board);
+					int test_val1 = minimax(*deathBlitz_board, depth-1, true, gamma);
+					bestValueMin = min(bestValueMin, test_val1);
+				}
 			}
 		}
+
 		// //sabotage
 		// Board* sabotage_board = new Board(board);
 		// sabotage_board->parent = &board;
@@ -260,6 +267,7 @@ int main(int argc, char* argv[])
 	// Board* c = new Board(*b);
 	// c->printBoard();
 
+
 	Board* d = new Board();
 	d->parseBoard(scenario);
 	d->addPlayer("Blue");
@@ -269,6 +277,8 @@ int main(int argc, char* argv[])
 	cout << "Running minimax" << endl;
 	int minimax_heuristic = minimax(*d, 3, false, 1.0);
 	cout << "Minimax heuristic: " << minimax_heuristic << endl;
+
+
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
 	//cout << "Index: " << minimax_val[0] << "\tHeuristic Value: " << minimax_val[1] << endl;
 
@@ -283,6 +293,17 @@ int main(int argc, char* argv[])
 	// // cout << "Running alphabeta" << endl;
 	// // vector<int> alphabeta_val = alphabeta(*e, 3, INT_MIN, INT_MAX, true, 1.0, 0, false);
 	// // cout << "Index: " << alphabeta_val[0] << "\tHeuristic Value: " << alphabeta_val[1] << endl;
+
+	// Board* f = new Board(*d);
+	// cout << "Two board are ";
+	// if(!(f->isSameBoard(*d)))
+	// 	cout << "not ";
+	// cout << "the same" << endl;
+	// f->paraDrop('D', 4, "Green");
+	// cout << "Two board are ";
+	// if(!(f->isSameBoard(*d)))
+	// 	cout << "not ";
+	// cout << "the same" << endl;
 
 	//delete b;
 	//delete c;

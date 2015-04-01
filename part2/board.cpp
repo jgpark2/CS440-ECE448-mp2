@@ -953,3 +953,22 @@ vector<int> Board::getEmptyNeighboringSquares(int playerID)
 	}
 	return indices;
 }
+
+bool Board::isSameBoard(Board rhs)
+{
+	//compare player scores
+	int num_players = player_map.size();
+	for(int i = -1; i<num_players-1; i++)
+	{
+		if(getPlayerScore(i)!=rhs.getPlayerScore(i))
+			return false;	
+	}
+
+	//compare unoccupied indices
+	vector<int> lhs_unoccupied = getUnoccupiedIndices();
+	vector<int> rhs_unoccupied = rhs.getUnoccupiedIndices();
+	if(lhs_unoccupied!=rhs_unoccupied)
+		return false;	
+
+	return true;
+}
