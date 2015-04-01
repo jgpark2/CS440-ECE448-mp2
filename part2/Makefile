@@ -1,6 +1,6 @@
 #
 EXE = mp2
-OBJS = gameTree.o board.o main.o
+OBJS = move.o gameTree.o board.o main.o
 
 COMPILER = g++
 COMPILER_OPTS = -c -g -O0 -Wall -Werror
@@ -11,7 +11,10 @@ all : $(EXE)
 
 $(EXE) : $(OBJS)
 	$(LINKER) $(OBJS) -o $(EXE)
-	
+
+move.o : move.h move.cpp
+	$(COMPILER) $(COMPILER_OPTS) move.cpp
+
 gameTree.o : gameTree.h gameTree.cpp
 	$(COMPILER) $(COMPILER_OPTS) gameTree.cpp
 

@@ -21,7 +21,7 @@ int minimax(Board board, int depth, bool maximizingPlayer, double gamma)
 		if(maximizingPlayer)
 		{
 			//cout << " maximizingPlayer" << endl;
-			retval = board.getPlayerScore(0);
+			retval = board.getPlayerScore(1);
 			return retval;
 		}
 		else
@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
 	b->deathBlitz('D', 4, "Blue");
 	b->printBoard();
 	b->printScores();
-	
+
 	// b->sabotage('C', 1, "Green", 1.0);
 	// b->printBoard();
 	// b->printScores();
