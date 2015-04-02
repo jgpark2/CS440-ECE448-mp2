@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "board.h"
 #include "move.h"
+#include <ctime>
 
 
 using namespace std;
@@ -400,24 +401,35 @@ int main(int argc, char* argv[])
 	d->addPlayer("Green");
 	cout << "Running minimax" << endl;
 	int curPlayer = 0;
+	
+	//int totalExpansions = 0;
+	double totalTime = 0.0;
+	int timeCount = 0;
 
-	while(!(d->isBoardFull()))
-	{
+	while(!(d->isBoardFull())) {
 		Move heuristic;
+		clock_t time_start = clock();
 		
 		if(strategyType[curPlayer] == 0)
 			heuristic = minimax(*d, 3, curPlayer, true, 1.0);
 		else
-			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0);
-			
+			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0); //Probably change depth to smthn more
+		
+		clock_t time_end = clock();
+		
+		totalTime+=double(time_end-time_start)/CLOCKS_PER_SEC;
+		timeCount++;
+		cout << "Time this move took: " << double(time_end-time_start)/CLOCKS_PER_SEC << endl;
 		cout << "Minimax heuristic score: " << heuristic.score << endl;
 		cout << "Minimax heuristic index: " << heuristic.index << endl;
 		
 		d->makeMove(heuristic.index,curPlayer,heuristic.moveType,1.0);
 		
 		curPlayer = (curPlayer == 1)?0:1;
-
 	}
+	
+	cout << "Average Time per move: " << totalTime/timeCount <<"s"<<endl;
+	cout << "Average Nodes Expanded per move: " <<endl;
 	
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
