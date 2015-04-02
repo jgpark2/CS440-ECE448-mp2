@@ -281,9 +281,10 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
-					if(curMove.score < bestMove.score)
+					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 0;
+					}
 					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
@@ -308,9 +309,10 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
-					if(curMove.score < bestMove.score)
+					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 1;
+					}
 					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
