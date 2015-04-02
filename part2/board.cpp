@@ -269,22 +269,22 @@ void Board::conquerNeighbors(int col, int row, int playerID)
 	
 	//if the square is assigned and is not occupied by the player making the move,
 	int up = (row-1)*6+col;
-	if(board[up].second!=-1 && board[up].second!=playerID) {
+	if(up>-1 && board[up].second!=-1 && board[up].second!=playerID) {
 		conquer(up, playerID);
 	}
 	
 	int right = (row)*6+(col+1);
-	if(board[right].second!=-1 && board[right].second!=playerID) {
+	if(right<6 && board[right].second!=-1 && board[right].second!=playerID) {
 		conquer(right, playerID);
 	}
 	
 	int down = (row+1)*6+col;
-	if(board[down].second!=-1 && board[down].second!=playerID) {
+	if(down<6 && board[down].second!=-1 && board[down].second!=playerID) {
 		conquer(down, playerID);
 	}
 	
 	int left = (row)*6+(col-1);
-	if(board[left].second!=-1 && board[left].second!=playerID) {
+	if(left>-1 && board[left].second!=-1 && board[left].second!=playerID) {
 		conquer(left, playerID);
 	}
 }

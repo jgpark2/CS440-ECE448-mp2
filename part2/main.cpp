@@ -431,10 +431,10 @@ int main(int argc, char* argv[])
 		Move heuristic;
 		clock_t time_start = clock();
 		
-		if(strategyType[curPlayer] == 0)
-			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded0);
-		else
-			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1); //Probably change depth to smthn more
+		if(strategyType[curPlayer] == 0) //heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded0);  
+		heuristic = alphabeta(*d, 5, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded0);
+		else //heuristic = alphabeta(*d, 5, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1);
+			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded1);
 		
 		clock_t time_end = clock();
 		
