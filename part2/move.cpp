@@ -16,6 +16,7 @@ Move::Move(Move const &rhs)
 {
 	score = rhs.score;
 	index = rhs.index;
+	moveType = rhs.moveType;
 }
 Move::~Move()
 {
