@@ -33,7 +33,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
 			{
-				cout << board.board[*it].first;//////
+				
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, orig_id, 0, gamma);
 		  		Move curMove(-1, *it);
@@ -185,7 +185,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
 			{
 				Board* paraDrop_board = new Board(board);
-		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
+		  		paraDrop_board->makeMove(*it, orig_id, 0, gamma);
 		  		Move curMove(-1, *it);
 
 				if( !(paraDrop_board->isSameBoard(board)) )
@@ -214,7 +214,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
 			{
 				Board* deathBlitz_board = new Board(board);
-				deathBlitz_board->makeMove(*it, 0, 1, gamma);
+				deathBlitz_board->makeMove(*it, orig_id,  1, gamma);
 				Move curMove(-1, *it);
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
@@ -257,6 +257,14 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 	}
 	else
 	{
+		int playerID = orig_id;
+		if(!maximizingPlayer) {
+			if(orig_id==0)
+				playerID = 1;
+			else playerID = 0;
+			
+		}
+		
 		Move bestMove(INT_MAX, -1);
 
 		//paraDrop
@@ -267,7 +275,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
 			{
 				Board* paraDrop_board = new Board(board);
-		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
+		  		paraDrop_board->makeMove(*it, playerID, 0, gamma);
 		  		Move curMove(-1, *it);
 
 				if( !(paraDrop_board->isSameBoard(board)) )
@@ -289,14 +297,14 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 
 		//deathBlitz
 		//possible_moves.clear();
-		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(1);
+		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(playerID);
 		nodes_expanded+=possible_moves_2.size();
 		//if(!possible_moves_2.empty())
 		//{
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
 			{		
 				Board* deathBlitz_board = new Board(board);
-				deathBlitz_board->makeMove(*it, 1, 1, gamma);
+				deathBlitz_board->makeMove(*it, playerID, 1, gamma);
 			  	Move curMove(-1, *it);
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
@@ -424,10 +432,9 @@ int main(int argc, char* argv[])
 		clock_t time_start = clock();
 		
 		if(strategyType[curPlayer] == 0)
-			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded0);
+			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded0);
 		else
-			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded1);
-			//heuristic = alphabeta(*d, 6, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1); //Probably change depth to smthn more
+			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1); //Probably change depth to smthn more
 		
 		clock_t time_end = clock();
 		
