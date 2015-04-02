@@ -34,15 +34,16 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 0, 0, gamma);
 		  		Move curMove(-1, *it);
-		  		curMove.moveTypes = 0;
 
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
 					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
-					if(curMove.score > bestMove.score)
+					if(curMove.score > bestMove.score) {
 						bestMove = curMove;
+						bestMove.moveType = 0;
+					}
 				}
 			}
 		}
@@ -57,15 +58,16 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 0, 1, gamma);
 				Move curMove(-1, *it);
-				curMove.moveTypes = 1;
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
-					if(curMove.score > bestMove.score)
+					if(curMove.score > bestMove.score){
 						bestMove = curMove;
+						bestMove.moveType = 1;
+					}
 				}
 			}
 		//}
@@ -104,15 +106,16 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* paraDrop_board = new Board(board);
 		  		paraDrop_board->makeMove(*it, 1, 0, gamma);
 		  		Move curMove(-1, *it);
-		  		curMove.moveTypes = 0;
 
 				if( !(paraDrop_board->isSameBoard(board)) )
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
 					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
-					if(curMove.score < bestMove.score)
+					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
+						bestMove.moveType = 0;
+					}
 				}
 			}
 		}
@@ -127,15 +130,16 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				Board* deathBlitz_board = new Board(board);
 				deathBlitz_board->makeMove(*it, 1, 1, gamma);
 			  	Move curMove(-1, *it);
-			  	curMove.moveTypes = 1;
 
 				if( !(deathBlitz_board->isSameBoard(board)) )
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
-					if(curMove.score < bestMove.score)
+					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
+						bestMove.moveType = 1;
+					}
 				}
 			}
 		//}
@@ -276,13 +280,15 @@ int main(int argc, char* argv[])
 	}
 	
 	char player1Mode = argv[1][0];
-	char player2Mode = argv[2][0]
+	char player2Mode = argv[2][0];
 	string scenario = argv[3];
+	
 	vector<int> strategyType;
 	if(player1Mode == 'm')
 		strategyType.push_back(0);
 	else
 		strategyType.push_back(1);
+		
 	if(player2Mode == 'm')
 		strategyType.push_back(0);
 	else

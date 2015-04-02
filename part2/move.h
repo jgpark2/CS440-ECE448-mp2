@@ -12,6 +12,7 @@ class Move {
 
 		int score;
 		int index;
+		int moveType;
 };
 
 

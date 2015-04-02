@@ -10,6 +10,7 @@ Move::Move(int i_score, int i_index)
 {
 	score = i_score;
 	index = i_index;
+	moveType = -1;
 }
 Move::Move(Move const &rhs)
 {
