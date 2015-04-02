@@ -442,15 +442,15 @@ int main(int argc, char* argv[])
 		if(strategyType[curPlayer] == 0)
 			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded0);
 		else
-			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded1);
+			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded1);
 			//heuristic = alphabeta(*d, 6, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1); //Probably change depth to smthn more
 		
 		clock_t time_end = clock();
 		
 		totalTime+=double(time_end-time_start)/CLOCKS_PER_SEC;
 		moveCount++;
-		cout << "Time this move took: " << double(time_end-time_start)/CLOCKS_PER_SEC << endl;
-		//cout << "Minimax heuristic score: " << heuristic.score << endl;
+		//cout << "Time this move took: " << double(time_end-time_start)/CLOCKS_PER_SEC << endl;
+		cout << "Minimax heuristic score: " << heuristic.score << endl;
 		//cout << "Minimax heuristic index: " << heuristic.index << endl;
 		
 		d->makeMove(heuristic.index,curPlayer,heuristic.moveType,1.0);
