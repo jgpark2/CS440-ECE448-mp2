@@ -318,7 +318,7 @@ void Board::deathBlitz(char i_column, int i_row, string playerName)
 	int square_score = board[row*6+col].first;
 	player_map[orig_playerID].first -= square_score;
 	player_map[playerID].first += square_score;
-	cout<< "playerID = "<< playerID << "SquareScore = " << square_score <<endl;
+	//cout<< "playerID = "<< playerID << "SquareScore = " << square_score <<endl;
 
 	//update player's claim to square
 	board[row*6+col].second = playerID;

@@ -43,7 +43,8 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 					board.children.push_back(paraDrop_board);
 					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 0;
 					}
 				}
@@ -68,7 +69,8 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score){
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 1;
 					}
 				}
@@ -117,7 +119,8 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 					board.children.push_back(paraDrop_board);
 					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 0;
 					}
 				}
@@ -142,7 +145,8 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 1;
 					}
 				}
@@ -202,7 +206,8 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					board.children.push_back(paraDrop_board);
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 0;
 					}
 					alpha = max(alpha, bestMove.score);
@@ -230,7 +235,8 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 1;
 					}
 					alpha = max(alpha, bestMove.score);
@@ -282,7 +288,8 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					board.children.push_back(paraDrop_board);
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 0;
 					}
 					beta = min(beta, bestMove.score);
@@ -310,7 +317,8 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					board.children.push_back(deathBlitz_board);
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
-						bestMove = curMove;
+						bestMove.score = curMove.score;
+						bestMove.index = curMove.index;
 						bestMove.moveType = 1;
 					}
 					beta = min(beta, bestMove.score);
@@ -428,9 +436,10 @@ int main(int argc, char* argv[])
 		clock_t time_start = clock();
 		
 		if(strategyType[curPlayer] == 0)
-			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded);
+			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded);
 		else
-			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded); //Probably change depth to smthn more
+			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded);
+			//heuristic = alphabeta(*d, 6, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded); //Probably change depth to smthn more
 		
 		clock_t time_end = clock();
 		
