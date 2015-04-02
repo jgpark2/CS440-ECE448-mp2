@@ -48,6 +48,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 0;
 					}
 				}
+				delete paraDrop_board;
 			}
 		}
 
@@ -74,6 +75,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 1;
 					}
 				}
+				delete deathBlitz_board;
 			}
 		//}
 
@@ -124,6 +126,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 0;
 					}
 				}
+				delete paraDrop_board;
 			}
 		}
 
@@ -150,6 +153,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 1;
 					}
 				}
+				delete deathBlitz_board;
 			}
 		//}
 
@@ -429,17 +433,17 @@ int main(int argc, char* argv[])
 	//int totalExpansions = 0;
 	double totalTime = 0.0;
 	int moveCount = 0;
-	int total_nodes_expanded = 0;
-
+	int total_nodes_expanded0 = 0;
+	int total_nodes_expanded1 = 0;
 	while(!(d->isBoardFull())) {
 		Move heuristic;
 		clock_t time_start = clock();
 		
 		if(strategyType[curPlayer] == 0)
-			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded);
+			heuristic = minimax(*d, 1, curPlayer, true, 1.0, total_nodes_expanded0);
 		else
-			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded);
-			//heuristic = alphabeta(*d, 6, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded); //Probably change depth to smthn more
+			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded1);
+			//heuristic = alphabeta(*d, 6, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded1); //Probably change depth to smthn more
 		
 		clock_t time_end = clock();
 		
@@ -454,12 +458,11 @@ int main(int argc, char* argv[])
 		curPlayer = (curPlayer == 1)?0:1;
 	}
 
+	d->printBoard();
 	cout << "player1 Score = " << d->getPlayerScore(0) << endl;
 	cout << "player2 Score = " << d->getPlayerScore(1) << endl;
-	d->printBoard();
-	
+	cout << "Average Nodes Expanded per move: " << (total_nodes_expanded0+total_nodes_expanded1)/moveCount << endl;
 	cout << "Average Time per move: " << totalTime/moveCount <<"s"<<endl;
-	cout << "Average Nodes Expanded per move: " << total_nodes_expanded/moveCount << endl;
 	
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
