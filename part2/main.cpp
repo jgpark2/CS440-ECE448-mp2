@@ -451,6 +451,8 @@ int main(int argc, char* argv[])
 	d->printBoard();
 	cout << "player1 Score = " << d->getPlayerScore(0) << endl;
 	cout << "player2 Score = " << d->getPlayerScore(1) << endl;
+	cout << "Nodes expanded by player1: " << total_nodes_expanded0 << endl;
+	cout << "Nodes expanded by player2: " << total_nodes_expanded1 << endl;
 	cout << "Average Nodes Expanded per move: " << (total_nodes_expanded0+total_nodes_expanded1)/moveCount << endl;
 	cout << "Average Time per move: " << totalTime/moveCount <<"s"<<endl;
 	
