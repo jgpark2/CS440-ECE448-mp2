@@ -198,6 +198,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score > bestMove.score)
 						bestMove = curMove;
+						bestMove.moveType = 0;
 					alpha = max(alpha, bestMove.score);
 					if(beta<=alpha)
 						break;
@@ -223,6 +224,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score > bestMove.score)
 						bestMove = curMove;
+						bestMove.moveType = 1;
 					alpha = max(alpha, bestMove.score);
 					if(beta<=alpha)
 						break;
@@ -272,6 +274,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
+						bestMove.moveType = 0;
 					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
@@ -297,6 +300,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
+						bestMove.moveType = 1;
 					beta = min(beta, bestMove.score);
 					if(beta<=alpha)
 						break;
