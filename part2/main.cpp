@@ -410,14 +410,18 @@ int main(int argc, char* argv[])
 		else
 			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0);
 			
-		cout << "Minimax heuristic score: " << heuristic.score << endl;
-		cout << "Minimax heuristic index: " << heuristic.index << endl;
+		//cout << "Minimax heuristic score: " << heuristic.score << endl;
+		//cout << "Minimax heuristic index: " << heuristic.index << endl;
 		
 		d->makeMove(heuristic.index,curPlayer,heuristic.moveType,1.0);
 		
 		curPlayer = (curPlayer == 1)?0:1;
 
 	}
+
+	cout << "player1 Score = " << d->getPlayerScore(0) << endl;
+	cout << "player2 Score = " << d->getPlayerScore(1) << endl;
+	d->printBoard();
 	
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);
