@@ -13,7 +13,7 @@
 using namespace std;
 using namespace boost;
 
-Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double gamma)
+Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double gamma, int &nodes_expanded)
 {
 	Move move;
 	//board.printBoard();
@@ -28,6 +28,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 
 		//paraDrop
 		vector<int> possible_moves = board.getUnoccupiedIndices();
+		nodes_expanded+=possible_moves.size();
 		if(!possible_moves.empty())
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
@@ -40,7 +41,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
+					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 0;
@@ -52,6 +53,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 		//deathBlitz
 		//possible_moves.clear();
 		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(0);
+		nodes_expanded+=possible_moves_2.size();
 		//if(!possible_moves_2.empty())
 		//{
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
@@ -64,7 +66,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
+					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score){
 						bestMove = curMove;
 						bestMove.moveType = 1;
@@ -100,6 +102,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 
 		//paraDrop
 		vector<int>possible_moves = board.getUnoccupiedIndices();
+		nodes_expanded+=possible_moves.size();
 		if(!possible_moves.empty())
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
@@ -112,7 +115,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
+					curMove.score = (minimax(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 0;
@@ -124,6 +127,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 		//deathBlitz
 		//possible_moves.clear();
 		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(1);
+		nodes_expanded+=possible_moves_2.size();
 		//if(!possible_moves_2.empty())
 		//{
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
@@ -136,7 +140,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma)).score;
+					curMove.score = (minimax(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 1;
@@ -168,7 +172,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 	}
 }
 
-Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int alpha, int beta, double gamma)
+Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int alpha, int beta, double gamma, int &nodes_expanded)
 {
 	Move move;
 	//board.printBoard();
@@ -183,6 +187,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 
 		//paraDrop
 		vector<int> possible_moves = board.getUnoccupiedIndices();
+		nodes_expanded+=possible_moves.size();
 		if(!possible_moves.empty())
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
@@ -195,7 +200,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 0;
@@ -210,6 +215,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 		//deathBlitz
 		//possible_moves.clear();
 		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(0);
+		nodes_expanded+=possible_moves_2.size();
 		//if(!possible_moves_2.empty())
 		//{
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
@@ -222,7 +228,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score > bestMove.score) {
 						bestMove = curMove;
 						bestMove.moveType = 1;
@@ -261,6 +267,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 
 		//paraDrop
 		vector<int>possible_moves = board.getUnoccupiedIndices();
+		nodes_expanded+=possible_moves.size();
 		if(!possible_moves.empty())
 		{
 			for(vector<int>::iterator it = possible_moves.begin(); it!=possible_moves.end(); ++it)
@@ -273,7 +280,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 				{
 			  		paraDrop_board->parent = &board;
 					board.children.push_back(paraDrop_board);
-					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					curMove.score = (alphabeta(*paraDrop_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
 						bestMove.moveType = 0;
@@ -287,6 +294,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 		//deathBlitz
 		//possible_moves.clear();
 		set<int> possible_moves_2 = board.getEmptyNeighboringSquares(1);
+		nodes_expanded+=possible_moves_2.size();
 		//if(!possible_moves_2.empty())
 		//{
 			for(set<int>::iterator it = possible_moves_2.begin(); it!=possible_moves_2.end(); ++it)
@@ -299,7 +307,7 @@ Move alphabeta(Board board, int depth, int orig_id, bool maximizingPlayer, int a
 				{
 					deathBlitz_board->parent = &board;
 					board.children.push_back(deathBlitz_board);
-					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma)).score;
+					curMove.score = (alphabeta(*deathBlitz_board, depth-1, orig_id, !maximizingPlayer, alpha, beta, gamma, nodes_expanded)).score;
 					if(curMove.score < bestMove.score)
 						bestMove = curMove;
 						bestMove.moveType = 1;
@@ -410,21 +418,22 @@ int main(int argc, char* argv[])
 	
 	//int totalExpansions = 0;
 	double totalTime = 0.0;
-	int timeCount = 0;
+	int moveCount = 0;
+	int total_nodes_expanded = 0;
 
 	while(!(d->isBoardFull())) {
 		Move heuristic;
 		clock_t time_start = clock();
 		
 		if(strategyType[curPlayer] == 0)
-			heuristic = minimax(*d, 3, curPlayer, true, 1.0);
+			heuristic = minimax(*d, 3, curPlayer, true, 1.0, total_nodes_expanded);
 		else
-			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0); //Probably change depth to smthn more
+			heuristic = alphabeta(*d, 3, curPlayer, true, INT_MIN, INT_MAX, 1.0, total_nodes_expanded); //Probably change depth to smthn more
 		
 		clock_t time_end = clock();
 		
 		totalTime+=double(time_end-time_start)/CLOCKS_PER_SEC;
-		timeCount++;
+		moveCount++;
 		cout << "Time this move took: " << double(time_end-time_start)/CLOCKS_PER_SEC << endl;
 		//cout << "Minimax heuristic score: " << heuristic.score << endl;
 		//cout << "Minimax heuristic index: " << heuristic.index << endl;
@@ -438,8 +447,8 @@ int main(int argc, char* argv[])
 	cout << "player2 Score = " << d->getPlayerScore(1) << endl;
 	d->printBoard();
 	
-	cout << "Average Time per move: " << totalTime/timeCount <<"s"<<endl;
-	cout << "Average Nodes Expanded per move: " <<endl;
+	cout << "Average Time per move: " << totalTime/moveCount <<"s"<<endl;
+	cout << "Average Nodes Expanded per move: " << total_nodes_expanded/moveCount << endl;
 	
 
 	//vector<int> minimax_val = minimax(*d, 3, true, 1.0, 0, false);

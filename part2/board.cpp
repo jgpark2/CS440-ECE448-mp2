@@ -541,8 +541,8 @@ bool Board::isSameBoard(Board rhs)
 
 void Board::printBoard()
 {
-	//cout << "printing board..." << endl;
-	//cout << "\tA\tB\tC\tD\tE\tF" << endl;
+	cout << "printing board..." << endl;
+	cout << "\tA\tB\tC\tD\tE\tF" << endl;
 	int counter = 0;
 	int row_counter = 0;
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
@@ -550,14 +550,14 @@ void Board::printBoard()
 		if(counter%6==0)
 		{
 			row_counter++;
-			//cout << endl << (row_counter) << "\t";
+			cout << endl << (row_counter) << "\t";
 		}
-		//cout << (it)->first << "-";
+		cout << (it)->first << "-";
 		string playerName = (player_map[(it)->second]).second;
-		//cout << playerName.at(0) << "\t";
+		cout << playerName.at(0) << "\t";
 		counter++;
 	}
-	//cout << endl;
+	cout << endl;
 	if (DEBUG)
 		cout << "board printed" << endl;
 }
