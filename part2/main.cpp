@@ -47,6 +47,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 0;
 					}
 				}
+				delete paraDrop_board;
 			}
 		}
 
@@ -72,6 +73,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 1;
 					}
 				}
+				delete deathBlitz_board;
 			}
 		//}
 
@@ -121,6 +123,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 0;
 					}
 				}
+				delete paraDrop_board;
 			}
 		}
 
@@ -146,6 +149,7 @@ Move minimax(Board board, int depth, int orig_id, bool maximizingPlayer, double 
 						bestMove.moveType = 1;
 					}
 				}
+				delete deathBlitz_board;
 			}
 		//}
 
