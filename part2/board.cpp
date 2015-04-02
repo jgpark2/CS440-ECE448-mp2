@@ -230,7 +230,7 @@ void Board::paraDrop(char i_column, int i_row, string playerName)
 	int playerID = player_stoi(playerName);
 	
 	//***INITIATE PARADROP***//
-	cout << "paraDrop by " << playerName << " (" << playerID << ") on [" << i_column << "," << i_row << "]" << endl;
+	//cout << "paraDrop by " << playerName << " (" << playerID << ") on [" << i_column << "," << i_row << "]" << endl;
 	
 	//update score
 	int square_score = board[row*6+col].first;
@@ -252,9 +252,9 @@ void Board::paraDrop(char i_column, int i_row, string playerName)
 void Board::conquer(int index, int playerID) {
 	if(!inBounds(cIdx(index),rIdx(index)))
 		return;
-	char i_col = 'A'+cIdx(index);
-	int i_row = rIdx(index)+1;
-	cout << "Conquering neighbor [" << i_col << "," << i_row << "]" << endl;
+	//char i_col = 'A'+cIdx(index);
+	//int i_row = rIdx(index)+1;
+	//cout << "Conquering neighbor [" << i_col << "," << i_row << "]" << endl;
 	//conquer the square, update the score, etc.
 	int enemy_playerID = board[index].second;
 	int neighbor_square_score = board[index].first;
@@ -299,7 +299,7 @@ void Board::deathBlitz(char i_column, int i_row, string playerName)
 	
 	int orig_playerID = board[row*6+col].second;
 	if(orig_playerID!=-1) {
-		cerr << "Error: Invalid deathBlitz - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
+		cerr << "Error: Invalid paradrop - " << player_map[orig_playerID].second << " already occupies [" << i_column << "," << row+1 << "]" << endl;
 		return;
 	}
 	
@@ -312,12 +312,13 @@ void Board::deathBlitz(char i_column, int i_row, string playerName)
 	
 	//*******INITIATE DEATHBLITZ*******//
 	//todo: implementation
-	cout << "deathBlitz by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
+	//cout << "deathBlitz by " << playerName << " (" << playerID << ") on [" << i_column << "," << row+1 << "]" << endl;
 	
 	//update score
 	int square_score = board[row*6+col].first;
 	player_map[orig_playerID].first -= square_score;
 	player_map[playerID].first += square_score;
+	cout<< "playerID = "<< playerID << "SquareScore = " << square_score <<endl;
 
 	//update player's claim to square
 	board[row*6+col].second = playerID;
@@ -540,8 +541,8 @@ bool Board::isSameBoard(Board rhs)
 
 void Board::printBoard()
 {
-	cout << "printing board..." << endl;
-	cout << "\tA\tB\tC\tD\tE\tF" << endl;
+	//cout << "printing board..." << endl;
+	//cout << "\tA\tB\tC\tD\tE\tF" << endl;
 	int counter = 0;
 	int row_counter = 0;
 	for(vector< pair<int, int> >::const_iterator it = board.begin(); it!=board.end(); ++it)
@@ -549,14 +550,14 @@ void Board::printBoard()
 		if(counter%6==0)
 		{
 			row_counter++;
-			cout << endl << (row_counter) << "\t";
+			//cout << endl << (row_counter) << "\t";
 		}
-		cout << (it)->first << "-";
+		//cout << (it)->first << "-";
 		string playerName = (player_map[(it)->second]).second;
-		cout << playerName.at(0) << "\t";
+		//cout << playerName.at(0) << "\t";
 		counter++;
 	}
-	cout << endl;
+	//cout << endl;
 	if (DEBUG)
 		cout << "board printed" << endl;
 }

@@ -420,13 +420,17 @@ int main(int argc, char* argv[])
 		totalTime+=double(time_end-time_start)/CLOCKS_PER_SEC;
 		timeCount++;
 		cout << "Time this move took: " << double(time_end-time_start)/CLOCKS_PER_SEC << endl;
-		cout << "Minimax heuristic score: " << heuristic.score << endl;
-		cout << "Minimax heuristic index: " << heuristic.index << endl;
+		//cout << "Minimax heuristic score: " << heuristic.score << endl;
+		//cout << "Minimax heuristic index: " << heuristic.index << endl;
 		
 		d->makeMove(heuristic.index,curPlayer,heuristic.moveType,1.0);
 		
 		curPlayer = (curPlayer == 1)?0:1;
 	}
+
+	cout << "player1 Score = " << d->getPlayerScore(0) << endl;
+	cout << "player2 Score = " << d->getPlayerScore(1) << endl;
+	d->printBoard();
 	
 	cout << "Average Time per move: " << totalTime/timeCount <<"s"<<endl;
 	cout << "Average Nodes Expanded per move: " <<endl;
